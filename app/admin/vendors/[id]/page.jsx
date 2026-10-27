@@ -110,7 +110,7 @@ export default function VendorDetail() {
             <div className="space-y-1.5 text-[13px] text-charcoal/75">
               <p className="flex items-center gap-2"><Mail className="w-4 h-4 text-navy/40" />{v.email}</p>
               {v.phone && <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-navy/40" />{v.phone}</p>}
-              {v.abn && v.abn !== '—' && <p className="flex items-center gap-2"><Building2 className="w-4 h-4 text-navy/40" />ABN {v.abn}</p>}
+              {v.abn && v.abn !== '—' && <p className="flex items-center gap-2"><Building2 className="w-4 h-4 text-navy/40" />EIN {v.abn}</p>}
             </div>
           </Card>
           <Card title="Warehouses" action={<button className="dash-btn dash-btn-ghost !h-8 !px-3" onClick={() => setWhEdit({})}><Plus /> Add</button>}>

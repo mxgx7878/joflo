@@ -73,7 +73,7 @@ export default function CustomerDetail() {
           {u.type === 'retailer' && (
             <Card title="Business" action={<Building2 className="w-4 h-4 text-gold" />}>
               <KV k="Business name" v={u.company} />
-              <KV k="ABN / Reg. no." v={u.abn} />
+              <KV k="EIN / Tax ID" v={u.abn} />
               <KV k="Business type" v={u.businessType} />
             </Card>
           )}

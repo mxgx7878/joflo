@@ -152,7 +152,7 @@ function NewRequest() {
               <Field label="Incoterm">
                 <select value={trade.incoterm} onChange={upTrade('incoterm')} className="dash-input">{['FOB', 'CIF', 'CFR', 'EXW'].map((x) => <option key={x}>{x}</option>)}</select>
               </Field>
-              <Field label="Delivery port / destination *"><input value={trade.port} onChange={upTrade('port')} className="dash-input" placeholder="e.g. Port of Melbourne" /></Field>
+              <Field label="Delivery port / destination *"><input value={trade.port} onChange={upTrade('port')} className="dash-input" placeholder="e.g. Port of New York/New Jersey" /></Field>
               <Field label="Frequency">
                 <select value={trade.frequency} onChange={upTrade('frequency')} className="dash-input">{['One-off', 'Monthly', 'Quarterly', 'Seasonal'].map((x) => <option key={x}>{x}</option>)}</select>
               </Field>

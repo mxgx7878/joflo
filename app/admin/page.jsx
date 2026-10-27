@@ -33,7 +33,7 @@ export default function AdminOverview() {
       const to = end.getTime() - (7 - i) * WEEK;
       const from = to - WEEK;
       const inW = live.filter((o) => { const t = new Date(o.createdAt).getTime(); return t > from && t <= to; });
-      return { label: new Date(to).toLocaleDateString('en-AU', { day: 'numeric', month: 'short' }), revenue: Math.round(inW.reduce((s, o) => s + o.total, 0)), orders: inW.length };
+      return { label: new Date(to).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }), revenue: Math.round(inW.reduce((s, o) => s + o.total, 0)), orders: inW.length };
     });
     const units = {};
     live.forEach((o) => o.items.forEach((i) => { if (i.productId) units[i.productId] = (units[i.productId] || 0) + i.qty; }));
