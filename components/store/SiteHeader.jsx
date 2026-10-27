@@ -6,12 +6,14 @@ import { productImg } from '@/lib/catalogue';
 import { money, priced, catLine, sizeLine } from '@/lib/format';
 import { useUI } from './ui';
 import { useCatalogue, FilterLink, CosLink } from './shared';
+import { LocationButton } from '@/components/LocationPicker';
 import { Globe2, BadgeCheck, Ship, Menu, Search, UserRound, Heart, ShoppingBag, LayoutGrid, ChevronDown, PackageCheck, ArrowRight } from './icons';
 
 export function accountHref(user) {
   if (!user) return '/login';
-  return user.role === 'admin' ? '/admin' : '/account';
+  return user.role === 'admin' ? '/admin' : user.role === 'vendor' ? '/vendor' : '/account';
 }
+export const dashLabel = (user) => (user.role === 'admin' ? 'Admin Dashboard' : user.role === 'vendor' ? 'Supplier Dashboard' : null);
 
 export function useCounts() {
   const ready = useStoreReady();
@@ -222,18 +224,21 @@ export default function SiteHeader() {
             </div>
             <p className="sr-only">International Wholesale &amp; Trading · Premium Quality Products · Global Distribution</p>
           </div>
+          <LocationButton dark className="md:hidden normal-case tracking-normal text-[12px] font-medium max-w-[52%] hover:text-gold-soft" />
           <ul className="hidden md:flex items-center gap-7">
             <li className="flex items-center gap-2"><Globe2 className="w-3.5 h-3.5 text-gold-soft" />International Wholesale &amp; Trading</li>
             <li className="flex items-center gap-2"><BadgeCheck className="w-3.5 h-3.5 text-gold-soft" />Premium Quality Products</li>
             <li className="flex items-center gap-2"><Ship className="w-3.5 h-3.5 text-gold-soft" />Global Distribution</li>
           </ul>
           <div className="hidden md:flex items-center gap-5 normal-case tracking-normal text-[12.5px] font-medium">
+            <LocationButton dark className="max-w-[260px] hover:text-gold-soft transition" />
+            <span className="w-px h-3 bg-white/25" />
             <button type="button" onClick={() => openEnquiry({ type: 'bulk' })} className="hover:text-gold-soft transition">Request Bulk Pricing</button>
             <span className="w-px h-3 bg-white/25" />
             <button type="button" onClick={() => openEnquiry({ type: 'contact' })} className="hover:text-gold-soft transition">Help &amp; Contact</button>
             <span className="w-px h-3 bg-white/25" />
             <Link href={accountHref(loggedIn ? user : null)} className="hover:text-gold-soft transition">
-              {loggedIn ? (user.role === 'admin' ? 'Admin Dashboard' : `Hi, ${firstName}`) : 'Sign in / Register'}
+              {loggedIn ? (dashLabel(user) || `Hi, ${firstName}`) : 'Sign in / Register'}
             </Link>
           </div>
         </div>
@@ -251,7 +256,7 @@ export default function SiteHeader() {
             <DesktopSearch />
 
             <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
-              <Link href={accountHref(loggedIn ? user : null)} className="icon-btn hidden sm:grid" aria-label={loggedIn ? `Account — ${user.name}` : 'Account'} title={loggedIn ? (user.role === 'admin' ? 'Admin dashboard' : `My account (${user.name})`) : 'Sign in'}>
+              <Link href={accountHref(loggedIn ? user : null)} className="icon-btn hidden sm:grid" aria-label={loggedIn ? `Account — ${user.name}` : 'Account'} title={loggedIn ? (dashLabel(user) || `My account (${user.name})`) : 'Sign in'}>
                 <UserRound />
                 {loggedIn && <span className="absolute top-[9px] right-[9px] w-2.5 h-2.5 rounded-full bg-emerald ring-2 ring-white" aria-hidden="true" />}
               </Link>

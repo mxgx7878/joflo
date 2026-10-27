@@ -9,6 +9,7 @@ import { productImg } from '@/lib/catalogue';
 import { Pill, OrderProgress, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, KV, Skeleton, useConfirm, Initials } from '@/components/admin/common';
+import FulfilmentCard from '@/components/admin/FulfilmentCard';
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -39,7 +40,7 @@ export default function OrderDetail() {
       setNote('');
       toast({ text: `${order.id} marked as ${ORDER_STATUS[status].label.toLowerCase()}` });
     };
-    if (status === 'cancelled') ask({ title: `Cancel ${order.id}?`, body: 'Items will be returned to stock and the customer will see the order as cancelled.', confirm: 'Cancel order', danger: true }, run);
+    if (status === 'cancelled') ask({ title: `Cancel ${order.id}?`, body: 'Items go back to the supplier warehouses they were taken from and the customer will see the order as cancelled.', confirm: 'Cancel order', danger: true }, run);
     else run();
   };
 
@@ -54,6 +55,8 @@ export default function OrderDetail() {
             <Pill meta={ORDER_STATUS[order.status]} />
             <Pill meta={PAYMENT_STATUS[order.payment]} />
             {order.source === 'quote' && <span className="pill bg-[#EEE9F8] text-[#5B3FA0]">From quote</span>}
+            {order.guest && <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Guest checkout</span>}
+            {order.items.some((i) => i.productId && !i.warehouseId) && order.status !== 'cancelled' && <span className="pill bg-[#F8E7E3] text-[#B4432F]">Needs a supplier</span>}
           </div>
           <p className="text-[13px] text-charcoal/55 mt-1">Placed {fmtDateTime(order.createdAt)}</p>
         </div>
@@ -95,6 +98,8 @@ export default function OrderDetail() {
               </div>
             </div>
           </Card>
+
+          <FulfilmentCard order={order} />
 
           <Card title="Timeline" className="print:hidden">
             <ol className="relative">
@@ -144,7 +149,7 @@ export default function OrderDetail() {
               <Initials name={order.customer.name} className="w-11 h-11 text-[13px]" />
               <div className="min-w-0">
                 <p className="font-bold text-navy truncate">{order.customer.company || order.customer.name}</p>
-                <p className="text-[12.5px] text-charcoal/55 truncate">{order.customer.company ? order.customer.name : 'Individual'}</p>
+                <p className="text-[12.5px] text-charcoal/55 truncate">{order.customer.company ? order.customer.name : order.guest && !order.userId ? 'Guest — no account' : 'Individual'}</p>
               </div>
             </div>
             <div className="mt-3 text-[13px] space-y-1 text-charcoal/75">

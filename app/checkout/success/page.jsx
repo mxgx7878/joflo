@@ -2,8 +2,10 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight, Check, Landmark, PackageCheck, Truck, MailCheck } from 'lucide-react';
-import { useStore, useStoreReady } from '@/lib/store';
+import { ArrowRight, Check, Landmark, PackageCheck, Truck, MailCheck, Warehouse, UserPlus } from 'lucide-react';
+import { useStore, useStoreReady, useCurrentUser } from '@/lib/store';
+import { getLocation, fmtKm, locationLabel } from '@/lib/locations';
+import { fulfilmentGroups } from '@/lib/fulfilment';
 import { money, PAYMENT_METHODS, fmtDateTime } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
 import { MinimalHeader, AddressBlock, PageLoader } from '@/components/account/shared';
@@ -12,6 +14,8 @@ function Success() {
   const id = useSearchParams().get('order');
   const ready = useStoreReady();
   const order = useStore((s) => s.orders.find((o) => o.id === id));
+  const warehouses = useStore((s) => s.warehouses);
+  const user = useCurrentUser();
   if (!ready) return <PageLoader />;
   if (!order) {
     return (
@@ -23,9 +27,11 @@ function Success() {
   }
   const steps = [
     { icon: MailCheck, t: 'Order received', d: 'We\'ve emailed a confirmation to ' + order.customer.email },
-    { icon: PackageCheck, t: 'We confirm & pack', d: 'Our team checks stock and confirms within one business day.' },
-    { icon: Truck, t: 'Dispatched', d: 'You\'ll get a tracking number in your account once shipped.' },
+    { icon: PackageCheck, t: 'Nearest warehouse packs it', d: `Routed to the closest warehouse to ${order.location ? locationLabel(order.location) : 'you'} — confirmed within one business day.` },
+    { icon: Truck, t: 'Dispatched', d: order.userId ? 'You\'ll get a tracking number in your account once shipped.' : `We'll email the tracking number to ${order.customer.email}.` },
   ];
+  const guestNoAccount = !order.userId && !user;
+  const shipFrom = fulfilmentGroups(order).map((g) => ({ ...g, city: getLocation(warehouses.find((w) => w.id === g.warehouseId)?.locationId)?.city || null }));
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_400px] gap-6 items-start">
       <div className="space-y-5">
@@ -35,9 +41,12 @@ function Success() {
           <h1 className="h-display text-navy text-[2rem] sm:text-[2.6rem] mt-2">Your order is placed.</h1>
           <p className="text-[15px] text-charcoal/65 mt-3">Order <b className="text-navy">{order.id}</b> · {fmtDateTime(order.createdAt)} · {money(order.total)}</p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link href={`/account/orders/${order.id}`} className="btn btn-navy">Track this order <ArrowRight className="mv" /></Link>
+            {guestNoAccount
+              ? <Link href={`/register?email=${encodeURIComponent(order.customer.email)}&name=${encodeURIComponent(order.customer.name)}&next=${encodeURIComponent(`/account/orders/${order.id}`)}`} className="btn btn-navy"><UserPlus /> Create an account to track it</Link>
+              : <Link href={`/account/orders/${order.id}`} className="btn btn-navy">Track this order <ArrowRight className="mv" /></Link>}
             <Link href="/" className="btn btn-line-dark">Continue shopping</Link>
           </div>
+          {guestNoAccount && <p className="text-[12.5px] text-charcoal/55 mt-4">You checked out as a guest. Sign up with <b className="text-navy">{order.customer.email}</b> and this order will appear in your account automatically.</p>}
         </div>
 
         <div className="dash-card p-6 sm:p-7">
@@ -85,6 +94,15 @@ function Success() {
         <div className="px-6 py-5 grid grid-cols-2 gap-4 border-t border-navy/5">
           <div><p className="dash-label">Deliver to</p><AddressBlock address={order.address} /></div>
           <div><p className="dash-label">Payment</p><p className="text-[13.5px] text-charcoal/80">{PAYMENT_METHODS[order.paymentMethod]}</p></div>
+        </div>
+        <div className="px-6 pb-5 -mt-1">
+          <p className="dash-label">Ships from</p>
+          {shipFrom.map((g) => (
+            <p key={g.key} className="flex items-center gap-2 text-[13px] py-0.5">
+              <Warehouse className={`w-4 h-4 shrink-0 ${g.city ? 'text-emerald' : 'text-gold'}`} />
+              {g.city ? <span className="text-navy font-semibold">{g.city} warehouse <span className="font-normal text-charcoal/50">· {fmtKm(g.distanceKm)} · {g.items.length} item{g.items.length > 1 ? 's' : ''}</span></span> : <span className="text-[#8a6417] font-semibold">Being sourced by our team</span>}
+            </p>
+          ))}
         </div>
       </aside>
     </div>

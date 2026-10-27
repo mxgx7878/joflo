@@ -7,7 +7,7 @@ import { productImg } from '@/lib/catalogue';
 import { money, priced, catLine, sizeLine } from '@/lib/format';
 import { useUI } from './ui';
 import { FilterLink, CosLink, useCatalogue, useProductActions } from './shared';
-import { accountHref, useCounts } from './SiteHeader';
+import { accountHref, dashLabel, useCounts } from './SiteHeader';
 import { X, ChevronDown, UserRound, Lock, ShoppingBag, Heart, Minus, Plus, Trash2, PackageCheck, Info, Mail, ArrowRight, CircleCheck } from './icons';
 
 /* Global behaviour: Escape closes, body scroll lock, focus the panel */
@@ -78,7 +78,7 @@ export function MobileMenu() {
       </nav>
       <div className="p-5 bg-ivory border-t border-navy/10 space-y-3">
         <button type="button" className="btn btn-gold w-full" onClick={() => openEnquiry({ type: 'bulk' })}>Request Bulk Pricing</button>
-        <Link href={accountHref(u)} className="btn btn-line-dark w-full"><UserRound />{u ? (u.role === 'admin' ? 'Admin Dashboard' : 'My Account') : 'Sign in / Register'}</Link>
+        <Link href={accountHref(u)} className="btn btn-line-dark w-full"><UserRound />{u ? (dashLabel(u) || 'My Account') : 'Sign in / Register'}</Link>
       </div>
     </aside>
   );
@@ -134,7 +134,7 @@ export function CartDrawer() {
       {rows.length > 0 && (
         <div className="border-t border-navy/10 p-6 bg-ivory">
           <div className="flex items-center justify-between"><span className="font-bold text-navy">Subtotal</span><span className="font-extrabold text-xl text-navy">{money(cartTotal)}</span></div>
-          <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Some items use sample prices; delivery is calculated at checkout.</p>
+          <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Some items use sample prices; delivery is calculated at checkout. No account needed — guest checkout available.</p>
           <button type="button" className="btn btn-navy w-full mt-5" onClick={() => { closeAll(); router.push('/checkout'); }}><Lock />Checkout</button>
           <button type="button" className="btn btn-line-dark w-full mt-3" onClick={() => openEnquiry({ type: 'cart' })}>Request Bulk Quote for Cart</button>
         </div>

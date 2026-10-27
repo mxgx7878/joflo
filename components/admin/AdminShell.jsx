@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, ShoppingCart, MessageSquareText, Package, FolderTree, Boxes, Wheat, Users, Settings,
-  Menu, X, ExternalLink, LogOut, Search,
+  Menu, X, ExternalLink, LogOut, Search, Warehouse,
 } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { stockState } from '@/lib/format';
@@ -16,6 +16,7 @@ const NAV = [
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/categories', label: 'Categories', icon: FolderTree },
   { href: '/admin/inventory', label: 'Inventory', icon: Boxes, badge: 'inventory' },
+  { href: '/admin/vendors', label: 'Suppliers', icon: Warehouse, badge: 'vendors' },
   { href: '/admin/trading', label: 'Trading', icon: Wheat },
   { href: '/admin/customers', label: 'Customers', icon: Users, badge: 'customers' },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
@@ -27,10 +28,11 @@ function useBadges() {
   const products = useStore((s) => s.products);
   const users = useStore((s) => s.users);
   return useMemo(() => ({
-    orders: orders.filter((o) => o.status === 'pending').length,
+    orders: orders.filter((o) => o.status === 'pending' || (o.status !== 'cancelled' && o.items.some((i) => i.productId && !i.warehouseId))).length,
     inquiries: inquiries.filter((i) => i.status === 'new').length,
     inventory: products.filter((p) => p.status === 'active' && stockState(p) !== 'ok').length,
     customers: users.filter((u) => u.role === 'customer' && u.status === 'pending').length,
+    vendors: users.filter((u) => u.role === 'vendor' && u.status === 'pending').length,
   }), [orders, inquiries, products, users]);
 }
 
