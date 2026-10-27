@@ -22,8 +22,8 @@ npm run build && npm start
 | Admin | admin@jolof.demo | admin123 |
 | Retailer (approved) | retailer@jolof.demo | demo123 |
 | Individual customer | customer@jolof.demo | demo123 |
-| Supplier (Sahel Wholesale Foods — Sydney & Brisbane warehouses) | vendor@jolof.demo | demo123 |
-| Supplier (West Coast Beauty — Perth & Adelaide) | westcoast@beauty.demo | demo123 |
+| Supplier (Sahel Wholesale Foods — Houston & Atlanta warehouses) | vendor@jolof.demo | demo123 |
+| Supplier (West Coast Beauty — Los Angeles & Seattle) | westcoast@beauty.demo | demo123 |
 
 `kwame@accrabeauty.demo / demo123` is a retailer **awaiting approval** (approve it from Admin → Customers).
 `cheikh@baobab.demo / demo123` is a supplier **awaiting approval** (approve it from Admin → Suppliers).
@@ -43,7 +43,9 @@ npm run build && npm start
   then add **warehouses** and list **catalogue products** with a supply price and stock **per warehouse**.
 - **Routing rule** (`lib/fulfilment.js`): an order goes to the *nearest* active warehouse that can fill the **whole order**;
   if none can, each line goes to the nearest warehouse holding it (split shipment). Lines nobody can fill are flagged
-  *Needs a supplier* for admin. JOLOF's own stock is the house supplier `v-jolof`.
+  *Needs a supplier* for admin. JOLOF's own stock is the house supplier `v-jolof` (Port Newark, NJ).
+- **United States**: 32 delivery metros grouped by region (`lib/locations.js`); addresses in any of the 50 states + DC
+  route from their state's nearest hub. Distances are in miles.
 - **Supplier portal** (`/vendor`): new orders → Accept → Packed → Shipped (tracking) → Delivered. The customer order
   status follows the slowest supplier part. *Can't fulfil* returns the stock and re-routes to the next nearest supplier.
 - **Admin**: Suppliers list/detail with approval, Inventory shows which supplier/warehouse holds each product,

@@ -70,7 +70,7 @@ function Job({ job, offersIdx }) {
           {['packed', 'shipped'].includes(next) || job.status === 'shipped' ? (
             <>
               <label className="dash-label" htmlFor={`trk-${job.key}`}>Tracking number{next === 'shipped' ? ' *' : ''}</label>
-              <input id={`trk-${job.key}`} className="dash-input" value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="e.g. AUP123456789" />
+              <input id={`trk-${job.key}`} className="dash-input" value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="e.g. 1Z999AA10123456784" />
             </>
           ) : null}
           <div className="flex flex-col sm:flex-row gap-2 mt-4">

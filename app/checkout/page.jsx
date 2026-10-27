@@ -24,7 +24,7 @@ function GInput({ id, label, value, onChange, error, className = '', ...rest }) 
 }
 
 const METHODS = [
-  { v: 'bank_transfer', icon: Landmark, t: 'Bank transfer', d: 'Pay by EFT after we confirm stock. Details on the next screen.' },
+  { v: 'bank_transfer', icon: Landmark, t: 'Bank transfer', d: 'Pay by ACH or wire after we confirm stock. Details on the next screen.' },
   { v: 'cod', icon: Truck, t: 'Pay on delivery', d: 'Pay the driver by card or cash when your order arrives.' },
   { v: 'card_demo', icon: CreditCard, t: 'Card (demo)', d: 'Card payments go live when the payment gateway is connected.' },
 ];
@@ -72,7 +72,7 @@ export default function CheckoutPage() {
   }, [location?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isGuest = ready && !user;
-  const address = isGuest ? { label: 'Delivery', ...gAddr, country: 'Australia' } : user?.addresses.find((a) => a.id === addressId) || null;
+  const address = isGuest ? { label: 'Delivery', ...gAddr, country: 'United States' } : user?.addresses.find((a) => a.id === addressId) || null;
   const addrLoc = address && (address.city || address.state) ? locationFromAddress(address) : null;
   const mismatch = location && addrLoc && addrLoc.state !== location.state ? addrLoc : null;
 
@@ -216,14 +216,14 @@ export default function CheckoutPage() {
                   {isGuest ? (
                     <div className="grid sm:grid-cols-2 gap-4">
                       <GInput id="g-line1" label="Street address *" className="sm:col-span-2" value={gAddr.line1} onChange={(v) => setGAddr({ ...gAddr, line1: v })} error={gErr.line1} autoComplete="street-address" placeholder="Unit / street" />
-                      <GInput id="g-city" label="Suburb / City *" value={gAddr.city} onChange={(v) => setGAddr({ ...gAddr, city: v })} error={gErr.city} />
+                      <GInput id="g-city" label="City *" value={gAddr.city} onChange={(v) => setGAddr({ ...gAddr, city: v })} error={gErr.city} />
                       <div className="grid grid-cols-2 gap-4">
                         <label className="block"><span className="dash-label">State *</span>
                           <select className={`dash-input ${gErr.state ? '!border-[#B4432F]' : ''}`} value={gAddr.state} onChange={(e) => setGAddr({ ...gAddr, state: e.target.value })}>
                             <option value="">—</option>{STATES.map((st) => <option key={st}>{st}</option>)}
                           </select>
                         </label>
-                        <GInput id="g-postcode" label="Postcode *" value={gAddr.postcode} onChange={(v) => setGAddr({ ...gAddr, postcode: v })} error={gErr.postcode} inputMode="numeric" />
+                        <GInput id="g-postcode" label="ZIP code *" value={gAddr.postcode} onChange={(v) => setGAddr({ ...gAddr, postcode: v })} error={gErr.postcode} inputMode="numeric" />
                       </div>
                     </div>
                   ) : (

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useStore, useCurrentUser } from '@/lib/store';
 import { Logo, Field } from '@/components/ui';
+import { STATES } from '@/lib/locations';
 
 /** Minimal header used on login / register / checkout */
 export function MinimalHeader({ secure = false }) {
@@ -68,7 +69,7 @@ export function AddressBlock({ address, className = '' }) {
   );
 }
 
-const EMPTY_ADDR = { label: '', line1: '', city: '', state: '', postcode: '', country: 'Australia', isDefault: false };
+const EMPTY_ADDR = { label: '', line1: '', city: '', state: '', postcode: '', country: 'United States', isDefault: false };
 
 /** Address form — calls onSubmit(address) with a validated object */
 export function AddressForm({ initial, onSubmit, onCancel, submitLabel = 'Save address', showDefault = true }) {
@@ -89,10 +90,10 @@ export function AddressForm({ initial, onSubmit, onCancel, submitLabel = 'Save a
       <Field label="Label"><input className="dash-input" value={a.label} onChange={up('label')} placeholder="Store, Home, Warehouse…" /></Field>
       <Field label="Country"><input className="dash-input" value={a.country} onChange={up('country')} /></Field>
       <Field label="Street address *" className="sm:col-span-2"><input className={cls('line1')} value={a.line1} onChange={up('line1')} placeholder="Unit / street" /></Field>
-      <Field label="Suburb / City *"><input className={cls('city')} value={a.city} onChange={up('city')} /></Field>
+      <Field label="City *"><input className={cls('city')} value={a.city} onChange={up('city')} /></Field>
       <div className="grid grid-cols-2 gap-4">
-        <Field label="State *"><input className={cls('state')} value={a.state} onChange={up('state')} placeholder="VIC" /></Field>
-        <Field label="Postcode *"><input className={cls('postcode')} value={a.postcode} onChange={up('postcode')} inputMode="numeric" /></Field>
+        <Field label="State *"><select className={cls('state')} value={a.state} onChange={up('state')}><option value="">—</option>{STATES.map((st) => <option key={st}>{st}</option>)}</select></Field>
+        <Field label="ZIP code *"><input className={cls('postcode')} value={a.postcode} onChange={up('postcode')} inputMode="numeric" /></Field>
       </div>
       {Object.keys(err).length > 0 && <p className="sm:col-span-2 text-[12.5px] text-[#B4432F]">Please complete the highlighted fields.</p>}
       <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-3 pt-1">

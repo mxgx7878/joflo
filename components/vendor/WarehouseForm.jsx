@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { LOCATIONS, STATES } from '@/lib/locations';
+import { LOCATIONS, REGIONS } from '@/lib/locations';
 import { Field } from '@/components/ui';
 import { Toggle } from '@/components/admin/common';
 
@@ -22,16 +22,16 @@ export default function WarehouseForm({ initial, onSave, onCancel }) {
   const cls = (k) => `dash-input ${err[k] ? '!border-[#B4432F]' : ''}`;
   return (
     <div className="space-y-4">
-      <Field label="Warehouse name *"><input className={cls('name')} value={w.name} onChange={up('name')} placeholder="e.g. Sydney West DC" /></Field>
+      <Field label="Warehouse name *"><input className={cls('name')} value={w.name} onChange={up('name')} placeholder="e.g. Houston East DC" /></Field>
       <Field label="Street address *"><input className={cls('line1')} value={w.line1} onChange={up('line1')} /></Field>
       <div className="grid grid-cols-[1fr_120px] gap-3">
-        <Field label="Suburb"><input className="dash-input" value={w.suburb} onChange={up('suburb')} /></Field>
-        <Field label="Postcode"><input className="dash-input" value={w.postcode} onChange={up('postcode')} inputMode="numeric" /></Field>
+        <Field label="City, State"><input className="dash-input" value={w.suburb} onChange={up('suburb')} placeholder="Houston, TX" /></Field>
+        <Field label="ZIP code"><input className="dash-input" value={w.postcode} onChange={up('postcode')} inputMode="numeric" /></Field>
       </div>
       <Field label="Delivery area (nearest city) *" hint="Orders are routed by distance from this city to the customer's location.">
         <select className={cls('locationId')} value={w.locationId} onChange={up('locationId')}>
           <option value="">Select…</option>
-          {STATES.map((st) => <optgroup key={st} label={st}>{LOCATIONS.filter((l) => l.state === st).map((l) => <option key={l.id} value={l.id}>{l.city} {l.state}</option>)}</optgroup>)}
+          {REGIONS.map((r) => <optgroup key={r} label={r}>{LOCATIONS.filter((l) => l.region === r).map((l) => <option key={l.id} value={l.id}>{l.city}, {l.state}</option>)}</optgroup>)}
         </select>
       </Field>
       <Toggle checked={w.active !== false} onChange={(v) => setW({ ...w, active: v })} label="Receiving orders" />

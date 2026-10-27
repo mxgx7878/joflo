@@ -66,7 +66,7 @@ function Success() {
           <div className="dash-card p-6 sm:p-7 border-gold/40 bg-gold-pale/40">
             <div className="flex items-center gap-3"><Landmark className="w-5 h-5 text-gold" /><h2 className="font-display text-[1.35rem] text-navy">Bank transfer details</h2></div>
             <dl className="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-3 text-[13.5px]">
-              {[['Account name', 'JOLOF TRADING'], ['Bank', 'To be confirmed by JOLOF TRADING'], ['BSB / Sort code', '— — —'], ['Account no.', '— — — —'], ['Reference', order.id], ['Amount', money(order.total) + ' USD']].map(([k, v]) => (
+              {[['Account name', 'JOLOF TRADING'], ['Bank', 'To be confirmed by JOLOF TRADING'], ['Routing no. (ABA)', '— — —'], ['Account no.', '— — — —'], ['Reference', order.id], ['Amount', money(order.total) + ' USD']].map(([k, v]) => (
                 <div key={k}><dt className="text-[11px] font-extrabold uppercase tracking-[.14em] text-charcoal/50">{k}</dt><dd className="font-bold text-navy mt-0.5">{v}</dd></div>
               ))}
             </dl>
