@@ -21,8 +21,9 @@ function LoginForm() {
   const [busy, setBusy] = useState(false);
 
   // `next` is only honoured when the signed-in role may open it (prevents /admin <-> /login loops)
-  const allowed = (u, n) => !!n && n.startsWith('/') && !(n.startsWith('/admin') && u.role !== 'admin') && !(/^\/(account|checkout)/.test(n) && u.role === 'admin');
-  const dest = (u) => (allowed(u, next) ? next : u.role === 'admin' ? '/admin' : '/account');
+  const allowed = (u, n) => !!n && n.startsWith('/') && !(n.startsWith('/admin') && u.role !== 'admin') && !(n.startsWith('/vendor') && u.role !== 'vendor') && !(/^\/(account|checkout)/.test(n) && u.role !== 'customer');
+  const home = (u) => (u.role === 'admin' ? '/admin' : u.role === 'vendor' ? '/vendor' : '/account');
+  const dest = (u) => (allowed(u, next) ? next : home(u));
   const wrongRole = ready && user && next && !allowed(user, next);
 
   // Already signed in → skip the form (unless they need a different account for `next`)
@@ -41,7 +42,7 @@ function LoginForm() {
     <form onSubmit={submit} noValidate className="space-y-5">
       {wrongRole && (
         <p className="rounded-xl bg-gold-pale text-[13px] text-navy px-4 py-3 leading-relaxed">
-          You&apos;re signed in as <b>{user.name}</b>. That page needs {next.startsWith('/admin') ? 'an admin' : 'a customer'} account — sign in below to switch.
+          You&apos;re signed in as <b>{user.name}</b>. That page needs {next.startsWith('/admin') ? 'an admin' : next.startsWith('/vendor') ? 'a supplier' : 'a customer'} account — sign in below to switch.
         </p>
       )}
       <div className="field">
@@ -71,7 +72,7 @@ function LoginForm() {
 
       <div className="pt-2">
         <p className="text-[10.5px] font-extrabold tracking-[.2em] uppercase text-charcoal/45 mb-2.5">Use a demo account</p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {DEMO_ACCOUNTS.map((a) => (
             <button key={a.email} type="button" onClick={() => { setEmail(a.email); setPassword(a.password); setError(''); }}
               className={`rounded-xl border-[1.5px] px-2 py-2.5 text-center transition ${email === a.email ? 'border-gold bg-gold-pale' : 'border-[#E2DED2] hover:border-navy/40'}`}>

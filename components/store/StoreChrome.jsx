@@ -1,6 +1,7 @@
 'use client';
 // Storefront chrome: header, footer, mobile bottom bar and every overlay (menu, cart, wishlist, quick view, enquiry).
 import SiteHeader from './SiteHeader';
+import { LocationGate } from '@/components/LocationPicker';
 import SiteFooter, { BottomNav } from './SiteFooter';
 import { Scrim, MobileMenu, CartDrawer, WishDrawer, QuickView, EnquiryModal, useOverlayBehaviour } from './Overlays';
 
@@ -24,6 +25,7 @@ export default function StoreChrome({ children }) {
       <WishDrawer />
       <QuickView />
       <EnquiryModal />
+      <LocationGate />
     </div>
   );
 }

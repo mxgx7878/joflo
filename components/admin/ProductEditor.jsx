@@ -99,7 +99,9 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
         </section>
 
         <section className="grid sm:grid-cols-3 gap-4">
-          <Field label="Stock on hand"><input type="number" min="0" className="dash-input" value={f.stock} onChange={(e) => set({ stock: e.target.value })} /></Field>
+          {f.id
+            ? <Field label="Stock on hand" hint="Held by suppliers — change it in Inventory."><input className="dash-input" value={f.stock} disabled /></Field>
+            : <Field label="Opening stock" hint="Added to JOLOF's own warehouse."><input type="number" min="0" className="dash-input" value={f.stock} onChange={(e) => set({ stock: e.target.value })} /></Field>}
           <Field label="Low-stock alert at"><input type="number" min="0" className="dash-input" value={f.lowStock} onChange={(e) => set({ lowStock: e.target.value })} /></Field>
           <Field label="Badge">
             <select className="dash-input" value={f.tag} onChange={(e) => set({ tag: e.target.value })}><option value="">None</option><option>New</option><option>Bulk</option></select>

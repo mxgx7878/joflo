@@ -25,6 +25,8 @@ export default function AdminOverview() {
     const newInq = inquiries.filter((i) => i.status === 'new');
     const low = products.filter((p) => p.status === 'active' && stockState(p) !== 'ok');
     const pendingUsers = users.filter((u) => u.role === 'customer' && u.status === 'pending');
+    const pendingVendors = users.filter((u) => u.role === 'vendor' && u.status === 'pending');
+    const unrouted = orders.filter((o) => o.status !== 'cancelled' && o.items.some((i) => i.productId && !i.warehouseId));
     // last 8 weeks (week ending today)
     const end = new Date(now); end.setHours(23, 59, 59, 999);
     const weeks = Array.from({ length: 8 }, (_, i) => {
@@ -36,16 +38,18 @@ export default function AdminOverview() {
     const units = {};
     live.forEach((o) => o.items.forEach((i) => { if (i.productId) units[i.productId] = (units[i.productId] || 0) + i.qty; }));
     const top = Object.entries(units).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([id, n]) => ({ p: products.find((x) => x.id === id), n })).filter((x) => x.p);
-    return { monthRev, toProcess, newInq, low, pendingUsers, weeks, top, recent: orders.slice(0, 6) };
+    return { monthRev, toProcess, newInq, low, pendingUsers, pendingVendors, unrouted, weeks, top, recent: orders.slice(0, 6) };
   }, [orders, inquiries, products, users]);
 
   if (!ready) return <Skeleton />;
 
   const attention = [
+    ...d.unrouted.map((o) => ({ icon: AlertTriangle, tone: 'text-[#B4432F]', title: `Order ${o.id} needs a supplier`, sub: `No warehouse near ${o.location?.city || 'the customer'} had the stock`, href: `/admin/orders/${o.id}` })),
     ...d.newInq.slice(0, 3).map((i) => ({ icon: Inbox, tone: 'text-gold', title: `${INQUIRY_TYPE[i.type]} from ${i.company || i.name}`, sub: timeAgo(i.createdAt), href: `/admin/inquiries/${i.id}` })),
     ...orders.filter((o) => o.status === 'pending').slice(0, 3).map((o) => ({ icon: Clock, tone: 'text-navy-600', title: `Order ${o.id} awaiting confirmation`, sub: `${o.customer.company || o.customer.name} · ${money(o.total)}`, href: `/admin/orders/${o.id}` })),
     ...d.low.slice(0, 3).map((p) => ({ icon: PackageX, tone: 'text-[#B4432F]', title: `${p.name} — ${STOCK_STATE[stockState(p)].label.toLowerCase()}`, sub: `${p.stock} on hand · alert at ${p.lowStock}`, href: '/admin/inventory?filter=attention' })),
     ...d.pendingUsers.map((u) => ({ icon: UserCheck, tone: 'text-emerald', title: `Retailer approval: ${u.company}`, sub: `${u.name} · registered ${timeAgo(u.createdAt)}`, href: `/admin/customers/${u.id}` })),
+    ...d.pendingVendors.map((u) => ({ icon: UserCheck, tone: 'text-emerald', title: `Supplier approval: ${u.company}`, sub: `${u.businessType} · applied ${timeAgo(u.createdAt)}`, href: `/admin/vendors/${u.id}` })),
   ];
 
   return (
@@ -57,7 +61,7 @@ export default function AdminOverview() {
         <StatCard icon={ShoppingCart} label="To process" value={d.toProcess.length} hint="Orders not yet shipped" href="/admin/orders" />
         <StatCard icon={MessageSquareText} label="New inquiries" value={d.newInq.length} hint="Awaiting reply" tone="gold" href="/admin/inquiries" />
         <StatCard icon={AlertTriangle} label="Stock alerts" value={d.low.length} hint="Low or out" tone="ivory" href="/admin/inventory?filter=attention" />
-        <StatCard icon={UserCheck} label="Approvals" value={d.pendingUsers.length} hint="Retailers waiting" tone="ivory" href="/admin/customers?tab=pending" />
+        <StatCard icon={UserCheck} label="Approvals" value={d.pendingUsers.length + d.pendingVendors.length} hint={`${d.pendingUsers.length} retailers · ${d.pendingVendors.length} suppliers`} tone="ivory" href={d.pendingVendors.length && !d.pendingUsers.length ? '/admin/vendors?tab=pending' : '/admin/customers?tab=pending'} />
       </div>
 
       <div className="mt-5 grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_380px] gap-5">

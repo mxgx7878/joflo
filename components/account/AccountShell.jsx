@@ -47,15 +47,16 @@ export default function AccountShell({ children }) {
     return <div className="min-h-screen bg-ivory p-6 lg:p-10"><PageLoader /></div>;
   }
 
-  if (user.role === 'admin') {
+  if (user.role === 'admin' || user.role === 'vendor') {
+    const v = user.role === 'vendor';
     return (
       <div className="min-h-screen bg-ivory grid place-items-center p-6">
         <div className="dash-card max-w-md w-full p-8 text-center">
           <span className="mx-auto w-14 h-14 rounded-full bg-navy text-gold-soft grid place-items-center"><ShieldCheck className="w-6 h-6" /></span>
-          <h1 className="font-display text-2xl text-navy mt-5">You're signed in as admin</h1>
-          <p className="text-[14px] text-charcoal/60 mt-2">The customer account area is for shoppers. Head to the admin dashboard, or sign out to use a customer account.</p>
+          <h1 className="font-display text-2xl text-navy mt-5">You're signed in as {v ? 'a supplier' : 'admin'}</h1>
+          <p className="text-[14px] text-charcoal/60 mt-2">The customer account area is for shoppers. Head to the {v ? 'supplier' : 'admin'} dashboard, or sign out to use a customer account.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/admin" className="btn btn-navy">Open admin dashboard</Link>
+            <Link href={v ? '/vendor' : '/admin'} className="btn btn-navy">Open {v ? 'supplier' : 'admin'} dashboard</Link>
             <button type="button" onClick={doLogout} className="btn btn-line-dark">Sign out</button>
           </div>
         </div>
