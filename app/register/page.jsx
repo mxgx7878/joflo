@@ -26,7 +26,7 @@ function RegisterForm() {
   const next = params.get('next');
   const register = useStore((s) => s.register);
   const [type, setType] = useState(params.get('type') === 'supplier' ? 'supplier' : 'individual');
-  const [f, setF] = useState({ name: params.get('name') || '', email: params.get('email') || '', phone: '', password: '', confirm: '', company: '', abn: '', businessType: '', line1: '', city: '', state: '', postcode: '', locationId: '', country: 'Australia', agree: false });
+  const [f, setF] = useState({ name: params.get('name') || '', email: params.get('email') || '', phone: '', password: '', confirm: '', company: '', abn: '', businessType: '', line1: '', city: '', state: '', postcode: '', locationId: '', country: 'United States', agree: false });
   const business = type !== 'individual';
   const [err, setErr] = useState({});
   const [formError, setFormError] = useState('');
@@ -41,7 +41,7 @@ function RegisterForm() {
     if (f.confirm !== f.password) e.confirm = 'Passwords do not match.';
     if (business) {
       if (!f.company.trim()) e.company = 'Business name is required.';
-      if (!f.abn.trim()) e.abn = 'ABN or registration number is required.';
+      if (!f.abn.trim()) e.abn = 'EIN / Tax ID is required.';
       if (!f.businessType) e.businessType = 'Choose a business type.';
       if (!f.phone.trim()) e.phone = 'A contact phone is required for trade accounts.';
       ['line1', 'city', 'state', 'postcode'].forEach((k) => { if (!f[k].trim()) e[k] = 'Required'; });
@@ -128,7 +128,7 @@ function RegisterForm() {
           <p className="text-[10.5px] font-extrabold tracking-[.2em] uppercase text-gold">{type === 'supplier' ? 'Business & main warehouse' : 'Business details'}</p>
           <div className="grid sm:grid-cols-2 gap-4 mt-4">
             <Input id="company" label="Business name *" value={f.company} onChange={up('company')} error={err.company} />
-            <Input id="abn" label="ABN / Registration no. *" value={f.abn} onChange={up('abn')} error={err.abn} placeholder="e.g. 51 824 753 556" />
+            <Input id="abn" label="EIN / Tax ID *" value={f.abn} onChange={up('abn')} error={err.abn} placeholder="e.g. 12-3456789" />
             <div className={`field sm:col-span-2 ${err.businessType ? 'invalid' : ''}`}>
               <label htmlFor="businessType">Business type *</label>
               <select id="businessType" value={f.businessType} onChange={up('businessType')}>
@@ -138,14 +138,14 @@ function RegisterForm() {
               <p className="err">{err.businessType}</p>
             </div>
             <Input id="line1" label={type === 'supplier' ? 'Warehouse address *' : 'Store address *'} className="sm:col-span-2" value={f.line1} onChange={up('line1')} error={err.line1} />
-            <Input id="city" label="Suburb / City *" value={f.city} onChange={up('city')} error={err.city} />
+            <Input id="city" label="City *" value={f.city} onChange={up('city')} error={err.city} />
             <div className="grid grid-cols-2 gap-4">
               <div className={`field ${err.state ? 'invalid' : ''}`}>
                 <label htmlFor="state">State *</label>
                 <select id="state" value={f.state} onChange={up('state')}><option value="">—</option>{STATES.map((st) => <option key={st}>{st}</option>)}</select>
                 <p className="err">{err.state}</p>
               </div>
-              <Input id="postcode" label="Postcode *" value={f.postcode} onChange={up('postcode')} error={err.postcode} inputMode="numeric" />
+              <Input id="postcode" label="ZIP code *" value={f.postcode} onChange={up('postcode')} error={err.postcode} inputMode="numeric" />
             </div>
           </div>
           {type === 'supplier' && (
@@ -153,7 +153,7 @@ function RegisterForm() {
               <label htmlFor="locationId">Nearest delivery city (used for order routing) *</label>
               <select id="locationId" value={f.locationId} onChange={up('locationId')}>
                 <option value="">Select…</option>
-                {LOCATIONS.filter((l) => !f.state || l.state === f.state).map((l) => <option key={l.id} value={l.id}>{l.city} {l.state}</option>)}
+                {(LOCATIONS.some((l) => l.state === f.state) ? LOCATIONS.filter((l) => l.state === f.state) : LOCATIONS).map((l) => <option key={l.id} value={l.id}>{l.city}, {l.state}</option>)}
               </select>
               <p className="err">{err.locationId}</p>
             </div>

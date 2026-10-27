@@ -125,10 +125,10 @@ export default function OrderDetail() {
                 {[...ORDER_FLOW, 'cancelled'].map((s) => <option key={s} value={s}>{ORDER_STATUS[s].label}</option>)}
               </select>
               <label className="dash-label mt-4">Note for timeline (optional)</label>
-              <input className="dash-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Dispatched with Australia Post" />
+              <input className="dash-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Dispatched with UPS Ground" />
               <label className="dash-label mt-4">Tracking number</label>
               <div className="flex gap-2">
-                <input className="dash-input" value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="AUP…" />
+                <input className="dash-input" value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="1Z…" />
                 <button className="dash-btn dash-btn-ghost shrink-0" onClick={() => { setOrderTracking(order.id, tracking.trim()); toast({ text: 'Tracking number saved' }); }}><Truck /> Save</button>
               </div>
               {next && <button className="dash-btn dash-btn-navy w-full mt-4" onClick={() => move(next)}>Mark as {ORDER_STATUS[next].label} <ArrowRight /></button>}

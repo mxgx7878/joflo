@@ -33,7 +33,7 @@ function ProfileForm({ user }) {
       <Field label={retailer ? 'Business name *' : 'Company (optional)'}><input className="dash-input" value={f.company} onChange={up('company')} /></Field>
       {retailer && (
         <>
-          <Field label="ABN / Registration no."><input className="dash-input" value={f.abn} onChange={up('abn')} /></Field>
+          <Field label="EIN / Tax ID"><input className="dash-input" value={f.abn} onChange={up('abn')} /></Field>
           <Field label="Business type">
             <select className="dash-input" value={f.businessType} onChange={up('businessType')}>
               <option value="">Select…</option>{BUSINESS_TYPES.map((b) => <option key={b}>{b}</option>)}

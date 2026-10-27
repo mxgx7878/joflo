@@ -389,7 +389,7 @@ export function EnquiryModal() {
                     </select>
                   ), 'sm:col-span-2')}
                   {fld('mt', 'Quantity (MT)', <input id="e-mt" name="mt" type="number" min="0" step="1" inputMode="numeric" value={f.mt || ''} onChange={set('mt')} placeholder="e.g. 25" />)}
-                  {fld('port', 'Delivery port', <input id="e-port" name="port" value={f.port || ''} onChange={set('port')} placeholder="e.g. Fremantle, WA" />)}
+                  {fld('port', 'Delivery port', <input id="e-port" name="port" value={f.port || ''} onChange={set('port')} placeholder="e.g. Port of Newark, NJ" />)}
                 </>
               ) : (
                 fld('dept', 'Department *', (
