@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Printer, Truck, MapPin, Phone, Mail, FileText, Warehouse, XCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Printer, Truck, MapPin, FileText, Warehouse, XCircle, CheckCircle2 } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
-import { money, fmtDate, fmtDateTime, PAYMENT_METHODS } from '@/lib/format';
+import { money, fmtDate, fmtDateTime } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
-import { locationLabel, fmtKm, getLocation } from '@/lib/locations';
+import { fmtKm, getLocation } from '@/lib/locations';
 import { FUL_FLOW, FUL_STATUS, FUL_SHORT, indexOffers } from '@/lib/fulfilment';
 import { Pill, OrderProgress, EmptyState, Modal, Field } from '@/components/ui';
 import { useToast } from '@/components/Providers';
@@ -27,16 +27,16 @@ function Job({ job, offersIdx }) {
   const next = NEXT[job.status];
   const done = ['delivered', 'cancelled'].includes(job.status);
 
-  const advance = () => {
+  const advance = async () => {
     if (next === 'shipped' && !tracking.trim()) { toast({ text: 'Add a tracking number before marking as shipped.' }); document.getElementById(`trk-${job.key}`)?.focus(); return; }
-    const r = setFulfilmentStatus(job.order.id, job.warehouseId, next, { tracking: tracking.trim() });
+    const r = await setFulfilmentStatus(job.order.id, job.warehouseId, next, { tracking: tracking.trim() });
     toast({ text: r.ok ? `${job.order.id} · ${FUL_SHORT[next].toLowerCase()}` : r.error });
   };
-  const doDecline = () => {
-    const r = rejectFulfilment(job.order.id, job.warehouseId, decline.reason === 'Other' ? decline.note : decline.reason);
+  const doDecline = async () => {
+    const r = await rejectFulfilment(job.order.id, job.warehouseId, decline.reason === 'Other' ? decline.note : decline.reason);
     setDecline(null);
     if (!r.ok) { toast({ text: r.error }); return; }
-    toast({ text: `Declined — ${job.order.id} has been passed to another supplier.` });
+    toast({ text: r.lost ? `Declined — JOLOF TRADING will source ${job.order.id} manually.` : `Declined — ${job.order.id} has been passed to the next warehouse.` });
     router.push('/vendor/orders');
   };
 
@@ -106,7 +106,7 @@ export default function VendorOrderDetail() {
   if (!mine.length) return <EmptyState icon={FileText} title="Order not found" body={`${id} isn't assigned to your warehouses (it may have been re-routed).`} action={<Link href="/vendor/orders" className="dash-btn dash-btn-navy">Back to my orders</Link>} />;
 
   const order = mine[0].order;
-  const otherParts = Object.keys(order.fulfilments || {}).length + (order.items.some((i) => !i.warehouseId) ? 1 : 0) - mine.length;
+  const otherParts = order.otherParts || 0;
   const idx = indexOffers(offers);
 
   return (
@@ -116,9 +116,8 @@ export default function VendorOrderDetail() {
           <Link href="/vendor/orders" className="inline-flex items-center gap-1.5 text-[12.5px] font-bold text-charcoal/60 hover:text-navy"><ArrowLeft className="w-4 h-4" /> My orders</Link>
           <div className="flex flex-wrap items-center gap-3 mt-2">
             <h1 className="h-display text-navy text-[2rem]">{order.id}</h1>
-            {order.guest && <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Guest order</span>}
           </div>
-          <p className="text-[13px] text-charcoal/55 mt-1">Placed {fmtDateTime(order.createdAt)} · delivering to {locationLabel(order.location)} · {fmtKm(mine[0].distanceKm)} from {getLocation(mine[0].warehouse?.locationId)?.city}</p>
+          <p className="text-[13px] text-charcoal/55 mt-1">Placed {fmtDateTime(order.createdAt)} · ships from {mine[0].warehouse?.name || getLocation(mine[0].warehouse?.locationId)?.city}{mine[0].distanceKm != null ? ` · ${fmtKm(mine[0].distanceKm)} delivery` : ''}</p>
         </div>
         <button className="dash-btn dash-btn-ghost" onClick={() => window.print()}><Printer /> Packing slip</button>
       </div>
@@ -137,24 +136,16 @@ export default function VendorOrderDetail() {
           {mine.map((j) => <Job key={j.key} job={j} offersIdx={idx} />)}
         </div>
         <div className="space-y-5">
-          <Card title="Deliver to">
-            <p className="font-bold text-navy">{order.customer.company || order.customer.name}</p>
-            {order.customer.company && <p className="text-[13px] text-charcoal/60">{order.customer.name}</p>}
-            {order.address && (
-              <p className="flex gap-2 text-[13.5px] text-charcoal/80 leading-relaxed mt-3"><MapPin className="w-4 h-4 mt-0.5 text-navy/40 shrink-0" />
-                <span>{order.address.line1}<br />{order.address.city} {order.address.state} {order.address.postcode}<br />{order.address.country}</span>
-              </p>
-            )}
-            <div className="mt-3 space-y-1 text-[13px] text-charcoal/75">
-              {order.customer.phone && <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-navy/40" />{order.customer.phone}</p>}
-              <p className="flex items-center gap-2"><Mail className="w-4 h-4 text-navy/40" />{order.customer.email}</p>
-            </div>
-            {order.notes && <p className="mt-3 text-[13px] bg-ivory rounded-xl p-3"><b className="text-navy">Customer note:</b> {order.notes}</p>}
+          <Card title="Customer & delivery">
+            <p className="flex gap-2 text-[13.5px] text-charcoal/75 leading-relaxed"><MapPin className="w-4 h-4 mt-0.5 text-navy/40 shrink-0" />
+              <span>This is a <b className="text-navy">JOLOF TRADING</b> order. Pack the items above and have them ready for collection — JOLOF&apos;s driver delivers to the customer.</span>
+            </p>
+            <p className="mt-3 text-[12px] text-charcoal/50">Customer name, contact and address are kept by JOLOF TRADING. Questions? Contact the JOLOF operations team quoting <b className="text-navy">{order.id}</b>.</p>
           </Card>
           <Card title="Order info" className="print:hidden">
-            <KV k="Payment" v={PAYMENT_METHODS[order.paymentMethod]} />
-            <KV k="Collected by" v="JOLOF TRADING" />
-            <p className="text-[12px] text-charcoal/50 mt-2">JOLOF TRADING collects payment from the customer and settles your supply value.</p>
+            <KV k="Customer billed by" v="JOLOF TRADING" />
+            <KV k="Your supply value" v={money(mine.reduce((s, j) => s + j.value, 0))} />
+            <p className="text-[12px] text-charcoal/50 mt-2">JOLOF TRADING invoices the customer and settles your supply value.</p>
           </Card>
         </div>
       </div>

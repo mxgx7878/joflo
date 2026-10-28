@@ -2,11 +2,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Building2, Clock3, CreditCard, Landmark, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, Warehouse, UserRound } from 'lucide-react';
-import { useStore, useCurrentUser, useStoreReady, shippingFor, FREE_SHIPPING_FROM } from '@/lib/store';
+import { ArrowRight, Building2, Clock3, FileText, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, UserRound } from 'lucide-react';
+import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
+import { rateLabel } from '@/lib/delivery';
 import { productImg } from '@/lib/catalogue';
 import { money, sizeLine } from '@/lib/format';
-import { getLocation, locationFromAddress, locationLabel, kmAway, STATES } from '@/lib/locations';
+import { locationFromAddress, locationLabel, STATES } from '@/lib/locations';
 import { useToast } from '@/components/Providers';
 import { MinimalHeader, AddressPicker, PageLoader } from '@/components/account/shared';
 import { LocationModal, useDeliveryLocation } from '@/components/LocationPicker';
@@ -23,11 +24,6 @@ function GInput({ id, label, value, onChange, error, className = '', ...rest }) 
   );
 }
 
-const METHODS = [
-  { v: 'bank_transfer', icon: Landmark, t: 'Bank transfer', d: 'Pay by ACH or wire after we confirm stock. Details on the next screen.' },
-  { v: 'cod', icon: Truck, t: 'Pay on delivery', d: 'Pay the driver by card or cash when your order arrives.' },
-  { v: 'card_demo', icon: CreditCard, t: 'Card (demo)', d: 'Card payments go live when the payment gateway is connected.' },
-];
 
 function Step({ n, title, children }) {
   return (
@@ -48,15 +44,14 @@ export default function CheckoutPage() {
   const toast = useToast();
   const cart = useStore((s) => s.cart);
   const products = useStore((s) => s.products);
-  const offers = useStore((s) => s.offers);
-  const { setQty, removeFromCart, placeOrder, submitInquiry, clearCart, previewRouting, setDeliveryLocation } = useStore.getState();
+  const settings = useStore((s) => s.settings);
+  const { setQty, removeFromCart, placeOrder, submitInquiry, clearCart, previewDelivery, setDeliveryLocation } = useStore.getState();
   const { location, saved: savedLoc, label: locLabel } = useDeliveryLocation();
   const [locOpen, setLocOpen] = useState(false);
   const [addressId, setAddressId] = useState(null);
   const [guest, setGuest] = useState({ name: '', email: '', phone: '', company: '' });
   const [gAddr, setGAddr] = useState({ line1: '', city: '', state: '', postcode: '' });
   const [gErr, setGErr] = useState({});
-  const [method, setMethod] = useState('bank_transfer');
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [placing, setPlacing] = useState(false);
@@ -76,25 +71,31 @@ export default function CheckoutPage() {
   const addrLoc = address && (address.city || address.state) ? locationFromAddress(address) : null;
   const mismatch = location && addrLoc && addrLoc.state !== location.state ? addrLoc : null;
 
-  // where this cart would ship from (customer sees cities, not supplier names)
-  const routing = useMemo(() => (ready && location ? previewRouting(address) : null), [ready, location?.id, cart, offers, address?.city, address?.state]); // eslint-disable-line react-hooks/exhaustive-deps
-  const shipFrom = useMemo(() => {
-    if (!routing) return [];
-    const whs = useStore.getState().warehouses;
-    const groups = {};
-    routing.items.forEach((it) => {
-      const w = whs.find((x) => x.id === it.warehouseId);
-      const key = w ? w.id : 'none';
-      groups[key] = groups[key] || { city: w ? getLocation(w.locationId)?.city : null, km: it.distanceKm, n: 0 };
-      groups[key].n += it.qty;
-    });
-    return Object.values(groups);
-  }, [routing]);
+  // delivery is priced by road distance from the warehouse(s) that will ship — customers only see JOLOF TRADING
+  const [estimate, setEstimate] = useState(null);
+  const [estimating, setEstimating] = useState(false);
+  const addrKey = isGuest ? `${gAddr.line1}|${gAddr.city}|${gAddr.state}|${gAddr.postcode}` : addressId || '';
+  const cartKey = JSON.stringify(cart);
+  useEffect(() => {
+    if (!ready) return undefined;
+    const target = isGuest ? (gAddr.city && gAddr.state ? { ...gAddr, country: 'United States' } : null) : null;
+    if (!target && !addressId) { setEstimate(null); return undefined; }
+    let live = true;
+    setEstimating(true);
+    const t = setTimeout(async () => {
+      const e = await previewDelivery(isGuest ? { address: target } : { addressId });
+      if (live) { setEstimate(e); setEstimating(false); }
+    }, 450);
+    return () => { live = false; clearTimeout(t); };
+  }, [ready, addrKey, cartKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const showPricing = settings.showPricing !== false;
   const lines = useMemo(() => Object.entries(cart).map(([id, qty]) => ({ p: products.find((x) => x.id === id), qty })).filter((l) => l.p && typeof l.p.price === 'number'), [cart, products]);
+  const quoteOnly = useMemo(() => Object.entries(cart).map(([id, qty]) => ({ p: products.find((x) => x.id === id), qty })).filter((l) => l.p && typeof l.p.price !== 'number'), [cart, products]);
   const subtotal = Math.round(lines.reduce((s, l) => s + l.p.price * l.qty, 0) * 100) / 100;
-  const shipping = shippingFor(subtotal);
-  const total = subtotal + shipping;
+  const shipping = estimate?.deliveryFee ?? null;
+  const total = Math.round((subtotal + (shipping || 0)) * 100) / 100;
+  const unavailable = (estimate?.unavailable || []).length;
   const pendingRetailer = user?.type === 'retailer' && user?.status === 'pending';
   const isAdmin = user?.role === 'admin';
 
@@ -105,7 +106,7 @@ export default function CheckoutPage() {
   }
 
   const jump = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  const place = () => {
+  const place = async () => {
     setError('');
     if (!location) { setError('Please choose your delivery location first.'); jump('step-location'); setLocOpen(true); return; }
     if (isGuest) {
@@ -121,20 +122,23 @@ export default function CheckoutPage() {
       if (Object.keys(e).length) { setError('Please complete the highlighted fields.'); jump(e.name || e.email || e.phone ? 'step-details' : 'step-address'); return; }
     } else if (!address) { setError('Please choose or add a delivery address.'); jump('step-address'); return; }
     setPlacing(true);
-    const r = placeOrder({ address, paymentMethod: method, notes, guest: isGuest ? guest : undefined });
+    const r = await placeOrder({ address: isGuest ? address : undefined, addressId: isGuest ? undefined : addressId, notes, guest: isGuest ? guest : undefined });
     if (!r.ok) { setError(r.error); setPlacing(false); return; }
     router.push(`/checkout/success?order=${r.id}`);
   };
 
-  const requestQuote = () => {
+  const requestQuote = async () => {
     const who = user || { name: guest.name, company: guest.company, email: guest.email, phone: guest.phone };
     if (isGuest && (!guest.name.trim() || !EMAIL.test(guest.email.trim()))) { setGErr({ name: !guest.name.trim() && 'Please enter your name.', email: !EMAIL.test(guest.email.trim()) && 'Enter a valid email.' }); setError('Add your name and email so we can send the quote.'); jump('step-details'); return; }
-    const r = submitInquiry({
+    const all = [...lines, ...quoteOnly];
+    const r = await submitInquiry({
       type: 'cart', name: who.name, company: who.company, email: who.email, phone: who.phone,
-      dept: [...new Set(lines.map((l) => l.p.dept))].join(', '),
+      dept: [...new Set(all.map((l) => l.p.dept))].join(', '),
       message: notes || 'Bulk quote requested for my cart.',
-      items: lines.map((l) => ({ productId: l.p.id, name: l.p.name, qty: l.qty, unit: 'units' })),
+      items: all.map((l) => ({ productId: l.p.id, name: l.p.name, qty: l.qty, unit: 'units' })),
+      address: isGuest && gAddr.city ? { ...gAddr, country: 'United States' } : undefined,
     });
+    if (!r.ok) { setError(r.error); return; }
     clearCart();
     toast({ text: `Quote request ${r.id} sent — we'll reply ${user ? 'in your account' : 'by email'}.` });
     router.push(user ? `/account/quotes/${r.id}` : '/');
@@ -145,9 +149,28 @@ export default function CheckoutPage() {
       <MinimalHeader secure />
       <main className="max-w-site mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-28 lg:py-12">
         <p className="kicker">Checkout</p>
-        <h1 className="h-display text-navy text-[2rem] sm:text-[2.5rem] mt-2">Complete your order</h1>
+        <h1 className="h-display text-navy text-[2rem] sm:text-[2.5rem] mt-2">{lines.length && showPricing ? 'Send your order request' : 'Request a quote'}</h1>
 
-        {!lines.length ? (
+        {(!lines.length || !showPricing) && quoteOnly.length + lines.length > 0 ? (
+          <div className="dash-card mt-8 p-6 sm:p-8 max-w-2xl">
+            <p className="font-display text-2xl text-navy">{showPricing ? 'These items are priced on request' : 'Pricing is shared on request'}</p>
+            <p className="text-[14px] text-charcoal/65 mt-2">Send your list to our team — we&apos;ll reply with wholesale pricing, delivery and an invoice {user ? 'in your account' : 'by email'}.</p>
+            <ul className="mt-5 divide-y divide-navy/5 border-y border-navy/5">
+              {[...lines, ...quoteOnly].map(({ p, qty }) => <li key={p.id} className="py-2.5 flex justify-between text-[14px]"><span className="text-navy font-semibold">{p.name}</span><span className="text-charcoal/60">× {qty}</span></li>)}
+            </ul>
+            {isGuest && (
+              <div className="grid sm:grid-cols-2 gap-4 mt-5">
+                <GInput id="q-name" label="Full name *" value={guest.name} onChange={(v) => setGuest({ ...guest, name: v })} error={gErr.name} />
+                <GInput id="q-email" label="Email *" type="email" value={guest.email} onChange={(v) => setGuest({ ...guest, email: v })} error={gErr.email} />
+                <GInput id="q-phone" label="Phone" value={guest.phone} onChange={(v) => setGuest({ ...guest, phone: v })} />
+                <GInput id="q-company" label="Business name" value={guest.company} onChange={(v) => setGuest({ ...guest, company: v })} />
+              </div>
+            )}
+            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="dash-input resize-y mt-5" placeholder="Quantities, delivery city, anything else we should know…" />
+            {error && <p role="alert" className="mt-4 text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{error}</p>}
+            <button type="button" onClick={requestQuote} disabled={isAdmin || isVendor} className="btn btn-gold w-full sm:w-auto mt-5">Send quote request <ArrowRight className="mv" /></button>
+          </div>
+        ) : !lines.length ? (
           <div className="dash-card mt-8 text-center py-16 px-6">
             <span className="mx-auto w-16 h-16 rounded-full bg-ivory grid place-items-center text-gold"><ShoppingBag className="w-7 h-7" strokeWidth={1.6} /></span>
             <p className="font-display text-2xl text-navy mt-5">Your cart is empty</p>
@@ -180,14 +203,14 @@ export default function CheckoutPage() {
                       <span className="w-11 h-11 rounded-xl bg-emerald text-white grid place-items-center shrink-0"><MapPin className="w-5 h-5" strokeWidth={1.8} /></span>
                       <div className="flex-1 min-w-0">
                         <p className="font-extrabold text-navy text-[15px]">{locLabel}{savedLoc?.postcode ? ` ${savedLoc.postcode}` : ''}</p>
-                        <p className="text-[12.5px] text-charcoal/60">Your order ships from the nearest supplier warehouse that has everything in stock.</p>
+                        <p className="text-[12.5px] text-charcoal/60">Delivery is priced by distance to your address.</p>
                       </div>
                       <button type="button" onClick={() => setLocOpen(true)} className="dash-btn dash-btn-ghost shrink-0">Change</button>
                     </div>
                   ) : (
                     <button type="button" onClick={() => setLocOpen(true)} className="w-full flex items-center gap-4 rounded-2xl border-[1.5px] border-dashed border-gold bg-gold-pale/40 p-4 text-left">
                       <span className="w-11 h-11 rounded-xl bg-gold-soft text-navy grid place-items-center shrink-0"><MapPin className="w-5 h-5" strokeWidth={1.8} /></span>
-                      <span className="flex-1"><span className="block font-extrabold text-navy">Choose your delivery location</span><span className="block text-[12.5px] text-charcoal/60">We need your city to route the order to the closest warehouse.</span></span>
+                      <span className="flex-1"><span className="block font-extrabold text-navy">Choose your delivery location</span><span className="block text-[12.5px] text-charcoal/60">We need your city to work out delivery.</span></span>
                       <ArrowRight className="w-5 h-5 text-navy" />
                     </button>
                   )}
@@ -243,24 +266,17 @@ export default function CheckoutPage() {
                 </Step>
               </div>
 
-              <Step n={isGuest ? '4' : '3'} title="Payment method">
-                <div className="grid gap-3">
-                  {METHODS.map(({ v, icon: Icon, t, d }) => {
-                    const on = method === v;
-                    return (
-                      <button key={v} type="button" onClick={() => setMethod(v)} aria-pressed={on}
-                        className={`text-left flex items-center gap-4 rounded-2xl border-[1.5px] p-4 transition ${on ? 'border-emerald bg-[#F2F8F5] shadow-[0_0_0_3px_rgba(7,86,60,.12)]' : 'border-[#E2DED2] hover:border-navy/40 bg-white'}`}>
-                        <span className={`w-11 h-11 rounded-xl grid place-items-center shrink-0 ${on ? 'bg-emerald text-white' : 'bg-ivory text-navy'}`}><Icon className="w-5 h-5" strokeWidth={1.8} /></span>
-                        <span className="flex-1 min-w-0">
-                          <span className="block font-extrabold text-navy text-[14.5px]">{t}</span>
-                          <span className="block text-[12.5px] text-charcoal/60">{d}</span>
-                        </span>
-                        <span className={`w-5 h-5 rounded-full border-2 grid place-items-center shrink-0 ${on ? 'border-emerald' : 'border-navy/20'}`}>{on && <span className="w-2.5 h-2.5 rounded-full bg-emerald" />}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <p className="mt-4 text-[12px] text-charcoal/55 flex items-center gap-2"><Lock className="w-3.5 h-3.5" /> Demo store — no payment is taken when you place this order.</p>
+              <Step n={isGuest ? '4' : '3'} title="How it works">
+                <ol className="grid sm:grid-cols-3 gap-3 text-[13px]">
+                  {[[Clock3, 'You send the request', 'No payment now. Stock is held for you.'], [FileText, 'We confirm & invoice', 'Our team confirms prices, delivery and sends your invoice.'], [Truck, 'We deliver', 'Pay by bank transfer per the invoice. We deliver to your door.']].map(([Icon, t, d]) => (
+                    <li key={t} className="rounded-2xl border border-navy/10 bg-white p-4">
+                      <Icon className="w-5 h-5 text-emerald" strokeWidth={1.8} />
+                      <p className="font-extrabold text-navy mt-2">{t}</p>
+                      <p className="text-charcoal/60 mt-0.5">{d}</p>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-4 text-[12px] text-charcoal/55 flex items-center gap-2"><Lock className="w-3.5 h-3.5" /> Delivery is {rateLabel(settings.delivery)}{Number(settings.delivery?.baseFee) ? ` + $${Number(settings.delivery.baseFee).toFixed(2)} per shipment` : ''}, by road distance.</p>
               </Step>
 
               <Step n={isGuest ? '5' : '4'} title="Order notes">
@@ -296,44 +312,35 @@ export default function CheckoutPage() {
               </ul>
               <dl className="px-5 sm:px-6 py-4 space-y-2 text-[13.5px] border-t border-navy/5 bg-ivory/50">
                 <div className="flex justify-between"><dt className="text-charcoal/60">Subtotal</dt><dd className="font-bold text-navy">{money(subtotal)}</dd></div>
-                <div className="flex justify-between"><dt className="text-charcoal/60">Delivery</dt><dd className="font-bold text-navy">{shipping ? money(shipping) : 'Free'}</dd></div>
-                {shipping > 0 && <p className="text-[11.5px] text-emerald font-semibold">Add {money(FREE_SHIPPING_FROM - subtotal)} more for free delivery</p>}
-                {shipFrom.length > 0 && (
-                  <div className="pt-2.5 mt-1 border-t border-navy/10 space-y-1.5">
-                    <p className="text-[10.5px] font-extrabold uppercase tracking-[.14em] text-charcoal/50">Ships from</p>
-                    {shipFrom.map((g, i) => (
-                      <p key={i} className="flex items-center gap-2 text-[12.5px]">
-                        <Warehouse className={`w-4 h-4 shrink-0 ${g.city ? 'text-emerald' : 'text-gold'}`} />
-                        {g.city ? <span className="text-navy font-semibold">{g.city} warehouse <span className="text-charcoal/50 font-normal">· {kmAway(g.km)}{shipFrom.length > 1 ? ` · ${g.n} units` : ''}</span></span>
-                          : <span className="text-[#8a6417] font-semibold">{g.n} units — our team will source these</span>}
-                      </p>
-                    ))}
-                  </div>
-                )}
-                <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">Total</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
+                <div className="flex justify-between"><dt className="text-charcoal/60">Delivery{estimate?.miles ? <span className="text-charcoal/45"> · ~{Math.round(estimate.miles)} mi</span> : ''}</dt><dd className="font-bold text-navy">{estimating ? '…' : shipping === null ? 'Add address' : shipping ? money(shipping) : 'Free'}</dd></div>
+                {estimate?.freeOver > 0 && shipping > 0 && subtotal < estimate.freeOver && <p className="text-[11.5px] text-emerald font-semibold">Add {money(estimate.freeOver - subtotal)} more for free delivery</p>}
+                {unavailable > 0 && <p className="text-[11.5px] text-[#8a6417] font-semibold">{unavailable} item{unavailable > 1 ? 's are' : ' is'} low on stock — our team will confirm availability.</p>}
+                {quoteOnly.length > 0 && <p className="text-[11.5px] text-charcoal/55">{quoteOnly.length} price-on-request item{quoteOnly.length > 1 ? 's stay' : ' stays'} in your cart — send {quoteOnly.length > 1 ? 'them' : 'it'} as a quote request after this order.</p>}
+                <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">Estimated total</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
+                <p className="text-[11px] text-charcoal/50">Final prices are confirmed on your invoice.</p>
               </dl>
               <div className="px-5 sm:px-6 pb-6 pt-1 space-y-2.5">
                 {error && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{error}</p>}
                 <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold w-full">
-                  {placing ? 'Placing order…' : `Place order · ${money(total)}`} <ArrowRight className="mv" />
+                  {placing ? 'Sending…' : 'Send order request'} <ArrowRight className="mv" />
                 </button>
                 {(isGuest || user.role === 'customer') && (
                   <button type="button" onClick={requestQuote} className="btn btn-line-dark w-full !min-h-[44px] !py-2.5">Request a bulk quote instead</button>
                 )}
-                <p className="text-[11.5px] text-center text-charcoal/50">By placing this order you agree to our Terms &amp; Conditions.</p>
+                <p className="text-[11.5px] text-center text-charcoal/50">No payment now. By sending this request you agree to our Terms &amp; Conditions.</p>
               </div>
             </aside>
           </div>
         )}
       </main>
       <LocationModal open={locOpen} onClose={() => setLocOpen(false)} />
-      {lines.length > 0 && (
+      {lines.length > 0 && showPricing && (
         <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-navy/10 px-4 py-3 flex items-center gap-3 shadow-[0_-12px_30px_-20px_rgba(11,35,71,.4)]">
           <div className="min-w-0">
             <p className="text-[10.5px] font-extrabold uppercase tracking-[.14em] text-charcoal/50">Total</p>
             <p className="text-[17px] font-extrabold text-navy leading-tight">{money(total)}</p>
           </div>
-          <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold flex-1 !min-h-[46px] !py-2.5">Place order <ArrowRight className="mv" /></button>
+          <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold flex-1 !min-h-[46px] !py-2.5">Send request <ArrowRight className="mv" /></button>
         </div>
       )}
     </div>

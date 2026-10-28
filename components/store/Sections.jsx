@@ -98,6 +98,7 @@ export function Shop() {
   const setFilter = useUI((s) => s.setFilter);
   const openEnquiry = useUI((s) => s.openEnquiry);
   const { products, featured, catStatus } = useCatalogue();
+  const showPricing = useStore((s) => s.settings.showPricing !== false);
   const q = filter.q.trim().toLowerCase();
   const list = !filter.dept && !filter.cat && !q
     ? featured
@@ -117,7 +118,7 @@ export function Shop() {
           <div>
             <p className="kicker">Featured Products</p>
             <h2 className={H2}>{title}</h2>
-            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold" />Carotone and Bio Claire prices are JOLOF wholesale case prices; other prices are samples until the full price list is supplied.</p>
+            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold" />{showPricing ? 'Order priced items online — no payment now, we confirm and send an invoice. Others are quoted on request.' : 'Send us your list — our team replies with wholesale pricing and an invoice.'}</p>
           </div>
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0" role="tablist" aria-label="Filter products">
             {[['', 'All Products'], ['Food', 'Food'], ['Cosmetics', 'Cosmetics'], ['Trading', 'Trading']].map(([d, l]) => (
@@ -192,6 +193,7 @@ export function Cosmetics() {
   const setCosCat = useUI((s) => s.setCosCat);
   const openEnquiry = useUI((s) => s.openEnquiry);
   const { cosmetics, catStatus } = useCatalogue();
+  const showPricing = useStore((s) => s.settings.showPricing !== false);
   const tabs = [['', 'All'], ['Skin Care', 'Skin Care'], ['Hair Care', 'Hair Care'], ['Cosmetics', 'Cosmetics']].filter(([c]) => !c || catStatus('Cosmetics', c) !== 'hidden');
   return (
     <section id="cosmetics" className="pt-20 lg:pt-28">
@@ -200,7 +202,7 @@ export function Cosmetics() {
           <div>
             <p className="kicker">Cosmetics Wholesale</p>
             <h2 className={H2}>Beauty &amp; personal care, by the case</h2>
-            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold shrink-0" />Carotone and Bio Claire are listed at JOLOF wholesale case prices. Other catalogue items are priced on request.</p>
+            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold shrink-0" />{showPricing ? 'Carotone and Bio Claire are listed at JOLOF wholesale case prices. Other catalogue items are priced on request.' : 'All cosmetics are priced on request — enquire for wholesale case pricing.'}</p>
           </div>
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0" role="tablist" aria-label="Filter cosmetics">
             {tabs.map(([c, l]) => <button key={l} className="tab" role="tab" aria-selected={cosCat === c} onClick={() => setCosCat(c)}>{l}</button>)}

@@ -1,56 +1,70 @@
-# JOLOF TRADING — Storefront + Dashboards (frontend demo)
+# JOLOF TRADING — Storefront + Dashboards
 
-Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · Zustand · lucide-react · Recharts
+Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · Zustand · **PostgreSQL + Prisma** · Google Maps (Geocoding + Routes API)
 
-This is a **frontend-only demo**. All data lives in the browser (localStorage key `jolof_demo_v1`),
-so the full flow works without a backend and survives reloads. Open the store in one tab and the
-admin in another — changes sync between tabs.
+The storefront, customer account, supplier portal and admin now run on a real database and API
+(`app/api/*`, logic in `lib/server/*`). Only the cart, wishlist and chosen delivery city stay in the browser.
+No payments and no emails yet — orders are *requests* that JOLOF confirms, then an invoice is issued.
 
-## Run
+## Setup
 
 ```bash
-npm install
-npm run dev        # http://localhost:3000
-# or
-npm run build && npm start
+cp .env.example .env          # DATABASE_URL, AUTH_SECRET, GOOGLE_MAPS_API_KEY
+npm install                   # also runs prisma generate
+npm run db:setup              # create tables + load the catalogue & demo data
+npm run dev                   # http://localhost:3000
 ```
 
-## Demo logins
+`npm run db:seed` wipes and reloads the data at any time (also Admin → Settings → Reset demo data;
+disabled in production unless `ALLOW_DEMO_RESET=true`). `npm run db:studio` opens a DB browser.
+
+**Google Maps:** enable *Geocoding API* and *Routes API* on the key. Without a key everything still works —
+addresses resolve to their city/state hub and distances are straight-line × 1.2 (marked approximate).
+
+## Demo logins (from the seed)
 
 | Role | Email | Password |
 |---|---|---|
 | Admin | admin@jolof.demo | admin123 |
-| Retailer (approved) | retailer@jolof.demo | demo123 |
-| Individual customer | customer@jolof.demo | demo123 |
-| Supplier (Sahel Wholesale Foods — Houston & Atlanta warehouses) | vendor@jolof.demo | demo123 |
-| Supplier (West Coast Beauty — Los Angeles & Seattle) | westcoast@beauty.demo | demo123 |
+| Retailer | retailer@jolof.demo | demo123 |
+| Individual | customer@jolof.demo | demo123 |
+| Supplier — Sahel Wholesale Foods (Houston, Atlanta) | vendor@jolof.demo | demo123 |
+| Supplier — Midwest African Foods (Chicago, Minneapolis) | midwest@foods.demo | demo123 |
+| Supplier — West Coast Beauty (LA, Seattle) | westcoast@beauty.demo | demo123 |
 
-`kwame@accrabeauty.demo / demo123` is a retailer **awaiting approval** (approve it from Admin → Customers).
-`cheikh@baobab.demo / demo123` is a supplier **awaiting approval** (approve it from Admin → Suppliers).
+Also: lonestar@cosmetics.demo, sunshine@wholesale.demo, rocky@distribution.demo (demo123), JOLOF's own stock
+`warehouse@jolof.demo`, pending supplier `cheikh@baobab.demo`, pending retailer `kwame@accrabeauty.demo`.
 
-## The core flow
+## How it works
 
-1. **Priced products** → Add to cart → `/checkout` → order placed → appears in *My Orders* and *Admin → Orders*. Stock is deducted.
-2. **Price-on-request products / bulk / commodities** → *Enquire* → inquiry lands in *Admin → Inquiries*.
-3. Admin builds and **sends a quote** → customer sees it in *Quotes & Inquiries* → **Accept** → an order is created automatically.
-4. Admin moves the order through **Pending → Confirmed → Packed → Shipped → Delivered**, sets payment and tracking. Customer sees progress live.
-5. New **retailer** sign-ups are *pending* until an admin approves them (they can browse and send inquiries meanwhile, but can't check out).
+**Catalogue = master products + supplier offers.** `Product` is the master record (admin owns name, category, price).
+A supplier *offers* a master product (`SupplierOffer`: supply price, active/paused) and holds stock per warehouse
+(`StockLevel`). New items a supplier carries go in as a `ProductRequest` → Admin → Product requests → approve
+(admin sets store price) → master product created and the supplier's stock is listed automatically.
+JOLOF itself is the house supplier (`isHouse`) with its own warehouses.
 
-## Suppliers, warehouses & location routing
+**Pricing toggle (Admin → Settings).** On: priced products → cart → order request; price-on-request products → inquiry.
+Off: no prices anywhere, everything is an inquiry; customers see prices only in the quote and invoice.
 
-- **Delivery location first.** Shoppers pick their city on the first visit (also in the top bar and at checkout).
-- **Suppliers / wholesalers** (`role: vendor`) register from `/register` → *Supplier / Wholesaler*, are approved by admin,
-  then add **warehouses** and list **catalogue products** with a supply price and stock **per warehouse**.
-- **Routing rule** (`lib/fulfilment.js`): an order goes to the *nearest* active warehouse that can fill the **whole order**;
-  if none can, each line goes to the nearest warehouse holding it (split shipment). Lines nobody can fill are flagged
-  *Needs a supplier* for admin. JOLOF's own stock is the house supplier `v-jolof` (Port Newark, NJ).
-- **United States**: 32 delivery metros grouped by region (`lib/locations.js`); addresses in any of the 50 states + DC
-  route from their state's nearest hub. Distances are in miles.
-- **Supplier portal** (`/vendor`): new orders → Accept → Packed → Shipped (tracking) → Delivered. The customer order
-  status follows the slowest supplier part. *Can't fulfil* returns the stock and re-routes to the next nearest supplier.
-- **Admin**: Suppliers list/detail with approval, Inventory shows which supplier/warehouse holds each product,
-  order detail has *Routing & suppliers* with manual reassignment and a routing log.
-- **Guest checkout**: no account needed. Signing up later with the same email attaches those orders to the account.
+**Order request → confirm → invoice.** Checkout creates a *pending* order (stock reserved, estimated delivery).
+Admin opens it, sets final unit prices / delivery / discount and clicks *Confirm order & issue invoice* →
+customer sees final pricing and the invoice (`/account/invoices/[id]`, printable to PDF).
+**Inquiry → quote → accept.** Admin builds a quote (delivery can be calculated by distance), customer accepts in
+their account → confirmed order + invoice straight away.
+
+**Routing** (`lib/server/routing.js`): 1) lines JOLOF's warehouses can fill go to JOLOF regardless of distance
+(optional max-miles limit in Settings); 2) the rest go to the nearest approved supplier warehouse with stock
+(one warehouse when possible); 3) anything left is flagged *Needs a supplier*. Admin can reassign any shipment.
+A supplier who declines returns the stock and the lines re-route.
+
+**Delivery fee** (`lib/delivery.js`): per shipment = max(minimum, base + miles ÷ per-miles × charge),
+e.g. $20 per 100 miles + $10 base; optional free-delivery threshold. Road miles from Google Routes API.
+
+**Privacy.** Customers only ever see JOLOF TRADING (no supplier/warehouse). Suppliers see only their own lines at
+their supply price — no customer name, contact, address or retail prices.
+
+**Drivers** (Admin → Drivers): add the delivery team, assign a driver on each confirmed order; the customer sees the
+driver once the order ships.
 
 ## Routes
 
@@ -59,34 +73,17 @@ npm run build && npm start
 | Storefront | `/` |
 | Auth | `/login`, `/register` |
 | Checkout | `/checkout`, `/checkout/success` |
-| Customer | `/account`, `/account/orders`, `/account/orders/[id]`, `/account/quotes`, `/account/quotes/[id]`, `/account/quotes/new`, `/account/saved`, `/account/profile` |
-| Admin | `/admin`, `/admin/orders`, `/admin/orders/[id]`, `/admin/inquiries`, `/admin/inquiries/[id]`, `/admin/products`, `/admin/categories`, `/admin/inventory`, `/admin/vendors`, `/admin/vendors/[id]`, `/admin/trading`, `/admin/customers`, `/admin/customers/[id]`, `/admin/settings` |
+| Customer | `/account`, `/account/orders`, `/account/invoices/[id]`, `/account/orders/[id]`, `/account/quotes`, `/account/quotes/[id]`, `/account/quotes/new`, `/account/saved`, `/account/profile` |
+| Admin | `/admin`, `/admin/orders`, `/admin/invoices/[id]`, `/admin/drivers`, `/admin/product-requests`, `/admin/orders/[id]`, `/admin/inquiries`, `/admin/inquiries/[id]`, `/admin/products`, `/admin/categories`, `/admin/inventory`, `/admin/vendors`, `/admin/vendors/[id]`, `/admin/trading`, `/admin/customers`, `/admin/customers/[id]`, `/admin/settings` |
 | Supplier | `/vendor`, `/vendor/orders`, `/vendor/orders/[id]`, `/vendor/products`, `/vendor/warehouses` |
 
 ## Project layout
 
 ```
-app/                 routes (storefront, auth, checkout, account, admin)
-components/store/    storefront (home page sections, header, drawers, enquiry modal)
-components/account/  customer dashboard pieces
-components/admin/    admin dashboard pieces
-components/vendor/   supplier portal pieces
-components/LocationPicker.jsx  delivery-location modal, header button and first-visit gate
-components/ui.jsx    shared dashboard primitives (Modal, Drawer, Pill, StatCard…)
-lib/catalogue.js     product catalogue + commodities (from the approved home page)
-lib/seed.js          demo users, orders, inquiries
-lib/store.js         the single app store — every action the backend will later replace
-lib/locations.js     delivery cities + distance
-lib/fulfilment.js    order routing to supplier warehouses (pure functions — move server-side as is)
-lib/format.js        money/date formatting + status labels
-public/products/     client-supplied product photos
+app/api/             REST endpoints (auth, orders, inquiries, vendor, admin, settings)
+lib/server/          db, auth (JWT cookie), maps, routing, orders, inquiries, catalogue, state (role-scoped data)
+lib/store.js         client store — every action calls the API and receives fresh state
+lib/delivery.js      delivery fee rule (shared by server + settings preview)
+prisma/schema.prisma database schema · prisma/seed-data.js starter data · prisma/migrations/
+app/, components/    UI (storefront, account, supplier portal, admin)
 ```
-
-## Connecting a backend later
-
-Every read/write goes through `lib/store.js`. Each action there (`login`, `placeOrder`,
-`submitInquiry`, `sendQuote`, `acceptQuote`, `updateOrderStatus`, `saveProduct`, `adjustWarehouseStock`,
-`setUserStatus`, `saveWarehouse`, `saveOffer`, `setFulfilmentStatus`, `rejectFulfilment`, `reassignGroup`, …) maps 1:1 to an API endpoint, so the UI does not need to change — swap the
-action bodies for `fetch` calls (e.g. to a Laravel API) and load initial data from the server.
-
-Use **Settings → Reset demo data** in the admin to restore the original demo state.

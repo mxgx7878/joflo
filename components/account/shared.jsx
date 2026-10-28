@@ -144,11 +144,11 @@ export function AddressPicker({ value, onChange }) {
           <AddressForm
             submitLabel="Use this address"
             onCancel={list.length ? () => setAdding(false) : undefined}
-            onSubmit={(addr) => {
-              saveAddress({ ...addr, isDefault: addr.isDefault || !list.length });
+            onSubmit={async (addr) => {
+              const r = await saveAddress({ ...addr, isDefault: addr.isDefault || !list.length });
+              if (!r.ok) return;
               setAdding(false);
-              // newly added address is last in the list
-              setTimeout(() => { const u = useStore.getState().currentUser(); const last = u?.addresses[u.addresses.length - 1]; if (last) onChange(last.id); }, 0);
+              if (r.id) onChange(r.id);
             }}
           />
         </div>

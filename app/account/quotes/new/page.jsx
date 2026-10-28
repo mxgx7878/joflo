@@ -42,7 +42,7 @@ function NewRequest() {
   const addItem = () => { if (!pick) return; setItems((x) => [...x, { productId: pick, qty: 1 }]); setPick(''); setErr(''); };
   const upTrade = (k) => (e) => { setTrade((t) => ({ ...t, [k]: e.target.value })); setErr(''); };
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     let payload;
     if (type === 'product') {
@@ -65,7 +65,8 @@ function NewRequest() {
       if (message.trim().length < 10) { setErr('Tell us what you need — products, quantities and timing.'); return; }
       payload = { type: 'bulk', dept, message, items: [] };
     }
-    const r = submitInquiry({ ...payload, name: user.name, company: user.company, email: user.email, phone: user.phone });
+    const r = await submitInquiry({ ...payload, name: user.name, company: user.company, email: user.email, phone: user.phone });
+    if (!r.ok) { setErr(r.error); return; }
     toast({ text: `Request ${r.id} sent — we'll reply here with a quote.` });
     router.push(`/account/quotes/${r.id}`);
   };
