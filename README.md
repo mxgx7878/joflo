@@ -7,7 +7,7 @@ The storefront, customer account, supplier portal and admin now run on a real da
 No payments and no emails yet — orders are *requests* that JOLOF confirms, then an invoice is issued.
 
 ## Setup
-
+ 
 ```bash
 cp .env.example .env          # DATABASE_URL, AUTH_SECRET, GOOGLE_MAPS_API_KEY
 npm install                   # also runs prisma generate
