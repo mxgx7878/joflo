@@ -16,6 +16,15 @@ function ProductsInner() {
   const products = useStore((s) => s.products);
   const categories = useStore((s) => s.categories);
   const deleteProduct = useStore((s) => s.deleteProduct);
+  const offers = useStore((s) => s.offers);
+  const users = useStore((s) => s.users);
+  const showPricing = useStore((s) => s.settings.showPricing !== false);
+  const suppliersOf = useMemo(() => {
+    const live = new Set(users.filter((u) => u.role === 'vendor' && u.status === 'active').map((u) => u.id));
+    const m = {};
+    offers.forEach((o) => { if (o.status === 'active' && live.has(o.vendorId)) m[o.productId] = (m[o.productId] || 0) + 1; });
+    return m;
+  }, [offers, users]);
   const toast = useToast();
   const [ask, dialog] = useConfirm();
   const sp = useSearchParams();
@@ -35,14 +44,15 @@ function ProductsInner() {
 
   if (!ready) return <Skeleton />;
 
-  const onDelete = (p) => ask({ title: `Delete ${p.name}?`, body: 'It will be removed from the store, carts and wishlists. Past orders keep their line items.', confirm: 'Delete product', danger: true }, () => { deleteProduct(p.id); setEdit(null); toast({ text: `${p.name} deleted` }); });
+  const onDelete = (p) => ask({ title: `Delete ${p.name}?`, body: 'It is removed from the store and from every supplier’s listings. If it appears on past orders it is hidden instead, so order history stays intact.', confirm: 'Delete product', danger: true }, async () => { const r = await deleteProduct(p.id); if (!r.ok) return; setEdit(null); toast({ text: r.hidden ? `${p.name} is on past orders — hidden from the store instead` : `${p.name} deleted` }); });
   const catOptions = categories.filter((c) => c.dept !== 'Trading' && (!dept || c.dept === dept));
   const onRequest = products.filter((p) => p.price === null).length;
 
   return (
     <>
       {dialog}
-      <PageHeader kicker="Catalogue" title="Products" sub={`${products.length} products · ${products.length - onRequest} with fixed prices (cart) · ${onRequest} price on request (enquiry)`}
+      {!showPricing && <p className="mb-4 rounded-xl bg-gold-pale text-[13px] text-[#6d4f12] px-4 py-3">Store pricing is <b>hidden</b> — shoppers see every product as “price on request”. Change it in Settings.</p>}
+      <PageHeader kicker="Master catalogue" title="Products" sub={`${products.length} master products · ${products.length - onRequest} with fixed prices (cart) · ${onRequest} price on request (inquiry). Suppliers attach their stock to these.`}
         actions={<button className="dash-btn dash-btn-navy" onClick={() => setEdit('new')}><Plus /> Add product</button>} />
       <Card pad={false}>
         <div className="p-4 sm:p-5 flex flex-wrap gap-2 border-b border-navy/5">
@@ -56,7 +66,7 @@ function ProductsInner() {
         {list.length === 0 ? <EmptyState icon={Package} title="No products match" body="Clear a filter or add a new product." /> : (
           <TableWrap>
             <table className="dash-table">
-              <thead><tr><th>Product</th><th>SKU</th><th>Category</th><th className="text-right">Price</th><th>Stock</th><th>Home page</th><th>Status</th></tr></thead>
+              <thead><tr><th>Product</th><th>SKU</th><th>Category</th><th className="text-right">Price</th><th>Stock</th><th className="text-center">Suppliers</th><th>Home page</th><th>Status</th></tr></thead>
               <tbody>
                 {list.map((p) => {
                   const st = stockState(p);
@@ -75,6 +85,7 @@ function ProductsInner() {
                       <td className="whitespace-nowrap"><span className="text-navy font-semibold">{p.cat}</span><span className="block text-[11.5px] text-charcoal/50">{p.dept}</span></td>
                       <td className="text-right whitespace-nowrap">{typeof p.price === 'number' ? <b className="text-navy">{money(p.price)}</b> : <span className="text-[12px] font-bold text-emerald">On request</span>}</td>
                       <td className="whitespace-nowrap"><span className="font-bold text-navy mr-2">{p.stock}</span><Pill meta={STOCK_STATE[st]} /></td>
+                      <td className="text-center">{suppliersOf[p.id] ? <span className="font-bold text-navy">{suppliersOf[p.id]}</span> : <span className="pill bg-[#F8E7E3] text-[#B4432F]">None</span>}{p.source === 'supplier_request' && <span className="block text-[10.5px] font-bold text-[#5B3FA0]">Supplier-added</span>}</td>
                       <td>
                         <div className="flex gap-1">
                           {FLAGS.map(([key, Icon, label]) => <span key={key} title={label} className={`w-7 h-7 rounded-full grid place-items-center ${p[key] ? 'bg-gold-pale text-[#8a6417]' : 'text-navy/15'}`}><Icon className="w-3.5 h-3.5" /></span>)}

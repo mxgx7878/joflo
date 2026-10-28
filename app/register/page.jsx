@@ -51,15 +51,15 @@ function RegisterForm() {
     return e;
   };
 
-  const submit = (ev) => {
+  const submit = async (ev) => {
     ev.preventDefault();
     const e = validate();
     setErr(e);
     if (Object.keys(e).length) { document.getElementById(Object.keys(e)[0])?.focus(); return; }
     const data = business ? { ...f, type } : { name: f.name, email: f.email, phone: f.phone, password: f.password, type };
-    const r = register(data);
-    if (!r.ok) { setFormError(r.error); setErr({ email: r.error }); return; }
-    if (business) setDone(r.user);
+    const r = await register(data);
+    if (!r.ok) { setFormError(r.error); if (/email/i.test(r.error || '')) setErr({ email: r.error }); return; }
+    if (business) setDone(r.state?.me || r.user);
     else router.push(next && next.startsWith('/') ? next : '/account');
   };
 

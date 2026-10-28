@@ -24,10 +24,10 @@ export default function FulfilmentCard({ order }) {
   const ranked = useMemo(() => rankWarehouses({ location: order.location, warehouses, users }), [order.location, warehouses, users]);
   const closed = ['cancelled', 'delivered'].includes(order.status);
 
-  const move = (g) => {
+  const move = async (g) => {
     const to = pick[g.key];
     if (!to) return;
-    const r = reassignGroup(order.id, g.key, to);
+    const r = await reassignGroup(order.id, g.key, to);
     toast({ text: r.ok ? 'Shipment reassigned — the supplier will see it in their portal.' : r.error });
     if (r.ok) setPick({ ...pick, [g.key]: '' });
   };
@@ -49,7 +49,8 @@ export default function FulfilmentCard({ order }) {
                     {un ? <p className="font-extrabold text-[#B4432F]">No supplier had enough stock</p> : (
                       <>
                         <Link href={`/admin/vendors/${v?.id}`} className="font-extrabold text-navy hover:text-emerald">{v?.company}</Link>
-                        <p className="text-[12.5px] text-charcoal/60">{w?.name} · {getLocation(w?.locationId)?.city} → {order.location?.city || '—'} · {fmtKm(g.distanceKm ?? distanceKm(order.location, getLocation(w?.locationId)))}</p>
+                        {v?.isHouse && <span className="ml-2 pill bg-gold-soft text-navy">JOLOF stock</span>}
+                        <p className="text-[12.5px] text-charcoal/60">{w?.name} · {getLocation(w?.locationId)?.city} → {order.location?.city || '—'} · {fmtKm(g.distanceKm ?? distanceKm(order.location, getLocation(w?.locationId)))}{order.fulfilments?.[g.key]?.fee ? ` · delivery ${money(order.fulfilments[g.key].fee)}` : ''}</p>
                       </>
                     )}
                   </div>
@@ -57,7 +58,7 @@ export default function FulfilmentCard({ order }) {
                 <Pill meta={FUL_STATUS[g.status]} />
               </div>
               <ul className="mt-3 text-[13px] text-charcoal/75 space-y-0.5">
-                {g.items.map((i) => <li key={i.idx} className="flex justify-between gap-3"><span className="truncate">{i.qty} × {i.name}</span><span className="text-charcoal/50 whitespace-nowrap">{money(i.qty * i.price)}</span></li>)}
+                {g.items.map((i) => <li key={i.idx} className="flex justify-between gap-3"><span className="truncate">{i.qty} × {i.name}</span><span className="text-charcoal/50 whitespace-nowrap">{i.price == null ? '—' : money(i.qty * i.price)}</span></li>)}
               </ul>
               {g.tracking && <p className="mt-2 text-[12.5px]"><span className="text-charcoal/55">Tracking:</span> <b className="text-navy">{g.tracking}</b></p>}
               {!closed && ['unassigned', 'assigned', 'accepted'].includes(g.status) && (

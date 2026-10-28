@@ -29,11 +29,11 @@ function LoginForm() {
   // Already signed in → skip the form (unless they need a different account for `next`)
   useEffect(() => { if (ready && user && !busy && !wrongRole) router.replace(dest(user)); }, [ready, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     if (!email.trim() || !password) { setError('Please enter your email and password.'); return; }
     setBusy(true);
-    const r = login(email, password);
+    const r = await login(email, password);
     if (!r.ok) { setError(r.error); setBusy(false); return; }
     router.push(dest(r.user));
   };
@@ -55,7 +55,7 @@ function LoginForm() {
       <div className="field">
         <div className="flex items-center justify-between">
           <label htmlFor="password">Password</label>
-          <button type="button" className="text-[11.5px] font-bold text-emerald hover:text-navy -mt-1.5" onClick={() => setError('Password reset emails will be enabled once the backend is connected. Use a demo account below.')}>Forgot password?</button>
+          <button type="button" className="text-[11.5px] font-bold text-emerald hover:text-navy -mt-1.5" onClick={() => setError('Password reset by email is coming soon — contact JOLOF TRADING to reset your password.')}>Forgot password?</button>
         </div>
         <div className="relative">
           <LockKeyhole className="w-[18px] h-[18px] text-navy/40 absolute left-4 top-1/2 -translate-y-1/2" />

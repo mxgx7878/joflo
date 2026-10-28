@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, MessageSquareText, Ship, XCircle } from 'lucide-react';
 import { useStore, useCurrentUser, quoteTotal } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
-import { money, fmtDate, fmtDateTime, INQUIRY_STATUS, INQUIRY_TYPE, PAYMENT_METHODS, qtyUnit } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, INQUIRY_STATUS, INQUIRY_TYPE, qtyUnit } from '@/lib/format';
 import { Pill, Modal, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { AddressPicker, SectionCard, useMyInquiries } from '@/components/account/shared';
@@ -26,10 +26,10 @@ export default function QuoteDetail() {
   const products = useStore((s) => s.products);
   const commodities = useStore((s) => s.commodities);
   const { acceptQuote, declineQuote } = useStore.getState();
+  const invoiceId = useStore((s) => s.invoices.find((v) => v.orderId === inq?.orderId)?.id);
   const [accepting, setAccepting] = useState(false);
   const [declining, setDeclining] = useState(false);
   const [addressId, setAddressId] = useState(() => (user?.addresses.find((a) => a.isDefault) || user?.addresses[0])?.id || null);
-  const [method, setMethod] = useState('bank_transfer');
   const [err, setErr] = useState('');
 
   if (!inq) return <div className="dash-card"><EmptyState title="Request not found" action={<Link href="/account/quotes" className="dash-btn dash-btn-navy">Back to quotes</Link>} /></div>;
@@ -44,13 +44,16 @@ export default function QuoteDetail() {
     return c?.img || '/brand/logo.webp';
   };
 
-  const doAccept = () => {
+  const [busy, setBusy] = useState(false);
+  const doAccept = async () => {
     const address = user.addresses.find((a) => a.id === addressId);
     if (!address) { setErr('Please choose or add a delivery address.'); return; }
-    const r = acceptQuote(inq.id, { address, paymentMethod: method });
+    setBusy(true);
+    const r = await acceptQuote(inq.id, { addressId });
+    setBusy(false);
     if (!r.ok) { setErr(r.error); return; }
     setAccepting(false);
-    toast({ text: `Quote accepted — order ${r.id} created` });
+    toast({ text: `Quote accepted — order ${r.id} confirmed and invoiced` });
     router.push(`/account/orders/${r.id}`);
   };
 
@@ -115,14 +118,15 @@ export default function QuoteDetail() {
                 </table>
               </div>
               <dl className="px-5 sm:px-6 py-4 bg-ivory/50 space-y-1.5 text-[13.5px] border-t border-navy/5">
-                <div className="flex justify-between"><dt className="text-charcoal/60">Delivery</dt><dd className="font-bold">{Number(q.shipping) ? money(Number(q.shipping)) : 'Included'}</dd></div>
+                <div className="flex justify-between"><dt className="text-charcoal/60">Delivery{q.deliveryMiles ? ` · ~${Math.round(q.deliveryMiles)} mi` : ''}</dt><dd className="font-bold">{Number(q.shipping) ? money(Number(q.shipping)) : 'Included'}</dd></div>
+                {Number(q.discount) > 0 && <div className="flex justify-between"><dt className="text-charcoal/60">Discount</dt><dd className="font-bold">−{money(Number(q.discount))}</dd></div>}
                 <div className="flex justify-between pt-2 border-t border-navy/10 text-[17px]"><dt className="font-extrabold text-navy">Quote total</dt><dd className="font-extrabold text-navy">{money(quoteTotal(q))} <span className="text-[11px] text-charcoal/45">USD</span></dd></div>
               </dl>
               {q.note && <div className="px-5 sm:px-6 py-4 border-t border-navy/5 flex gap-3 text-[13.5px] text-charcoal/75"><MessageSquareText className="w-4 h-4 text-gold shrink-0 mt-0.5" /><p>{q.note}</p></div>}
 
               {inq.status === 'quoted' && (
                 <div className="px-5 sm:px-6 py-5 border-t border-navy/5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                  <p className="text-[12.5px] text-charcoal/60">{pendingRetailer ? 'Your trade account must be approved before you can accept quotes.' : expired ? 'This quote has expired — send a new request for updated pricing.' : 'Accepting creates an order at these prices.'}</p>
+                  <p className="text-[12.5px] text-charcoal/60">{pendingRetailer ? 'Your trade account must be approved before you can accept quotes.' : expired ? 'This quote has expired — send a new request for updated pricing.' : 'Accepting confirms the order at these prices and issues your invoice.'}</p>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setDeclining(true)} className="dash-btn dash-btn-ghost"><XCircle />Decline</button>
                     <button type="button" onClick={() => { setErr(''); setAccepting(true); }} disabled={pendingRetailer || expired} className="dash-btn dash-btn-gold"><CheckCircle2 />Accept quote</button>
@@ -132,7 +136,10 @@ export default function QuoteDetail() {
               {inq.status === 'accepted' && inq.orderId && (
                 <div className="px-5 sm:px-6 py-4 border-t border-navy/5 bg-[#F2F8F5] flex flex-wrap items-center justify-between gap-3">
                   <p className="text-[13.5px] font-bold text-emerald flex items-center gap-2"><CheckCircle2 className="w-4 h-4" />Accepted — converted to order {inq.orderId}</p>
-                  <Link href={`/account/orders/${inq.orderId}`} className="dash-btn dash-btn-navy">View order <ArrowRight /></Link>
+                  <div className="flex gap-2">
+                    {invoiceId && <Link href={`/account/invoices/${invoiceId}`} className="dash-btn dash-btn-ghost">Invoice</Link>}
+                    <Link href={`/account/orders/${inq.orderId}`} className="dash-btn dash-btn-navy">View order <ArrowRight /></Link>
+                  </div>
                 </div>
               )}
             </section>
@@ -182,26 +189,18 @@ export default function QuoteDetail() {
       <Modal open={accepting} onClose={() => setAccepting(false)} kicker="Accept quote" title={`Confirm ${inq.id}`} size="max-w-2xl"
         footer={<>
           <button type="button" className="dash-btn dash-btn-ghost" onClick={() => setAccepting(false)}>Cancel</button>
-          <button type="button" className="dash-btn dash-btn-gold" onClick={doAccept}><CheckCircle2 />Accept & create order · {q ? money(quoteTotal(q)) : ''}</button>
+          <button type="button" className="dash-btn dash-btn-gold" disabled={busy} onClick={doAccept}><CheckCircle2 />{busy ? 'Confirming…' : `Accept · ${q ? money(quoteTotal(q)) : ''}`}</button>
         </>}>
         <div className="space-y-6">
           <div><p className="dash-label">Deliver to</p><AddressPicker value={addressId} onChange={setAddressId} /></div>
-          <div>
-            <p className="dash-label">Payment method</p>
-            <div className="grid sm:grid-cols-3 gap-2">
-              {Object.entries(PAYMENT_METHODS).map(([v, label]) => (
-                <button key={v} type="button" onClick={() => setMethod(v)} aria-pressed={method === v}
-                  className={`rounded-xl border-[1.5px] px-3 py-3 text-[13px] font-bold transition ${method === v ? 'border-emerald bg-[#F2F8F5] text-emerald' : 'border-[#E2DED2] text-navy hover:border-navy/40'}`}>{label}</button>
-              ))}
-            </div>
-          </div>
+          <p className="text-[13px] text-charcoal/65 rounded-xl bg-ivory px-4 py-3">Your order is confirmed straight away and the invoice ({q ? money(quoteTotal(q)) : ''}) appears in your account — pay by bank transfer using the invoice number as reference.</p>
           {err && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{err}</p>}
         </div>
       </Modal>
       <Modal open={declining} onClose={() => setDeclining(false)} kicker="Decline quote" title="Decline this quote?"
         footer={<>
           <button type="button" className="dash-btn dash-btn-ghost" onClick={() => setDeclining(false)}>Go back</button>
-          <button type="button" className="dash-btn dash-btn-danger" onClick={() => { declineQuote(inq.id); setDeclining(false); toast({ text: `Quote ${inq.id} declined` }); }}>Decline quote</button>
+          <button type="button" className="dash-btn dash-btn-danger" onClick={async () => { setDeclining(false); const r = await declineQuote(inq.id); if (r.ok) toast({ text: `Quote ${inq.id} declined` }); }}>Decline quote</button>
         </>}>
         <p className="text-[14px] text-charcoal/70">We'll let our team know. You can always send a new request for updated pricing.</p>
       </Modal>

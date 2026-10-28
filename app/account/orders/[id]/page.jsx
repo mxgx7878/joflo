@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Check, Copy, Printer, RotateCcw, Truck, XCircle } from 'lucide-react';
+import { ArrowLeft, Check, Clock3, Copy, FileText, RotateCcw, Truck, XCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
 import { money, fmtDate, fmtDateTime, ORDER_FLOW, ORDER_STATUS, PAYMENT_STATUS, PAYMENT_METHODS } from '@/lib/format';
@@ -50,15 +50,38 @@ export default function OrderDetail() {
         </div>
         <div className="no-print flex flex-wrap gap-2">
           {order.status === 'pending' && <button type="button" onClick={() => setConfirmCancel(true)} className="dash-btn dash-btn-danger"><XCircle />Cancel order</button>}
-          <button type="button" onClick={() => window.print()} className="dash-btn dash-btn-ghost"><Printer />Invoice</button>
+          {order.invoiceId && order.status !== 'cancelled' && <Link href={`/account/invoices/${order.invoiceId}`} className="dash-btn dash-btn-ghost"><FileText />View invoice</Link>}
           <button type="button" onClick={reorder} className="dash-btn dash-btn-navy"><RotateCcw />Reorder</button>
         </div>
       </div>
+
+      {order.status === 'pending' && (
+        <div className="mb-6 rounded-2xl bg-gold-pale border border-gold/30 p-4 sm:p-5 flex gap-3 text-[13.5px] text-[#6d4f12]">
+          <Clock3 className="w-5 h-5 shrink-0 mt-0.5" />
+          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Prices below are estimates — our team confirms the final prices and delivery, then your invoice appears here.</p></div>
+        </div>
+      )}
+      {order.invoiceId && order.status !== 'cancelled' && order.payment !== 'paid' && (
+        <div className="mb-6 rounded-2xl bg-[#E6EEF8] p-4 sm:p-5 flex flex-wrap items-center gap-3 text-[13.5px] text-navy-600">
+          <FileText className="w-5 h-5 shrink-0" />
+          <p className="flex-1 min-w-[200px]"><b>Invoice {order.invoiceId}</b> is ready — {money(order.total)} due by bank transfer.</p>
+          <Link href={`/account/invoices/${order.invoiceId}`} className="dash-btn dash-btn-navy">Open invoice</Link>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
         <div className="space-y-6">
           <SectionCard title="Delivery progress" className="no-print">
             <OrderProgress status={order.status} flow={ORDER_FLOW} />
+            {order.driver && (
+              <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl bg-ivory p-3.5 text-[13px]">
+                <Truck className="w-5 h-5 text-emerald" />
+                <span className="text-charcoal/70">Your driver</span>
+                <span className="font-extrabold text-navy">{order.driver.name}</span>
+                {order.driver.phone && <a href={`tel:${order.driver.phone}`} className="text-emerald font-bold">{order.driver.phone}</a>}
+                {order.driver.vehicle && <span className="text-charcoal/55">· {order.driver.vehicle}</span>}
+              </div>
+            )}
             {order.tracking && (
               <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl bg-ivory p-3.5">
                 <Truck className="w-5 h-5 text-emerald" />
@@ -85,8 +108,9 @@ export default function OrderDetail() {
             </ul>
             <dl className="px-5 sm:px-6 py-4 border-t border-navy/5 bg-ivory/50 space-y-1.5 text-[13.5px]">
               <div className="flex justify-between"><dt className="text-charcoal/60">Subtotal</dt><dd className="font-bold">{money(order.subtotal)}</dd></div>
-              <div className="flex justify-between"><dt className="text-charcoal/60">Delivery</dt><dd className="font-bold">{order.shipping ? money(order.shipping) : 'Free'}</dd></div>
-              <div className="flex justify-between pt-2 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">Total</dt><dd className="font-extrabold text-navy">{money(order.total)} <span className="text-[11px] text-charcoal/45">USD</span></dd></div>
+              <div className="flex justify-between"><dt className="text-charcoal/60">Delivery{order.deliveryMiles ? ` · ~${Math.round(order.deliveryMiles)} mi` : ''}</dt><dd className="font-bold">{order.shipping ? money(order.shipping) : 'Free'}</dd></div>
+              {order.discount > 0 && <div className="flex justify-between"><dt className="text-charcoal/60">Discount</dt><dd className="font-bold">−{money(order.discount)}</dd></div>}
+              <div className="flex justify-between pt-2 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">{order.status === 'pending' ? 'Estimated total' : 'Total'}</dt><dd className="font-extrabold text-navy">{money(order.total)} <span className="text-[11px] text-charcoal/45">USD</span></dd></div>
             </dl>
           </SectionCard>
         </div>
@@ -121,9 +145,9 @@ export default function OrderDetail() {
       <Modal open={confirmCancel} onClose={() => setConfirmCancel(false)} kicker="Cancel order" title={`Cancel ${order.id}?`}
         footer={<>
           <button type="button" className="dash-btn dash-btn-ghost" onClick={() => setConfirmCancel(false)}>Keep order</button>
-          <button type="button" className="dash-btn dash-btn-danger" onClick={() => { cancelOrder(order.id); setConfirmCancel(false); toast({ text: `Order ${order.id} cancelled` }); }}>Yes, cancel order</button>
+          <button type="button" className="dash-btn dash-btn-danger" onClick={async () => { setConfirmCancel(false); const r = await cancelOrder(order.id); if (r.ok) toast({ text: `Order ${order.id} cancelled` }); }}>Yes, cancel order</button>
         </>}>
-        <p className="text-[14px] text-charcoal/70">Orders can be cancelled while they're still pending. Stock will be released and no payment will be requested.</p>
+        <p className="text-[14px] text-charcoal/70">Orders can be cancelled until JOLOF TRADING confirms them. Held stock is released and no invoice is issued.</p>
       </Modal>
 
       <style>{`

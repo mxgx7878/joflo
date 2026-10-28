@@ -10,6 +10,7 @@ import { Pill, OrderProgress, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, KV, Skeleton, useConfirm, Initials } from '@/components/admin/common';
 import FulfilmentCard from '@/components/admin/FulfilmentCard';
+import { ConfirmOrderCard, DriverCard, InvoiceCard } from '@/components/admin/OrderCards';
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -34,9 +35,10 @@ export default function OrderDetail() {
   const done = ['delivered', 'cancelled'].includes(order.status);
 
   const move = (status) => {
-    const run = () => {
-      if (status === 'shipped' && tracking && tracking !== order.tracking) setOrderTracking(order.id, tracking);
-      updateOrderStatus(order.id, status, note.trim());
+    const run = async () => {
+      if (status === 'shipped' && tracking && tracking !== order.tracking) await setOrderTracking(order.id, tracking);
+      const r = await updateOrderStatus(order.id, status, note.trim());
+      if (!r.ok) return;
       setNote('');
       toast({ text: `${order.id} marked as ${ORDER_STATUS[status].label.toLowerCase()}` });
     };
@@ -62,7 +64,7 @@ export default function OrderDetail() {
         </div>
         <div className="flex flex-wrap gap-2">
           <button className="dash-btn dash-btn-ghost" onClick={() => window.print()}><Printer /> Packing slip</button>
-          {next && <button className="dash-btn dash-btn-navy" onClick={() => move(next)}>Mark as {ORDER_STATUS[next].label} <ArrowRight /></button>}
+          {next && order.status !== 'pending' && <button className="dash-btn dash-btn-navy" onClick={() => move(next)}>Mark as {ORDER_STATUS[next].label} <ArrowRight /></button>}
         </div>
       </div>
 
@@ -85,15 +87,16 @@ export default function OrderDetail() {
                     <p className="font-bold text-navy text-[14px] truncate">{i.name}</p>
                     <p className="text-[12px] text-charcoal/55">{i.size}{i.unit ? ` · per ${i.unit}` : ''}</p>
                   </div>
-                  <p className="text-[13px] text-charcoal/65 whitespace-nowrap">{i.qty} × {money(i.price)}</p>
-                  <p className="w-24 text-right font-extrabold text-navy">{money(i.qty * i.price)}</p>
+                  <p className="text-[13px] text-charcoal/65 whitespace-nowrap">{i.qty} × {i.price == null ? 'TBC' : money(i.price)}</p>
+                  <p className="w-24 text-right font-extrabold text-navy">{i.price == null ? '—' : money(i.qty * i.price)}</p>
                 </li>
               ))}
             </ul>
             <div className="px-5 py-4 border-t border-navy/5 bg-ivory/50 rounded-b-[20px]">
               <div className="ml-auto max-w-[280px]">
                 <KV k="Subtotal" v={money(order.subtotal)} />
-                <KV k="Shipping" v={order.shipping ? money(order.shipping) : 'Free'} />
+                <KV k={`Delivery${order.deliveryMiles ? ` · ~${Math.round(order.deliveryMiles)} mi` : ''}`} v={order.shipping ? money(order.shipping) : 'Free'} />
+                {order.discount > 0 && <KV k="Discount" v={`−${money(order.discount)}`} />}
                 <div className="flex justify-between pt-2 mt-1 border-t border-navy/10"><span className="font-bold text-navy">Total</span><span className="text-lg font-extrabold text-navy">{money(order.total)}</span></div>
               </div>
             </div>
@@ -118,28 +121,33 @@ export default function OrderDetail() {
         </div>
 
         <div className="space-y-5">
-          {!done && (
+          {order.status === 'pending' && <ConfirmOrderCard order={order} />}
+          {!done && order.status !== 'pending' && (
             <Card title="Update order" className="print:hidden">
               <label className="dash-label">Set status</label>
               <select className="dash-input" value={order.status} onChange={(e) => move(e.target.value)}>
-                {[...ORDER_FLOW, 'cancelled'].map((s) => <option key={s} value={s}>{ORDER_STATUS[s].label}</option>)}
+                {[...ORDER_FLOW, 'cancelled'].filter((s) => s !== 'pending').map((s) => <option key={s} value={s}>{ORDER_STATUS[s].label}</option>)}
               </select>
               <label className="dash-label mt-4">Note for timeline (optional)</label>
               <input className="dash-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Dispatched with UPS Ground" />
               <label className="dash-label mt-4">Tracking number</label>
               <div className="flex gap-2">
                 <input className="dash-input" value={tracking} onChange={(e) => setTracking(e.target.value)} placeholder="1Z…" />
-                <button className="dash-btn dash-btn-ghost shrink-0" onClick={() => { setOrderTracking(order.id, tracking.trim()); toast({ text: 'Tracking number saved' }); }}><Truck /> Save</button>
+                <button className="dash-btn dash-btn-ghost shrink-0" onClick={async () => { const r = await setOrderTracking(order.id, tracking.trim()); if (r.ok) toast({ text: 'Tracking number saved' }); }}><Truck /> Save</button>
               </div>
               {next && <button className="dash-btn dash-btn-navy w-full mt-4" onClick={() => move(next)}>Mark as {ORDER_STATUS[next].label} <ArrowRight /></button>}
               <button className="dash-btn dash-btn-danger w-full mt-2" onClick={() => move('cancelled')}>Cancel order</button>
             </Card>
           )}
+          {order.status === 'pending' && <button className="dash-btn dash-btn-danger w-full print:hidden" onClick={() => move('cancelled')}>Cancel order request</button>}
+          {!done && order.status !== 'pending' && <ConfirmOrderCard order={order} />}
+          <InvoiceCard order={order} />
+          <DriverCard order={order} />
 
           <Card title="Payment" className="print:hidden">
             <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod]} />
             <KV k="Status" v={<Pill meta={PAYMENT_STATUS[order.payment]} />} />
-            <button className="dash-btn dash-btn-ghost w-full mt-3" onClick={() => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; setOrderPayment(order.id, p); toast({ text: `Payment marked as ${p}` }); }}>
+            <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={order.status === 'pending'} onClick={async () => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; const r = await setOrderPayment(order.id, p); if (r.ok) toast({ text: `Payment marked as ${p}` }); }}>
               Mark as {order.payment === 'paid' ? 'unpaid' : 'paid'}
             </button>
           </Card>

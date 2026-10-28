@@ -15,6 +15,8 @@ function OrdersInner() {
   const ready = useStoreReady();
   const orders = useStore((s) => s.orders);
   const users = useStore((s) => s.users);
+  const drivers = useStore((s) => s.drivers);
+  const dById = useMemo(() => Object.fromEntries(drivers.map((d) => [d.id, d])), [drivers]);
   const vById = useMemo(() => Object.fromEntries(users.filter((u) => u.role === 'vendor').map((u) => [u.id, u])), [users]);
   const sp = useSearchParams();
   const [tab, setTab] = useState(sp.get('status') || 'all');
@@ -30,7 +32,7 @@ function OrdersInner() {
 
   return (
     <>
-      <PageHeader kicker="Sales" title="Orders" sub="Online checkouts and orders created from accepted quotes. Open an order to confirm, pack, ship and record payment." />
+      <PageHeader kicker="Sales" title="Orders" sub="Order requests from the store and orders from accepted quotes. Confirm prices to issue the invoice, assign a driver, then track delivery." />
       <Card pad={false}>
         <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center gap-3 justify-between border-b border-navy/5">
           <Tabs value={tab} onChange={setTab} tabs={STATUSES.map((s) => ({ value: s, label: s === 'all' ? 'All' : ORDER_STATUS[s].label, count: counts[s] }))} />
@@ -39,7 +41,7 @@ function OrdersInner() {
         {list.length === 0 ? <EmptyState icon={ShoppingCart} title="No orders here" body="Try another status or search term." /> : (
           <TableWrap>
             <table className="dash-table">
-              <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Items</th><th>Ships from</th><th>Source</th><th>Payment</th><th>Status</th><th className="text-right">Total</th></tr></thead>
+              <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Items</th><th>Ships from</th><th>Driver</th><th>Source</th><th>Payment</th><th>Status</th><th className="text-right">Total</th></tr></thead>
               <tbody>
                 {list.map((o) => (
                   <tr key={o.id} className="cursor-pointer">
@@ -53,6 +55,7 @@ function OrdersInner() {
                         {o.items.some((i) => i.productId && !i.warehouseId) && o.status !== 'cancelled' && <span className="pill bg-[#F8E7E3] text-[#B4432F]">Unassigned</span>}
                       </div>
                     </td>
+                    <td className="whitespace-nowrap text-[12.5px]">{o.driverId ? <span className="text-navy font-semibold">{dById[o.driverId]?.name}</span> : ['confirmed', 'packed'].includes(o.status) ? <span className="pill bg-gold-pale text-[#8a6417]">Assign</span> : <span className="text-charcoal/35">—</span>}</td>
                     <td>{o.source === 'quote' ? <span className="pill bg-[#EEE9F8] text-[#5B3FA0]">From quote</span> : o.guest ? <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Guest</span> : <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Online</span>}</td>
                     <td><Pill meta={PAYMENT_STATUS[o.payment]} /></td>
                     <td><Pill meta={ORDER_STATUS[o.status]} /></td>

@@ -41,7 +41,7 @@ export default function AccountShell({ children }) {
   const isActive = (n) => (n.exact ? path === n.href : path.startsWith(n.href));
   const badge = (n) => (n.href === '/account/quotes' && quotesWaiting ? quotesWaiting : n.href === '/account/saved' && wishCount ? wishCount : null);
 
-  const doLogout = () => { logout(); router.push('/'); };
+  const doLogout = async () => { await logout(); router.push('/'); };
 
   if (!ready || !user) {
     return <div className="min-h-screen bg-ivory p-6 lg:p-10"><PageLoader /></div>;
