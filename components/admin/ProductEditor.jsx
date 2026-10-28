@@ -27,16 +27,21 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
   const cats = useMemo(() => categories.filter((c) => c.dept === f.dept), [categories, f.dept]);
   const set = (patch) => setF((x) => ({ ...x, ...patch }));
 
-  const submit = () => {
+  const [busy, setBusy] = useState(false);
+  const submit = async () => {
     if (!f.name.trim()) return setErr('Product name is required.');
     if (f.priceMode === 'fixed' && !(Number(f.price) > 0)) return setErr('Enter a price, or switch to “Price on request”.');
     const { priceMode, ...rest } = f;
-    saveProduct({
+    setBusy(true);
+    const r = await saveProduct({
       ...rest, name: f.name.trim(), size: f.size.trim() || null, pack: f.pack.trim() || null, tag: f.tag || undefined, desc: f.desc.trim(),
       price: priceMode === 'fixed' ? Math.round(Number(f.price) * 100) / 100 : null,
       stock: Math.max(0, parseInt(f.stock, 10) || 0), lowStock: Math.max(0, parseInt(f.lowStock, 10) || 0), moq: Math.max(1, parseInt(f.moq, 10) || 1),
       ...(product ? { id: product.id } : {}),
+      categoryId: categories.find((c) => c.dept === f.dept && c.name === f.cat)?.id,
     });
+    setBusy(false);
+    if (!r.ok) { setErr(r.error); return; }
     toast({ text: product ? `${f.name} updated` : `${f.name} added to the catalogue` });
     onClose();
   };
@@ -46,7 +51,7 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
       footer={<>
         {product && <button className="dash-btn dash-btn-danger mr-auto" onClick={() => onDelete(product)}><Trash2 /> Delete</button>}
         <button className="dash-btn dash-btn-ghost" onClick={onClose}>Cancel</button>
-        <button className="dash-btn dash-btn-navy" onClick={submit}><Save /> {product ? 'Save changes' : 'Add product'}</button>
+        <button className="dash-btn dash-btn-navy" disabled={busy} onClick={submit}><Save /> {busy ? 'Saving…' : product ? 'Save changes' : 'Add product'}</button>
       </>}>
       <div className="space-y-6">
         <section className="flex gap-4">
@@ -95,13 +100,13 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
               <Field label="Price (USD) *"><input type="number" step="0.01" min="0" className="dash-input" value={f.price} onChange={(e) => set({ price: e.target.value })} /></Field>
               <Field label="Minimum order qty"><input type="number" min="1" className="dash-input" value={f.moq} onChange={(e) => set({ moq: e.target.value })} /></Field>
             </div>
-          ) : <p className="mt-3 text-[12.5px] text-charcoal/60">Shoppers see “Price on request” and an Enquire button. Their enquiry lands in Inquiries, where you send a quote.</p>}
+          ) : <p className="mt-3 text-[12.5px] text-charcoal/60">Shoppers see “Price on request” and an Inquire button. Their inquiry lands in Inquiries, where you send a quote with final pricing.</p>}
         </section>
 
         <section className="grid sm:grid-cols-3 gap-4">
           {f.id
             ? <Field label="Stock on hand" hint="Held by suppliers — change it in Inventory."><input className="dash-input" value={f.stock} disabled /></Field>
-            : <Field label="Opening stock" hint="Added to JOLOF's own warehouse."><input type="number" min="0" className="dash-input" value={f.stock} onChange={(e) => set({ stock: e.target.value })} /></Field>}
+            : <Field label="Opening stock" hint="Added to JOLOF's main warehouse (Port Newark)."><input type="number" min="0" className="dash-input" value={f.stock} onChange={(e) => set({ stock: e.target.value })} /></Field>}
           <Field label="Low-stock alert at"><input type="number" min="0" className="dash-input" value={f.lowStock} onChange={(e) => set({ lowStock: e.target.value })} /></Field>
           <Field label="Badge">
             <select className="dash-input" value={f.tag} onChange={(e) => set({ tag: e.target.value })}><option value="">None</option><option>New</option><option>Bulk</option></select>

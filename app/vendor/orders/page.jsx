@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { useStoreReady } from '@/lib/store';
 import { money, fmtDate } from '@/lib/format';
-import { locationLabel, kmAway } from '@/lib/locations';
+import { kmAway } from '@/lib/locations';
 import { FUL_STATUS, FUL_SHORT } from '@/lib/fulfilment';
 import { PageHeader, Pill, Tabs, EmptyState } from '@/components/ui';
 import { Card, TableWrap, SearchBox, Select, Skeleton } from '@/components/admin/common';
@@ -26,7 +26,7 @@ function Inner() {
   const counts = useMemo(() => Object.fromEntries(TABS.map((t) => [t, jobs.filter((j) => match(t, j)).length])), [jobs]);
   const list = useMemo(() => {
     const t = q.trim().toLowerCase();
-    return jobs.filter((j) => match(tab, j) && (!wh || j.warehouseId === wh) && (!t || `${j.order.id} ${j.order.location?.city || ''} ${j.items.map((i) => i.name).join(' ')}`.toLowerCase().includes(t)));
+    return jobs.filter((j) => match(tab, j) && (!wh || j.warehouseId === wh) && (!t || `${j.order.id} ${j.items.map((i) => i.name).join(' ')}`.toLowerCase().includes(t)));
   }, [jobs, tab, wh, q]);
 
   if (!ready) return <Skeleton />;
@@ -45,7 +45,7 @@ function Inner() {
         {list.length === 0 ? <EmptyState icon={ShoppingCart} title="No orders here" body={jobs.length ? 'Try another tab or search.' : 'Orders near your warehouses will be routed to you automatically.'} /> : (
           <TableWrap>
             <table className="dash-table">
-              <thead><tr><th>Order</th><th>Date</th><th>Ship from</th><th>Deliver to</th><th>Items</th><th>Status</th><th className="text-right">Supply value</th></tr></thead>
+              <thead><tr><th>Order</th><th>Date</th><th>Ship from</th><th>Delivery</th><th>Items</th><th>Status</th><th className="text-right">Supply value</th></tr></thead>
               <tbody>
                 {list.map((j) => (
                   <tr key={j.order.id + j.key}>
@@ -55,7 +55,7 @@ function Inner() {
                     </td>
                     <td className="whitespace-nowrap text-charcoal/70">{fmtDate(j.order.createdAt)}</td>
                     <td className="min-w-[160px] font-semibold text-navy">{j.warehouse?.name}</td>
-                    <td className="whitespace-nowrap text-charcoal/70">{locationLabel(j.order.location)}<span className="block text-[11.5px] text-charcoal/45">{kmAway(j.distanceKm)}</span></td>
+                    <td className="whitespace-nowrap text-charcoal/70">By JOLOF<span className="block text-[11.5px] text-charcoal/45">{kmAway(j.distanceKm)}</span></td>
                     <td className="min-w-[200px] text-charcoal/70"><span className="line-clamp-2">{j.items.map((i) => `${i.qty}× ${i.name}`).join(', ')}</span></td>
                     <td><Pill meta={FUL_STATUS[j.status]}>{FUL_SHORT[j.status]}</Pill>{OPEN_JOB.includes(j.status) && j.status === 'assigned' && <span className="block text-[11px] text-[#8a6417] font-bold mt-1">Action needed</span>}</td>
                     <td className="text-right font-bold text-navy whitespace-nowrap">{money(j.value)}</td>

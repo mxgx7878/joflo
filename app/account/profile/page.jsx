@@ -49,16 +49,17 @@ function ProfileForm({ user }) {
 
 function PasswordForm({ user }) {
   const toast = useToast();
-  const updateProfile = useStore((s) => s.updateProfile);
   const [f, setF] = useState({ current: '', next: '', confirm: '' });
   const [err, setErr] = useState('');
   const up = (k) => (e) => { setF((x) => ({ ...x, [k]: e.target.value })); setErr(''); };
-  const save = (e) => {
+  const save = async (e) => {
     e.preventDefault();
-    if (f.current !== user.password) { setErr('Current password is incorrect.'); return; }
+    if (!f.current) { setErr('Enter your current password.'); return; }
     if (f.next.length < 6) { setErr('New password must be at least 6 characters.'); return; }
     if (f.next !== f.confirm) { setErr('New passwords do not match.'); return; }
-    updateProfile({ password: f.next });
+    void user;
+    const r = await useStore.getState().updateProfile({ currentPassword: f.current, newPassword: f.next });
+    if (!r.ok) { setErr(r.error); return; }
     setF({ current: '', next: '', confirm: '' });
     toast({ text: 'Password changed' });
   };
@@ -143,8 +144,8 @@ export default function ProfilePage() {
           <button type="button" className="dash-btn dash-btn-ghost" onClick={() => setRemoving(null)}>Cancel</button>
           <button type="button" className="dash-btn dash-btn-danger" onClick={() => {
             const wasDefault = removing.isDefault;
+            void wasDefault; // the server promotes another address to default
             removeAddress(removing.id);
-            if (wasDefault) { const u = useStore.getState().currentUser(); if (u?.addresses[0]) saveAddress({ id: u.addresses[0].id, isDefault: true }); }
             setRemoving(null); toast({ text: 'Address removed' });
           }}>Remove</button>
         </>}>

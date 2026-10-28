@@ -2,7 +2,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Mail, Phone, Building2, Send, Plus, Trash2, FileText, StickyNote, CheckCircle2, ExternalLink, Wheat, Pencil } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building2, Send, Plus, Trash2, FileText, StickyNote, CheckCircle2, ExternalLink, Wheat, Pencil, Route } from 'lucide-react';
+import { STATES } from '@/lib/locations';
 import { useStore, useStoreReady, quoteTotal } from '@/lib/store';
 import { money, fmtDate, fmtDateTime, INQUIRY_STATUS, INQUIRY_TYPE, sizeLine, qtyUnit } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
@@ -16,6 +17,8 @@ const k = () => `l${++keySeq}`;
 
 function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
   const sendQuote = useStore((s) => s.sendQuote);
+  const estimateDelivery = useStore((s) => s.estimateDelivery);
+  const users = useStore((s) => s.users);
   const toast = useToast();
   const initial = useMemo(() => {
     if (inq.quote) return inq.quote.lines.map((l) => ({ ...l, key: k() }));
@@ -36,9 +39,23 @@ function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
   const [note, setNote] = useState(inq.quote?.note || (inq.type === 'commodity' ? 'Indicative price per metric tonne. Final price confirmed on contract, subject to quality inspection.' : 'Prices per unit/case as listed. Stock reserved until the quote expires.'));
   const [pick, setPick] = useState('');
   const [err, setErr] = useState('');
+  const [discount, setDiscount] = useState(inq.quote?.discount || '');
+  const [miles, setMiles] = useState(inq.quote?.deliveryMiles ?? null);
+  const acct = users.find((u) => u.id === inq.userId);
+  const [addr, setAddr] = useState(() => inq.address || acct?.addresses?.find((a) => a.isDefault) || acct?.addresses?.[0] || { line1: '', city: '', state: '', postcode: '' });
+  const [calc, setCalc] = useState('');
+  const [sending, setSending] = useState(false);
+  const calculate = async () => {
+    if (!addr.city || !addr.state) { setCalc('Enter at least the city and state.'); return; }
+    setCalc('Calculating…');
+    const e = await estimateDelivery(lines.filter((l) => l.name).map((l) => ({ productId: l.productId, qty: l.qty, unitPrice: l.unitPrice })), { ...addr, country: 'United States' });
+    if (!e || e.deliveryFee == null) { setCalc('Could not work out a distance for this address.'); return; }
+    setShipping(e.deliveryFee); setMiles(e.miles);
+    setCalc(`${e.shipments || 1} shipment${e.shipments > 1 ? 's' : ''} · ~${Math.round(e.miles || 0)} mi${e.precise ? '' : ' (approximate)'}${e.unavailable?.length ? ` · ${e.unavailable.length} line(s) not in stock anywhere` : ''}`);
+  };
 
   const upd = (key, patch) => setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
-  const total = lines.reduce((s, l) => s + (Number(l.qty) || 0) * (Number(l.unitPrice) || 0), 0) + (Number(shipping) || 0);
+  const total = lines.reduce((s, l) => s + (Number(l.qty) || 0) * (Number(l.unitPrice) || 0), 0) + (Number(shipping) || 0) - (Number(discount) || 0);
 
   const addProduct = (id) => {
     if (!id) return;
@@ -48,16 +65,20 @@ function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
     setPick('');
   };
 
-  const send = () => {
+  const send = async () => {
     const clean = lines.filter((l) => l.name.trim());
     if (!clean.length) return setErr('Add at least one line.');
     const bad = clean.find((l) => !(Number(l.qty) > 0) || !(Number(l.unitPrice) > 0));
     if (bad) return setErr(`Enter a quantity and unit price for “${bad.name}”.`);
     setErr('');
-    sendQuote(inq.id, {
+    setSending(true);
+    const r = await sendQuote(inq.id, {
       lines: clean.map(({ key, ...l }) => ({ ...l, qty: Number(l.qty), unitPrice: Math.round(Number(l.unitPrice) * 100) / 100 })),
-      shipping: Number(shipping) || 0, validUntil, note: note.trim(),
+      shipping: Number(shipping) || 0, discount: Number(discount) || 0, deliveryMiles: miles, validUntil, note: note.trim(),
+      address: addr.line1 || addr.city ? { label: addr.label || 'Delivery', line1: addr.line1, city: addr.city, state: addr.state, postcode: addr.postcode, country: 'United States' } : undefined,
     });
+    setSending(false);
+    if (!r.ok) { setErr(r.error); return; }
     toast({ text: `Quote sent to ${inq.name} · ${money(Math.round(total * 100) / 100)}` });
     onSent?.();
   };
@@ -109,7 +130,21 @@ function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
       <div className="p-5 grid md:grid-cols-[minmax(0,1fr)_280px] gap-5">
         <div className="grid sm:grid-cols-2 gap-4">
           <label><span className="dash-label">Valid until</span><input type="date" className="dash-input" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} /></label>
-          <label><span className="dash-label">Shipping / freight ($)</span><input type="number" min="0" step="0.01" className="dash-input" value={shipping} onChange={(e) => setShipping(e.target.value)} /></label>
+          <div className="sm:col-span-2 rounded-2xl border border-navy/10 p-4">
+            <p className="dash-label flex items-center gap-1.5"><Route className="w-3.5 h-3.5" /> Delivery address</p>
+            <div className="grid sm:grid-cols-[minmax(0,1fr)_120px_80px_100px] gap-2">
+              <input className="dash-input !text-[13px]" value={addr.line1 || ''} onChange={(e) => setAddr({ ...addr, line1: e.target.value })} placeholder="Street" />
+              <input className="dash-input !text-[13px]" value={addr.city || ''} onChange={(e) => setAddr({ ...addr, city: e.target.value })} placeholder="City" />
+              <select className="dash-input !text-[13px]" value={addr.state || ''} onChange={(e) => setAddr({ ...addr, state: e.target.value })}><option value="">ST</option>{STATES.map((st) => <option key={st}>{st}</option>)}</select>
+              <input className="dash-input !text-[13px]" value={addr.postcode || ''} onChange={(e) => setAddr({ ...addr, postcode: e.target.value })} placeholder="ZIP" />
+            </div>
+            <div className="grid grid-cols-2 gap-3 mt-3 items-end">
+              <label><span className="dash-label">Delivery ($)</span><input type="number" min="0" step="0.01" className="dash-input" value={shipping} onChange={(e) => setShipping(e.target.value)} /></label>
+              <button type="button" className="dash-btn dash-btn-ghost" onClick={calculate}><Route /> Calculate by distance</button>
+            </div>
+            {calc && <p className="text-[12px] text-charcoal/60 mt-2">{calc}</p>}
+          </div>
+          <label><span className="dash-label">Discount ($)</span><input type="number" min="0" step="0.01" className="dash-input" value={discount} onChange={(e) => setDiscount(e.target.value)} placeholder="0" /></label>
           <label className="sm:col-span-2"><span className="dash-label">Note to customer</span><textarea rows={3} className="dash-input" value={note} onChange={(e) => setNote(e.target.value)} /></label>
         </div>
         <div className="bg-navy text-white rounded-2xl p-5 flex flex-col">
@@ -117,7 +152,7 @@ function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
           <p className="text-[2rem] font-extrabold mt-1">{money(Math.round(total * 100) / 100)}</p>
           <p className="text-[12px] text-white/55">{lines.filter((l) => l.name).length} lines · valid to {fmtDate(validUntil)}</p>
           {err && <p className="mt-3 text-[12.5px] font-bold text-gold-soft">{err}</p>}
-          <button className="dash-btn dash-btn-gold mt-auto pt-0 w-full !mt-5" onClick={send}><Send /> {inq.quote ? 'Send revised quote' : 'Send quote to customer'}</button>
+          <button className="dash-btn dash-btn-gold mt-auto pt-0 w-full !mt-5" disabled={sending} onClick={send}><Send /> {sending ? 'Sending…' : inq.quote ? 'Send revised quote' : 'Send quote to customer'}</button>
           <p className="text-[11px] text-white/45 mt-2 text-center">{inq.userId ? 'Appears in the customer’s account to accept.' : 'Guest — they’ll see it when they register with this email.'}</p>
         </div>
       </div>
@@ -140,7 +175,8 @@ function QuoteSummary({ quote }) {
       <div className="mt-3 pt-3 border-t border-navy/10 grid sm:grid-cols-2 gap-4">
         <div className="text-[13px] text-charcoal/70">{quote.note && <p className="bg-ivory rounded-xl p-3">{quote.note}</p>}</div>
         <div>
-          <KV k="Shipping" v={quote.shipping ? money(quote.shipping) : 'Free'} />
+          <KV k={`Delivery${quote.deliveryMiles ? ` · ~${Math.round(quote.deliveryMiles)} mi` : ''}`} v={quote.shipping ? money(quote.shipping) : 'Free'} />
+          {quote.discount > 0 && <KV k="Discount" v={`−${money(quote.discount)}`} />}
           <KV k="Valid until" v={fmtDate(quote.validUntil)} />
           <div className="flex justify-between pt-2 mt-1 border-t border-navy/10"><span className="font-bold text-navy">Total</span><span className="text-lg font-extrabold text-navy">{money(quoteTotal(quote))}</span></div>
         </div>

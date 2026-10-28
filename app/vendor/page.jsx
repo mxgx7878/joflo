@@ -48,13 +48,13 @@ export default function VendorOverview() {
           {d.open.length === 0 ? <EmptyState icon={Inbox} title="All caught up" body="New orders routed to your warehouses will appear here." /> : (
             <TableWrap>
               <table className="dash-table">
-                <thead><tr><th>Order</th><th>Ship from</th><th>Deliver to</th><th>Units</th><th>Status</th><th className="text-right">Supply value</th></tr></thead>
+                <thead><tr><th>Order</th><th>Ship from</th><th>Delivery</th><th>Units</th><th>Status</th><th className="text-right">Supply value</th></tr></thead>
                 <tbody>
                   {d.open.slice(0, 8).map((j) => (
                     <tr key={j.order.id + j.key}>
                       <td className="whitespace-nowrap"><Link href={`/vendor/orders/${j.order.id}`} className="font-bold text-navy hover:text-emerald">{j.order.id}</Link><span className="block text-[11.5px] text-charcoal/50">{fmtDate(j.order.createdAt)}</span></td>
                       <td className="min-w-[150px]"><span className="font-semibold text-navy">{j.warehouse?.name}</span></td>
-                      <td className="whitespace-nowrap text-charcoal/70">{locationLabel(j.order.location)}<span className="block text-[11.5px] text-charcoal/45">{fmtKm(j.distanceKm)}</span></td>
+                      <td className="whitespace-nowrap text-charcoal/70">By JOLOF<span className="block text-[11.5px] text-charcoal/45">{fmtKm(j.distanceKm)}</span></td>
                       <td className="text-charcoal/70">{j.units}</td>
                       <td><Pill meta={FUL_STATUS[j.status]}>{j.status === 'assigned' ? 'New' : undefined}</Pill></td>
                       <td className="text-right font-bold text-navy">{money(j.value)}</td>

@@ -109,7 +109,7 @@ export default function VendorShell({ children }) {
                 <span className="block text-[11px] text-charcoal/50">{user.businessType || 'Supplier'}</span>
               </span>
             </div>
-            <button className="icon-btn" onClick={() => { logout(); router.replace('/login'); }} aria-label="Log out" title="Log out"><LogOut /></button>
+            <button className="icon-btn" onClick={async () => { await logout(); router.replace('/login'); }} aria-label="Log out" title="Log out"><LogOut /></button>
           </div>
         </div>
       </header>

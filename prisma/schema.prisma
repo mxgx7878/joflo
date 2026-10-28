@@ -1,0 +1,324 @@
+// JOLOF TRADING — database schema (PostgreSQL via Prisma)
+//
+// Catalogue model
+//   Product        = MASTER product (one row per item JOLOF sells, owned by admin)
+//   SupplierOffer  = a supplier saying "I carry this master product" (+ their supply price)
+//   StockLevel     = units of a product sitting in one warehouse
+//   ProductRequest = a supplier proposing a NEW product → admin approves → becomes a master Product
+//
+// JOLOF itself is a supplier row with isHouse = true (its own warehouses + stock).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  role         String // admin | customer | vendor (supplier)
+  type         String // staff | retailer | individual | supplier | house
+  name         String
+  email        String   @unique
+  passwordHash String
+  phone        String   @default("")
+  company      String   @default("")
+  abn          String   @default("") // EIN / tax id
+  businessType String   @default("")
+  status       String   @default("active") // active | pending | suspended
+  isHouse      Boolean  @default(false) // JOLOF TRADING's own stock
+  createdAt    DateTime @default(now())
+
+  addresses       Address[]
+  warehouses      Warehouse[]
+  offers          SupplierOffer[]
+  orders          Order[]
+  inquiries       Inquiry[]
+  productRequests ProductRequest[]
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label     String  @default("")
+  line1     String
+  city      String
+  state     String
+  postcode  String
+  country   String  @default("United States")
+  isDefault Boolean @default(false)
+  lat       Float?
+  lng       Float?
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  dept     String // Food | Cosmetics | Trading
+  name     String
+  status   String    @default("active") // active | coming_soon | hidden
+  sort     Int       @default(0)
+  products Product[]
+  requests ProductRequest[]
+
+  @@unique([dept, name])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  name        String
+  size        String?
+  pack        String?
+  price       Float? // null = price on request (inquiry only)
+  img         String?
+  desc        String   @default("")
+  tag         String?
+  real        Boolean  @default(false)
+  lowStock    Int      @default(10)
+  moq         Int      @default(1)
+  status      String   @default("active") // active | hidden
+  featured    Boolean  @default(false)
+  bestSeller  Boolean  @default(false)
+  newArrival  Boolean  @default(false)
+  recommended Boolean  @default(false)
+  source      String   @default("catalogue") // catalogue | supplier_request
+  sort        Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  offers SupplierOffer[]
+  stock  StockLevel[]
+}
+
+model Warehouse {
+  id         String       @id @default(cuid())
+  vendorId   String
+  vendor     User         @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  name       String
+  line1      String       @default("")
+  city       String       @default("")
+  state      String       @default("")
+  postcode   String       @default("")
+  locationId String? // nearest delivery metro (lib/locations.js)
+  lat        Float?
+  lng        Float?
+  active     Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  stock      StockLevel[]
+}
+
+model SupplierOffer {
+  id        String   @id @default(cuid())
+  vendorId  String
+  vendor    User     @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cost      Float? // supply price JOLOF pays per unit
+  status    String   @default("active") // active | paused
+  updatedAt DateTime @updatedAt
+
+  @@unique([vendorId, productId])
+}
+
+model StockLevel {
+  id          String    @id @default(cuid())
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  qty         Int       @default(0)
+
+  @@unique([warehouseId, productId])
+}
+
+model StockLog {
+  id          String   @id @default(cuid())
+  productId   String
+  warehouseId String?
+  vendorId    String?
+  change      Int
+  reason      String
+  by          String   @default("System")
+  at          DateTime @default(now())
+
+  @@index([productId])
+}
+
+model ProductRequest {
+  id             String    @id @default(cuid())
+  vendorId       String
+  vendor         User      @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  name           String
+  categoryId     String
+  category       Category  @relation(fields: [categoryId], references: [id])
+  size           String?
+  pack           String?
+  desc           String    @default("")
+  img            String?
+  suggestedPrice Float? // supplier's suggested retail price
+  cost           Float? // supplier's supply price
+  stock          Json      @default("{}") // { warehouseId: qty } to load once approved
+  status         String    @default("pending") // pending | approved | rejected
+  adminNote      String    @default("")
+  productId      String? // master product created on approval
+  createdAt      DateTime  @default(now())
+  reviewedAt     DateTime?
+}
+
+model Commodity {
+  id         String @id @default(cuid())
+  name       String
+  line       String @default("")
+  img        String @default("")
+  alt        String @default("")
+  group      String @default("Grains & Cereals")
+  origin     String @default("")
+  unit       String @default("MT")
+  minQty     Int    @default(1)
+  indicative Float?
+  status     String @default("active")
+  sort       Int    @default(0)
+}
+
+model Driver {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String   @default("")
+  email     String   @default("")
+  vehicle   String   @default("")
+  plate     String   @default("")
+  homeBase  String? // locationId
+  status    String   @default("active") // active | off_duty | inactive
+  notes     String   @default("")
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Order {
+  id            String    @id // JT-10242
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guest         Boolean   @default(false)
+  customer      Json // { name, email, phone, company }
+  address       Json?
+  lat           Float?
+  lng           Float?
+  locationId    String?
+  status        String    @default("pending") // pending | confirmed | packed | shipped | delivered | cancelled
+  payment       String    @default("unpaid") // unpaid | paid
+  paymentMethod String    @default("invoice")
+  source        String    @default("checkout") // checkout | quote
+  inquiryId     String?
+  notes         String    @default("")
+  tracking      String    @default("")
+  subtotal      Float     @default(0)
+  deliveryFee   Float     @default(0)
+  deliveryMiles Float?
+  discount      Float     @default(0)
+  total         Float     @default(0)
+  driverId      String?
+  driver        Driver?   @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  timeline      Json      @default("[]")
+  events        Json      @default("[]")
+  declinedBy    Json      @default("[]")
+  createdAt     DateTime  @default(now())
+  confirmedAt   DateTime?
+
+  items       OrderItem[]
+  fulfilments Fulfilment[]
+  invoice     Invoice?
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sort        Int     @default(0)
+  productId   String?
+  name        String
+  size        String  @default("")
+  img         String?
+  unit        String?
+  qty         Int
+  price       Float?
+  vendorId    String?
+  warehouseId String?
+  distanceMi  Float?
+}
+
+model Fulfilment {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  warehouseId String
+  status      String   @default("assigned") // assigned | accepted | packed | shipped | delivered
+  tracking    String   @default("")
+  miles       Float?
+  fee         Float    @default(0)
+  at          DateTime @default(now())
+
+  @@unique([orderId, warehouseId])
+}
+
+model Inquiry {
+  id        String   @id // INQ-2059
+  type      String   @default("bulk") // bulk | product | cart | commodity | contact
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name      String
+  company   String   @default("")
+  email     String
+  phone     String   @default("")
+  dept      String   @default("")
+  message   String   @default("")
+  items     Json     @default("[]")
+  trade     Json?
+  address   Json?
+  status    String   @default("new") // new | in_review | quoted | accepted | declined | closed
+  notes     Json     @default("[]")
+  quote     Json?
+  orderId   String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Invoice {
+  id          String    @id // INV-10242
+  orderId     String    @unique
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  billTo      Json
+  shipTo      Json?
+  lines       Json
+  subtotal    Float
+  deliveryFee Float     @default(0)
+  discount    Float     @default(0)
+  total       Float
+  status      String    @default("unpaid") // unpaid | paid | void
+  notes       String    @default("")
+  issuedAt    DateTime  @default(now())
+  dueAt       DateTime?
+}
+
+model Setting {
+  key   String @id
+  value Json
+}
+
+model Subscriber {
+  email String   @id
+  at    DateTime @default(now())
+}
+
+model Counter {
+  key   String @id
+  value Int
+}

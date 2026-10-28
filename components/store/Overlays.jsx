@@ -95,7 +95,9 @@ export function CartDrawer() {
   const setQty = useStore((s) => s.setQty);
   const removeFromCart = useStore((s) => s.removeFromCart);
   const { cartCount, cartTotal } = useCounts();
+  const showPricing = useStore((s) => s.settings.showPricing !== false);
   const rows = ready ? Object.entries(cart).map(([id, q]) => ({ p: products.find((x) => x.id === id), q })).filter((r) => r.p) : [];
+  const buyable = showPricing && rows.some((r) => priced(r.p));
 
   return (
     <aside id="cartDrawer" className={`drawer right fixed top-0 bottom-0 right-0 z-[100] w-full sm:w-[440px] bg-white flex flex-col ${open ? 'open' : ''}`} role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden={!open}>
@@ -110,14 +112,14 @@ export function CartDrawer() {
             <div className="flex-1 min-w-0">
               <p className="text-[10px] font-extrabold tracking-[.16em] uppercase text-gold">{p.dept}</p>
               <p className="font-bold text-navy leading-snug">{p.name}</p>
-              <p className="text-[12px] text-charcoal/55">{p.size} · {money(p.price)}</p>
+              <p className="text-[12px] text-charcoal/55">{p.size} · {priced(p) ? money(p.price) : 'Price on request'}</p>
               <div className="mt-3 flex items-center justify-between">
                 <div className="qty">
                   <button type="button" aria-label="Decrease quantity" onClick={() => setQty(p.id, q - 1)}><Minus width={14} height={14} /></button>
                   <span aria-label="Quantity">{q}</span>
                   <button type="button" aria-label="Increase quantity" onClick={() => setQty(p.id, q + 1)}><Plus width={14} height={14} /></button>
                 </div>
-                <span className="font-extrabold text-navy">{money(p.price * q)}</span>
+                <span className="font-extrabold text-navy">{priced(p) ? money(p.price * q) : <span className="text-emerald text-[12.5px]">Quote</span>}</span>
               </div>
             </div>
             <button type="button" className="self-start text-charcoal/40 hover:text-[#B4432F] w-8 h-8 grid place-items-center" aria-label={`Remove ${p.name}`} onClick={() => removeFromCart(p.id)}><Trash2 className="w-[18px] h-[18px]" /></button>
@@ -133,9 +135,13 @@ export function CartDrawer() {
       </div>
       {rows.length > 0 && (
         <div className="border-t border-navy/10 p-6 bg-ivory">
-          <div className="flex items-center justify-between"><span className="font-bold text-navy">Subtotal</span><span className="font-extrabold text-xl text-navy">{money(cartTotal)}</span></div>
-          <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Some items use sample prices; delivery is calculated at checkout. No account needed — guest checkout available.</p>
-          <button type="button" className="btn btn-navy w-full mt-5" onClick={() => { closeAll(); router.push('/checkout'); }}><Lock />Checkout</button>
+          {buyable ? (<>
+            <div className="flex items-center justify-between"><span className="font-bold text-navy">Subtotal</span><span className="font-extrabold text-xl text-navy">{money(cartTotal)}</span></div>
+            <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Delivery is calculated by distance at checkout. No payment now — we confirm your order and send an invoice.</p>
+            <button type="button" className="btn btn-navy w-full mt-5" onClick={() => { closeAll(); router.push('/checkout'); }}><Lock />Checkout</button>
+          </>) : (
+            <p className="text-[13px] text-charcoal/65">These items are priced on request — send them to our team and we&apos;ll reply with a quote.</p>
+          )}
           <button type="button" className="btn btn-line-dark w-full mt-3" onClick={() => openEnquiry({ type: 'cart' })}>Request Bulk Quote for Cart</button>
         </div>
       )}
@@ -309,7 +315,9 @@ export function EnquiryModal() {
 
   const set = (k) => (e) => { const v = e.target.value; setF((x) => ({ ...x, [k]: v })); if (err[k]) setErr((x) => ({ ...x, [k]: false })); };
 
-  const onSubmit = (e) => {
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState('');
+  const onSubmit = async (e) => {
     e.preventDefault();
     const em = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const bad = {
@@ -332,8 +340,10 @@ export function EnquiryModal() {
       items = c ? [{ commodityId: c.id, name: c.name, qty: Number(f.mt) || 0, unit: 'MT' }] : [];
       trade = { port: f.port.trim(), incoterm: '', frequency: '', targetPrice: null };
     }
-    const res = submitInquiry({ type: ctx.type, name: f.name.trim(), company: f.company.trim(), email: f.email.trim(), phone: f.phone.trim(), dept: f.dept, message: f.message.trim(), items, trade });
-    if (res.ok) setDone(res.id);
+    setSending(true); setSendError('');
+    const res = await submitInquiry({ type: ctx.type, name: f.name.trim(), company: f.company.trim(), email: f.email.trim(), phone: f.phone.trim(), dept: f.dept, message: f.message.trim(), items, trade });
+    setSending(false);
+    if (res.ok) setDone(res.id); else setSendError(res.error || 'Could not send your enquiry.');
   };
 
   const fld = (k, label, input, span = '') => (
@@ -402,7 +412,8 @@ export function EnquiryModal() {
               {ctx.type === 'product' && fld('qty', 'Quantity (cases)', <input id="e-qty" name="qty" type="number" min="1" step="1" inputMode="numeric" value={f.qty || ''} onChange={set('qty')} />)}
               {fld('message', ctx.type === 'contact' ? 'Message *' : 'Products & Quantities *', <textarea id="e-message" name="message" rows={4} value={f.message || ''} onChange={set('message')} aria-invalid={!!err.message} />, 'sm:col-span-2')}
               <div className="sm:col-span-2 flex flex-wrap items-center gap-4">
-                <button className="btn btn-navy w-full sm:w-auto">Send Enquiry <ArrowRight className="mv" /></button>
+                {sendError && <p role="alert" className="text-[13px] font-semibold text-[#B4432F]">{sendError}</p>}
+                <button className="btn btn-navy w-full sm:w-auto" disabled={sending}>{sending ? 'Sending…' : 'Send Enquiry'} <ArrowRight className="mv" /></button>
                 {!isCustomer && <p className="text-[12.5px] text-charcoal/55">Have an account? <Link href="/login" className="font-bold text-emerald hover:underline">Sign in</Link> to track replies.</p>}
               </div>
             </form>

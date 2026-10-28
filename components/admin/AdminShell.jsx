@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, ShoppingCart, MessageSquareText, Package, FolderTree, Boxes, Wheat, Users, Settings,
-  Menu, X, ExternalLink, LogOut, Search, Warehouse,
+  Menu, X, ExternalLink, LogOut, Search, Warehouse, Truck, ClipboardCheck,
 } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { stockState } from '@/lib/format';
@@ -14,9 +14,11 @@ const NAV = [
   { href: '/admin/orders', label: 'Orders', icon: ShoppingCart, badge: 'orders' },
   { href: '/admin/inquiries', label: 'Inquiries', icon: MessageSquareText, badge: 'inquiries' },
   { href: '/admin/products', label: 'Products', icon: Package },
+  { href: '/admin/product-requests', label: 'Product requests', icon: ClipboardCheck, badge: 'requests' },
   { href: '/admin/categories', label: 'Categories', icon: FolderTree },
   { href: '/admin/inventory', label: 'Inventory', icon: Boxes, badge: 'inventory' },
   { href: '/admin/vendors', label: 'Suppliers', icon: Warehouse, badge: 'vendors' },
+  { href: '/admin/drivers', label: 'Drivers', icon: Truck, badge: 'drivers' },
   { href: '/admin/trading', label: 'Trading', icon: Wheat },
   { href: '/admin/customers', label: 'Customers', icon: Users, badge: 'customers' },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
@@ -27,13 +29,17 @@ function useBadges() {
   const inquiries = useStore((s) => s.inquiries);
   const products = useStore((s) => s.products);
   const users = useStore((s) => s.users);
+  const requests = useStore((s) => s.productRequests);
   return useMemo(() => ({
+    requests: requests.filter((r) => r.status === 'pending').length,
+    // confirmed orders with no driver yet
+    drivers: orders.filter((o) => ['confirmed', 'packed'].includes(o.status) && !o.driverId).length,
     orders: orders.filter((o) => o.status === 'pending' || (o.status !== 'cancelled' && o.items.some((i) => i.productId && !i.warehouseId))).length,
     inquiries: inquiries.filter((i) => i.status === 'new').length,
     inventory: products.filter((p) => p.status === 'active' && stockState(p) !== 'ok').length,
     customers: users.filter((u) => u.role === 'customer' && u.status === 'pending').length,
     vendors: users.filter((u) => u.role === 'vendor' && u.status === 'pending').length,
-  }), [orders, inquiries, products, users]);
+  }), [orders, inquiries, products, users, requests]);
 }
 
 function SideNav({ onNavigate }) {
@@ -119,7 +125,7 @@ export default function AdminShell({ children }) {
       <aside className="hidden lg:flex print:!hidden fixed inset-y-0 left-0 w-[264px] bg-navy flex-col z-40">
         <SideBrand />
         <SideNav />
-        <div className="p-4 border-t border-white/10 text-[11.5px] text-white/40">Demo data · frontend preview</div>
+        <div className="p-4 border-t border-white/10 text-[11.5px] text-white/40">JOLOF TRADING · Admin</div>
       </aside>
 
       {/* Mobile drawer */}
@@ -147,7 +153,7 @@ export default function AdminShell({ children }) {
                 <span className="block text-[11px] text-charcoal/50">Administrator</span>
               </span>
             </div>
-            <button className="icon-btn" onClick={() => { logout(); router.replace('/login'); }} aria-label="Log out" title="Log out"><LogOut /></button>
+            <button className="icon-btn" onClick={async () => { await logout(); router.replace('/login'); }} aria-label="Log out" title="Log out"><LogOut /></button>
           </div>
         </div>
       </header>

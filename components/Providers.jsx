@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHydrateStore } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
 
@@ -19,6 +19,12 @@ export default function Providers({ children }) {
     setT({ ...opts, key: Date.now() });
     timer.current = setTimeout(() => setT(null), opts.duration || 3600);
   }, []);
+  // API errors from fire-and-forget actions (lib/store.js) surface as a toast
+  useEffect(() => {
+    const onErr = (e) => toast({ text: e.detail, duration: 5000 });
+    window.addEventListener('jolof:error', onErr);
+    return () => window.removeEventListener('jolof:error', onErr);
+  }, [toast]);
   return (
     <ToastCtx.Provider value={toast}>
       {children}

@@ -1,9 +1,9 @@
 'use client';
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Package, Plus, Pencil, Trash2, Warehouse, PauseCircle, PlayCircle, Check } from 'lucide-react';
+import { Package, Plus, Pencil, Trash2, Warehouse, PauseCircle, PlayCircle, Check, Send, ClipboardList } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
-import { money, sizeLine, catLine, priced, fmtDate } from '@/lib/format';
+import { money, sizeLine, catLine, priced, fmtDate, REQUEST_STATUS } from '@/lib/format';
 import { DEPARTMENTS } from '@/lib/catalogue';
 import { PageHeader, Pill, Modal, Drawer, Field, EmptyState, Tabs } from '@/components/ui';
 import { useToast } from '@/components/Providers';
@@ -23,8 +23,9 @@ function OfferEditor({ open, product, offer, warehouses, onClose }) {
     setStock(Object.fromEntries(warehouses.map((w) => [w.id, offer?.stock?.[w.id] ?? ''])));
   }
   const total = Object.values(stock).reduce((s, n) => s + (parseInt(n, 10) || 0), 0);
-  const save = () => {
-    saveOffer({ productId: product.id, cost: cost === '' ? null : Number(cost), stock });
+  const save = async () => {
+    const r = await saveOffer({ productId: product.id, cost: cost === '' ? null : Number(cost), stock });
+    if (!r.ok) return;
     toast({ text: `${product.name} ${offer ? 'updated' : 'added to your products'} · ${total} units`, product });
     setKey(null);
     onClose();
@@ -68,6 +69,62 @@ function OfferEditor({ open, product, offer, warehouses, onClose }) {
   );
 }
 
+/** Supplier proposes a product that isn't in the JOLOF catalogue yet → admin approval. */
+function RequestProduct({ open, onClose, warehouses }) {
+  const categories = useStore((s) => s.categories);
+  const requestProduct = useStore((s) => s.requestProduct);
+  const toast = useToast();
+  const blank = { name: '', categoryId: '', size: '', pack: '', desc: '', img: '', cost: '', suggestedPrice: '', stock: {} };
+  const [f, setF] = useState(blank);
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+  const cats = categories.filter((c) => c.dept !== 'Trading' && c.status !== 'hidden');
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  const close = () => { setF(blank); setErr(''); onClose(); };
+  const send = async () => {
+    if (f.name.trim().length < 3) { setErr('Enter the product name.'); return; }
+    if (!f.categoryId) { setErr('Choose a category.'); return; }
+    setBusy(true);
+    const r = await requestProduct(f);
+    setBusy(false);
+    if (!r.ok) { setErr(r.error); return; }
+    toast({ text: `${f.name} sent to JOLOF TRADING for approval` });
+    close();
+  };
+  return (
+    <Modal open={open} onClose={close} kicker="New to the catalogue" title="Request a new product" size="max-w-2xl"
+      footer={<><button className="dash-btn dash-btn-ghost" onClick={close}>Cancel</button><button className="dash-btn dash-btn-navy" disabled={busy} onClick={send}><Send /> {busy ? 'Sending…' : 'Send for approval'}</button></>}>
+      <div className="space-y-4">
+        <p className="text-[13px] text-charcoal/60">JOLOF TRADING reviews it and adds it to the master catalogue. Once approved, your supply price and stock below are listed automatically.</p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Field label="Product name *" className="sm:col-span-2"><input className="dash-input" value={f.name} onChange={set('name')} placeholder="Brand + product, e.g. Maggi Chicken Cubes" /></Field>
+          <Field label="Category *"><select className="dash-input" value={f.categoryId} onChange={set('categoryId')}><option value="">Choose…</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.dept} · {c.name}</option>)}</select></Field>
+          <Field label="Size"><input className="dash-input" value={f.size} onChange={set('size')} placeholder="e.g. 400 g" /></Field>
+          <Field label="Wholesale pack"><input className="dash-input" value={f.pack} onChange={set('pack')} placeholder="e.g. 24 units" /></Field>
+          <Field label="Image URL"><input className="dash-input" value={f.img} onChange={set('img')} placeholder="https://…" /></Field>
+          <Field label="Your supply price (USD)"><input type="number" min="0" step="0.01" className="dash-input" value={f.cost} onChange={set('cost')} /></Field>
+          <Field label="Suggested store price (USD)"><input type="number" min="0" step="0.01" className="dash-input" value={f.suggestedPrice} onChange={set('suggestedPrice')} /></Field>
+          <Field label="Description" className="sm:col-span-2"><textarea rows={3} className="dash-input" value={f.desc} onChange={set('desc')} /></Field>
+        </div>
+        {warehouses.length > 0 && (
+          <div>
+            <p className="dash-label">Stock you can supply</p>
+            <div className="grid sm:grid-cols-2 gap-2">
+              {warehouses.map((w) => (
+                <label key={w.id} className="flex items-center gap-3 rounded-xl border border-navy/10 px-3 py-2">
+                  <Warehouse className="w-4 h-4 text-emerald shrink-0" /><span className="flex-1 text-[13px] font-semibold text-navy truncate">{w.name}</span>
+                  <input type="number" min="0" className="dash-input !w-24 !h-9 text-right" value={f.stock[w.id] ?? ''} onChange={(e) => setF({ ...f, stock: { ...f.stock, [w.id]: e.target.value } })} placeholder="0" />
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+        {err && <p className="text-[13px] font-bold text-[#B4432F]">{err}</p>}
+      </div>
+    </Modal>
+  );
+}
+
 export default function VendorProducts() {
   const ready = useStoreReady();
   const { me, offers, warehouses, products } = useVendor();
@@ -81,6 +138,8 @@ export default function VendorProducts() {
   const [browse, setBrowse] = useState(false);
   const [bq, setBq] = useState('');
   const [bdept, setBdept] = useState('');
+  const [requesting, setRequesting] = useState(false);
+  const requests = useStore((s) => s.productRequests);
 
   const byId = useMemo(() => Object.fromEntries(products.map((p) => [p.id, p])), [products]);
   const rows = useMemo(() => {
@@ -103,7 +162,7 @@ export default function VendorProducts() {
     <>
       {dialog}
       <PageHeader kicker="Catalogue" title="My products" sub="Add the JOLOF catalogue products you stock, with your supply price and how many units each warehouse holds. Only products with stock get orders routed to you."
-        actions={<button className="dash-btn dash-btn-navy" onClick={() => setBrowse(true)}><Plus /> Add products</button>} />
+        actions={<><button className="dash-btn dash-btn-ghost" onClick={() => setRequesting(true)}><ClipboardList /> Request new product</button><button className="dash-btn dash-btn-navy" onClick={() => setBrowse(true)}><Plus /> Add from catalogue</button></>} />
 
       <Card pad={false}>
         <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center gap-3 justify-between border-b border-navy/5">
@@ -169,9 +228,31 @@ export default function VendorProducts() {
           })}
           {!catalogue.length && <li className="py-10 text-center text-[13px] text-charcoal/55">No catalogue products match.</li>}
         </ul>
-        <p className="text-[12px] text-charcoal/50 mt-4">Don&apos;t see a product you carry? Ask JOLOF TRADING to add it to the catalogue.</p>
+        <p className="text-[12px] text-charcoal/50 mt-4">Don&apos;t see a product you carry? <button className="font-bold text-emerald hover:text-navy" onClick={() => { setBrowse(false); setRequesting(true); }}>Request a new product</button> — JOLOF TRADING approves it into the catalogue.</p>
       </Drawer>
 
+      {requests.length > 0 && (
+        <Card title="My product requests" className="mt-5" pad={false}>
+          <TableWrap>
+            <table className="dash-table">
+              <thead><tr><th>Product</th><th>Category</th><th>Sent</th><th>Status</th><th>Note from JOLOF</th></tr></thead>
+              <tbody>
+                {requests.map((r) => (
+                  <tr key={r.id}>
+                    <td className="font-bold text-navy">{r.name}<span className="block text-[11.5px] font-normal text-charcoal/50">{[r.size, r.pack].filter(Boolean).join(' · ')}</span></td>
+                    <td className="text-charcoal/70 whitespace-nowrap">{r.dept} · {r.cat}</td>
+                    <td className="text-charcoal/60 whitespace-nowrap">{fmtDate(r.createdAt)}</td>
+                    <td><Pill meta={REQUEST_STATUS[r.status]} /></td>
+                    <td className="text-[12.5px] text-charcoal/65">{r.adminNote || (r.status === 'approved' ? 'Listed in your products' : '—')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableWrap>
+        </Card>
+      )}
+
+      <RequestProduct open={requesting} onClose={() => setRequesting(false)} warehouses={warehouses} />
       <OfferEditor open={!!edit} product={edit?.product} offer={edit?.offer} warehouses={warehouses} onClose={() => setEdit(null)} />
     </>
   );
