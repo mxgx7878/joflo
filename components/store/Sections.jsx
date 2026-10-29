@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { CATS, U, productImg } from '@/lib/catalogue';
 import { useUI } from './ui';
-import { Reveal, FilterLink, CosLink, useCatalogue } from './shared';
+import Link from 'next/link';
+import { Reveal, FilterLink, CosLink, useCatalogue, useGoShop } from './shared';
 import { ProductCard, RecoCard } from './ProductCard';
 import { ArrowRight, Info, PackageSearch, ChevronLeft, ChevronRight, Wheat, Sparkles, Ship, Send } from './icons';
 
@@ -30,22 +31,36 @@ function DeptCard({ n, title, text, cta, img, alt, grad, delay, href, onClick, a
   );
 }
 
+const NUM_WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+const GRADS = ['from-navy-950 via-navy-950/40', 'from-emerald-950 via-emerald-950/40', 'from-charcoal via-charcoal/40'];
+
 export function Departments() {
-  const setFilter = useUI((s) => s.setFilter);
+  const goShop = useGoShop();
+  const { departments } = useCatalogue();
+  if (!departments.length) return null;
+  const n = departments.length;
+  const cols = n === 1 ? 'md:grid-cols-1' : n === 2 ? 'md:grid-cols-2' : n === 4 ? 'md:grid-cols-2 xl:grid-cols-4' : 'md:grid-cols-3';
   return (
     <section id="departments" className="pt-20 lg:pt-28">
       <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
         <Reveal className="flex flex-col sm:flex-row sm:items-end justify-between gap-5">
-          <div><p className="kicker">Shop by Department</p><h2 className={H2}>Three departments, one destination.</h2></div>
+          <div><p className="kicker">Shop by Department</p><h2 className={H2}>{NUM_WORDS.at(n) || n} department{n === 1 ? '' : 's'}, one destination.</h2></div>
           <FilterLink dept="" className="text-[13px] font-bold text-navy inline-flex items-center gap-2 hover:text-emerald">View all products <ArrowRight className="w-4 h-4" /></FilterLink>
         </Reveal>
-        <div className="mt-10 grid md:grid-cols-3 gap-5">
-          <DeptCard n="01" title="Trading" href="#trading" text="Maize, millet, rice, groundnuts, sesame, shea and more — quoted on request." cta="Explore Commodities"
-            img="https://images.unsplash.com/photo-1651667343153-6dc318e27e41?auto=format&fit=crop&w=900&q=80" alt="Pile of harvested maize cobs and kernels" grad="from-navy-950 via-navy-950/40" />
-          <DeptCard n="02" title="Food" href="#shop" onClick={(e) => { e.preventDefault(); setFilter({ dept: 'Food' }); }} delay=".1s" text="Seasonings, millet & grains, tea & coffee, drinks and pantry staples." cta="Shop Food Products"
-            img="https://images.unsplash.com/photo-1736182146384-72e77abe44ec?auto=format&fit=crop&w=900&q=80" alt="Market bowls filled with dried fish, grains and food staples" grad="from-emerald-950 via-emerald-950/40" />
-          <DeptCard n="03" title="Cosmetics" href="#cosmetics" delay=".2s" text="Skin care, hair care, soaps and fragrance from the JOLOF Cosmetics catalogue." cta="Shop Beauty & Personal Care"
-            img="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&w=900&q=80" alt="Natural skincare products with stones and botanicals" grad="from-charcoal via-charcoal/40" />
+        <div className={`mt-10 grid ${cols} gap-5`}>
+          {departments.map((d, i) => {
+            const trading = d.kind === 'trading';
+            const soon = d.status === 'coming_soon';
+            return (
+              <DeptCard key={d.id} n={String(i + 1).padStart(2, '0')} title={d.name} delay={i ? `${Math.min(i, 3) * 0.1}s` : undefined}
+                href={trading ? '/trading' : '/#shop'}
+                onClick={trading ? undefined : (e) => { e.preventDefault(); goShop({ dept: d.name }); }}
+                text={soon ? `Coming soon. ${d.tagline}`.trim() : d.tagline}
+                cta={trading ? 'Explore JOLOF TRADE CENTER' : `Shop ${d.name}`}
+                img={d.image || 'https://images.unsplash.com/photo-1602018342965-6dd19657e145?auto=format&fit=crop&w=900&q=75'} alt=""
+                grad={GRADS.at(i % GRADS.length)} />
+            );
+          })}
         </div>
       </div>
     </section>
@@ -54,8 +69,16 @@ export function Departments() {
 
 /* ===================== SHOP BY CATEGORY ===================== */
 export function Categories() {
-  const { products, catStatus, commodities } = useCatalogue();
-  const tiles = CATS.filter((c) => c.dept === 'Trading' || catStatus(c.dept, c.cat) !== 'hidden');
+  const { products, catStatus, commodities, categories, departments } = useCatalogue();
+  const live = new Set(departments.map((d) => d.name));
+  const tradingNames = new Set(departments.filter((d) => d.kind === 'trading').map((d) => d.name));
+  const known = new Set(CATS.map((c) => `${c.dept}|${c.cat}`));
+  const extra = categories.filter((c) => live.has(c.dept) && !tradingNames.has(c.dept) && c.status !== 'hidden' && !known.has(`${c.dept}|${c.name}`))
+    .map((c) => ({ dept: c.dept, cat: c.name, label: c.name, src: departments.find((d) => d.name === c.dept)?.image }));
+  const tiles = [
+    ...CATS.filter((c) => live.has(c.dept) && (tradingNames.has(c.dept) || catStatus(c.dept, c.cat) !== 'hidden')),
+    ...extra,
+  ];
   return (
     <section id="categories" className="pt-20 lg:pt-28">
       <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,10 +89,11 @@ export function Categories() {
         <div className="mt-10 flex gap-4 overflow-x-auto no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 xl:justify-between">
           {tiles.map((c, i) => {
             const n = products.filter((p) => p.dept === c.dept && (!c.cat || p.cat === c.cat)).length;
-            const soon = c.dept !== 'Trading' && catStatus(c.dept, c.cat) === 'coming_soon';
-            const src = c.photo ? U(c.photo, 320, 320) : productImg({ img: c.img });
-            const fit = c.photo || c.cover ? 'object-cover' : 'object-contain p-4';
-            const sub = c.dept === 'Trading' ? `${commodities.length} commodities` : soon ? 'Coming soon' : `${n} product${n === 1 ? '' : 's'}`;
+            const isTrading = tradingNames.has(c.dept);
+            const soon = !isTrading && catStatus(c.dept, c.cat) === 'coming_soon';
+            const src = c.src || (c.photo ? U(c.photo, 320, 320) : productImg({ img: c.img }));
+            const fit = c.src || c.photo || c.cover ? 'object-cover' : 'object-contain p-4';
+            const sub = isTrading ? `${commodities.length} commodities` : soon ? 'Coming soon' : `${n} product${n === 1 ? '' : 's'}`;
             const body = (
               <>
                 <span className="relative block w-[104px] h-[104px] sm:w-[116px] sm:h-[116px] rounded-full overflow-hidden bg-white border border-navy/10 group-hover:border-gold transition shadow-[0_14px_30px_-20px_rgba(11,35,71,.45)]">
@@ -77,14 +101,14 @@ export function Categories() {
                   <span className="absolute inset-0 rounded-full ring-0 ring-gold group-hover:ring-2 transition" />
                 </span>
                 <span className="block mt-3 font-bold text-navy text-[13.5px] leading-tight group-hover:text-emerald transition">{c.label}</span>
-                <span className={`block mt-0.5 text-[11.5px] ${soon || c.dept === 'Trading' ? 'text-gold font-bold' : 'text-charcoal/50'}`}>{sub}</span>
+                <span className={`block mt-0.5 text-[11.5px] ${soon || isTrading ? 'text-gold font-bold' : 'text-charcoal/50'}`}>{sub}</span>
               </>
             );
             const cls = 'cat-tile group shrink-0 w-[104px] sm:w-[116px] text-center';
             const style = { transitionDelay: `${i * 0.05}s` };
-            if (c.dept === 'Trading') return <a key={c.label} href="#trading" className={cls} style={style}>{body}</a>;
-            if (c.dept === 'Cosmetics') return <CosLink key={c.label} cat={c.cat} className={cls} style={style}>{body}</CosLink>;
-            return <FilterLink key={c.label} dept={c.dept} cat={c.cat} className={cls} style={style}>{body}</FilterLink>;
+            if (isTrading) return <a key={c.dept + c.label} href="/#trading" className={cls} style={style}>{body}</a>;
+            if (c.dept === 'Cosmetics') return <CosLink key={c.dept + c.label} cat={c.cat} className={cls} style={style}>{body}</CosLink>;
+            return <FilterLink key={c.dept + c.label} dept={c.dept} cat={c.cat} className={cls} style={style}>{body}</FilterLink>;
           })}
         </div>
       </div>
@@ -97,15 +121,15 @@ export function Shop() {
   const filter = useUI((s) => s.filter);
   const setFilter = useUI((s) => s.setFilter);
   const openEnquiry = useUI((s) => s.openEnquiry);
-  const { products, featured, catStatus } = useCatalogue();
+  const { products, featured, catStatus, departments, commodities } = useCatalogue();
   const showPricing = useStore((s) => s.settings.showPricing !== false);
   const q = filter.q.trim().toLowerCase();
   const list = !filter.dept && !filter.cat && !q
     ? featured
     : products.filter((p) => (!filter.dept || p.dept === filter.dept) && (!filter.cat || p.cat === filter.cat) && (!q || `${p.name} ${p.cat} ${p.dept} ${p.size}`.toLowerCase().includes(q)));
-  const trading = filter.dept === 'Trading' && !filter.q;
-  const soon = filter.cat && !filter.q && catStatus(filter.dept, filter.cat) === 'coming_soon';
-  const title = filter.q ? 'Search results' : filter.cat ? filter.cat : filter.dept === 'Trading' ? 'Commodity Trading' : filter.dept ? `${filter.dept} products` : 'Handpicked for your business';
+  const trading = !!filter.dept && departments.some((x) => x.name === filter.dept && x.kind === 'trading') && !filter.q;
+  const soon = !filter.q && ((filter.cat && catStatus(filter.dept, filter.cat) === 'coming_soon') || (!filter.cat && departments.find((x) => x.name === filter.dept)?.status === 'coming_soon'));
+  const title = filter.q ? 'Search results' : filter.cat ? filter.cat : trading ? 'Commodity Trading' : filter.dept ? `${filter.dept} products` : 'Handpicked for your business';
   const chips = [];
   if (filter.q) chips.push(`Search: “${filter.q}”`);
   if (filter.dept && filter.cat) chips.push(`${filter.dept} › ${filter.cat}`);
@@ -121,7 +145,7 @@ export function Shop() {
             <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold" />{showPricing ? 'Order priced items online — no payment now, we confirm and send an invoice. Others are quoted on request.' : 'Send us your list — our team replies with wholesale pricing and an invoice.'}</p>
           </div>
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0" role="tablist" aria-label="Filter products">
-            {[['', 'All Products'], ['Food', 'Food'], ['Cosmetics', 'Cosmetics'], ['Trading', 'Trading']].map(([d, l]) => (
+            {[['', 'All Products'], ...departments.map((x) => [x.name, x.name])].map(([d, l]) => (
               <button key={l} className="tab" role="tab" aria-selected={filter.dept === d && !filter.q} onClick={() => setFilter({ dept: d }, false)}>{l}</button>
             ))}
           </div>
@@ -140,12 +164,13 @@ export function Shop() {
         ) : (
           <div className="mt-8 rounded-3xl bg-ivory p-10 sm:p-14 text-center">
             <span className="mx-auto w-16 h-16 rounded-full bg-white grid place-items-center text-gold"><PackageSearch className="w-7 h-7" /></span>
-            <p className="font-display text-2xl sm:text-3xl text-navy mt-5">{trading ? 'Commodity trading is quoted on request' : soon ? `${filter.cat} — coming soon` : 'No products match your search.'}</p>
+            <p className="font-display text-2xl sm:text-3xl text-navy mt-5">{trading ? 'Commodity trading is quoted on request' : soon ? `${filter.cat || filter.dept} — coming soon` : 'No products match your search.'}</p>
             <p className="mt-2 text-charcoal/60 max-w-[520px] mx-auto">
-              {trading ? 'Browse our 10 commodity categories — from maize and sesame to shea nuts — and request a quote.' : soon ? 'Products for this category will be added to the store soon. You can already send a wholesale enquiry.' : 'Try another term, or browse all products.'}
+              {trading ? `Browse our ${commodities.length} commodities — from maize and sesame to shea nuts — and request a quote.` : soon ? 'Products for this category will be added to the store soon. You can already send a wholesale enquiry.' : 'Try another term, or browse all products.'}
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
               {trading && <a href="#trading" className="btn btn-gold">View Commodities</a>}
+              {trading && <Link href="/trading" className="btn btn-line-dark">About JOLOF TRADE CENTER</Link>}
               {soon && <button type="button" className="btn btn-gold" onClick={() => openEnquiry({ type: 'bulk', dept: filter.dept })}>Request Bulk Pricing</button>}
               <button type="button" className="btn btn-navy" onClick={() => setFilter({}, false)}>Show all products</button>
             </div>
@@ -312,20 +337,27 @@ export function Wholesale() {
 }
 
 /* ===================== TRADING ===================== */
-export function Trading() {
+export function Trading({ intro = true }) {
   const openEnquiry = useUI((s) => s.openEnquiry);
-  const { commodities } = useCatalogue();
-  const quote = (c) => openEnquiry({ type: 'commodity', dept: 'Trading', commodityId: c?.id || '' });
+  const { commodities, tradingDepts } = useCatalogue();
+  const quote = (c) => openEnquiry({ type: 'commodity', dept: tradingDepts[0]?.name || 'Trading', commodityId: c?.id || '' });
   return (
     <section id="trading" className="pt-20 lg:pt-28">
       <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
         <Reveal className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div>
+          {intro ? <div>
+            <p className="kicker">JOLOF TRADE CENTER</p>
+            <h2 className={H2}>Global Commodity Trading <span className="text-gold">|</span> From Africa to the World</h2>
+            <p className="mt-3 text-[14.5px] text-charcoal/65 max-w-[720px] leading-relaxed">JOLOF TRADE CENTER is an international commodity trading company with strategically located offices in Dakar, Senegal, and New York, United States — connecting Africa&apos;s exceptional resources with international markets. Every commodity is quoted on request: tell us the quantity and destination you need.</p>
+          </div> : <div>
             <p className="kicker">Commodity Trading</p>
-            <h2 className={H2}>Agricultural commodities we trade</h2>
-            <p className="mt-2 text-[14.5px] text-charcoal/60 max-w-[640px]">Grains, oilseeds and shea for processors, millers and distributors. Every commodity is quoted on request — tell us the quantity and destination you need.</p>
+            <h2 className={H2}>Commodities we trade</h2>
+            <p className="mt-2 text-[14.5px] text-charcoal/60 max-w-[640px]">Every commodity is quoted on request — tell us the quantity and destination you need.</p>
+          </div>}
+          <div className="flex flex-wrap gap-3 self-start lg:self-auto">
+            {intro && <Link href="/trading" className="btn btn-line-dark">About JOLOF TRADE CENTER</Link>}
+            <button type="button" className="btn btn-gold" onClick={() => quote(null)}>Request a Quote <ArrowRight className="mv" /></button>
           </div>
-          <button type="button" className="btn btn-gold self-start lg:self-auto" onClick={() => quote(null)}>Request a Quote <ArrowRight className="mv" /></button>
         </Reveal>
         <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-5">
           {commodities.map((c, i) => (
@@ -361,7 +393,7 @@ export function Recommended() {
             <div className="rounded-3xl bg-ivory p-8 lg:p-10 h-full flex flex-col">
               <p className="kicker">Recommended</p>
               <h2 className="h-display text-navy text-[2rem] sm:text-[2.5rem] mt-3">Recommended for you</h2>
-              <p className="mt-4 text-charcoal/65 leading-relaxed">A mix across all three departments — a quick way to explore the range.</p>
+              <p className="mt-4 text-charcoal/65 leading-relaxed">A mix across our departments — a quick way to explore the range.</p>
               <div className="mt-auto pt-8 hidden lg:block">
                 <div className="rounded-2xl overflow-hidden aspect-[4/3]"><img src="https://images.unsplash.com/photo-1783042909392-0b8d8683e0a2?auto=format&fit=crop&w=700&q=78" alt="Millet plants with seed heads in sunlight" className="w-full h-full object-cover" loading="lazy" /></div>
               </div>
@@ -379,6 +411,7 @@ export function Recommended() {
 
 /* ===================== ABOUT ===================== */
 export function About() {
+  const aboutDepts = useCatalogue().departments;
   return (
     <section id="about" className="pt-20 lg:pt-28">
       <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
@@ -393,9 +426,13 @@ export function About() {
             <h2 className="h-display text-navy text-[2rem] sm:text-[2.6rem] mt-3">From Africa to the world.</h2>
             <p className="mt-5 text-charcoal/70 leading-[1.85] text-[1.02rem]">JOLOF TRADING is a diversified trading and wholesale distribution business bringing together commodity trading, food wholesale and cosmetics distribution. Our online store makes it simple for retailers, distributors and commercial buyers to browse the range, build an order and request wholesale pricing — all in one place.</p>
             <div className="mt-8 grid sm:grid-cols-3 gap-4">
-              <a href="#trading" className="rounded-2xl bg-ivory p-5 hover:bg-gold-pale transition"><Ship className="w-6 h-6 text-emerald" /><p className="mt-3 font-bold text-navy">Trading</p><p className="text-[13px] text-charcoal/60">Agricultural commodities</p></a>
-              <FilterLink dept="Food" className="rounded-2xl bg-ivory p-5 hover:bg-gold-pale transition"><Wheat className="w-6 h-6 text-emerald" /><p className="mt-3 font-bold text-navy">Food</p><p className="text-[13px] text-charcoal/60">Spices, grains, meat &amp; fish</p></FilterLink>
-              <a href="#cosmetics" className="rounded-2xl bg-ivory p-5 hover:bg-gold-pale transition"><Sparkles className="w-6 h-6 text-emerald" /><p className="mt-3 font-bold text-navy">Cosmetics</p><p className="text-[13px] text-charcoal/60">Skin, hair &amp; personal care</p></a>
+              {aboutDepts.map((d) => {
+                const Icon = d.kind === 'trading' ? Ship : d.name === 'Cosmetics' ? Sparkles : Wheat;
+                const inner = <><Icon className="w-6 h-6 text-emerald" /><p className="mt-3 font-bold text-navy">{d.name}</p><p className="text-[13px] text-charcoal/60 line-clamp-2">{d.tagline}</p></>;
+                return d.kind === 'trading'
+                  ? <Link key={d.id} href="/trading" className="rounded-2xl bg-ivory p-5 hover:bg-gold-pale transition">{inner}</Link>
+                  : <FilterLink key={d.id} dept={d.name} className="rounded-2xl bg-ivory p-5 hover:bg-gold-pale transition">{inner}</FilterLink>;
+              })}
             </div>
           </Reveal>
         </div>

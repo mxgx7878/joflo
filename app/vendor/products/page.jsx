@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Package, Plus, Pencil, Trash2, Warehouse, PauseCircle, PlayCircle, Check, Send, ClipboardList } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
 import { money, sizeLine, catLine, priced, fmtDate, REQUEST_STATUS } from '@/lib/format';
-import { DEPARTMENTS } from '@/lib/catalogue';
+import { useDepartments } from '@/lib/departments';
 import { PageHeader, Pill, Modal, Drawer, Field, EmptyState, Tabs } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, TableWrap, SearchBox, Select, Thumb, Skeleton, useConfirm } from '@/components/admin/common';
@@ -78,7 +78,8 @@ function RequestProduct({ open, onClose, warehouses }) {
   const [f, setF] = useState(blank);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
-  const cats = categories.filter((c) => c.dept !== 'Trading' && c.status !== 'hidden');
+  const depts = useDepartments();
+  const cats = categories.filter((c) => !depts.isTrading(c.dept) && c.status !== 'hidden');
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const close = () => { setF(blank); setErr(''); onClose(); };
   const send = async () => {
@@ -139,6 +140,7 @@ export default function VendorProducts() {
   const [bq, setBq] = useState('');
   const [bdept, setBdept] = useState('');
   const [requesting, setRequesting] = useState(false);
+  const productDepts = useDepartments().product;
   const requests = useStore((s) => s.productRequests);
 
   const byId = useMemo(() => Object.fromEntries(products.map((p) => [p.id, p])), [products]);
@@ -208,7 +210,7 @@ export default function VendorProducts() {
       <Drawer open={browse} onClose={() => setBrowse(false)} kicker="JOLOF catalogue" title="Add products you stock" width="max-w-[640px]">
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <SearchBox value={bq} onChange={setBq} placeholder="Search the catalogue" className="flex-1" />
-          <Select value={bdept} onChange={setBdept} options={[{ value: '', label: 'All departments' }, ...DEPARTMENTS.filter((d) => d !== 'Trading').map((d) => ({ value: d, label: d }))]} />
+          <Select value={bdept} onChange={setBdept} options={[{ value: '', label: 'All departments' }, ...productDepts.map((d) => ({ value: d.name, label: d.name }))]} />
         </div>
         <ul className="divide-y divide-navy/5 -mx-2">
           {catalogue.map((p) => {

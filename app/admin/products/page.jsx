@@ -8,6 +8,7 @@ import { PageHeader, Pill, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, TableWrap, SearchBox, Select, Thumb, Skeleton, useConfirm } from '@/components/admin/common';
 import ProductEditor from '@/components/admin/ProductEditor';
+import { useDepartments } from '@/lib/departments';
 
 const FLAGS = [['featured', Star, 'Featured'], ['bestSeller', Flame, 'Popular'], ['newArrival', Sparkles, 'Just landed'], ['recommended', ThumbsUp, 'Recommended']];
 
@@ -15,6 +16,7 @@ function ProductsInner() {
   const ready = useStoreReady();
   const products = useStore((s) => s.products);
   const categories = useStore((s) => s.categories);
+  const depts = useDepartments();
   const deleteProduct = useStore((s) => s.deleteProduct);
   const offers = useStore((s) => s.offers);
   const users = useStore((s) => s.users);
@@ -45,7 +47,7 @@ function ProductsInner() {
   if (!ready) return <Skeleton />;
 
   const onDelete = (p) => ask({ title: `Delete ${p.name}?`, body: 'It is removed from the store and from every supplier’s listings. If it appears on past orders it is hidden instead, so order history stays intact.', confirm: 'Delete product', danger: true }, async () => { const r = await deleteProduct(p.id); if (!r.ok) return; setEdit(null); toast({ text: r.hidden ? `${p.name} is on past orders — hidden from the store instead` : `${p.name} deleted` }); });
-  const catOptions = categories.filter((c) => c.dept !== 'Trading' && (!dept || c.dept === dept));
+  const catOptions = categories.filter((c) => !depts.isTrading(c.dept) && (!dept || c.dept === dept));
   const onRequest = products.filter((p) => p.price === null).length;
 
   return (
@@ -57,7 +59,7 @@ function ProductsInner() {
       <Card pad={false}>
         <div className="p-4 sm:p-5 flex flex-wrap gap-2 border-b border-navy/5">
           <SearchBox value={q} onChange={setQ} placeholder="Name, SKU, category…" className="w-full md:w-[260px]" />
-          <Select value={dept} onChange={(v) => { setDept(v); setCat(''); }} options={[{ value: '', label: 'All departments' }, 'Food', 'Cosmetics']} />
+          <Select value={dept} onChange={(v) => { setDept(v); setCat(''); }} options={[{ value: '', label: 'All departments' }, ...depts.product.map((d) => d.name)]} />
           <Select value={cat} onChange={setCat} options={[{ value: '', label: 'All categories' }, ...catOptions.map((c) => c.name)]} />
           <Select value={stock} onChange={setStock} options={[{ value: '', label: 'Any stock' }, { value: 'ok', label: 'In stock' }, { value: 'low', label: 'Low stock' }, { value: 'out', label: 'Out of stock' }]} />
           <Select value={ptype} onChange={setPtype} options={[{ value: '', label: 'Any pricing' }, { value: 'fixed', label: 'Fixed price' }, { value: 'request', label: 'Price on request' }]} />
