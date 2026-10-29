@@ -6,7 +6,7 @@ The storefront, customer account, supplier portal and admin now run on a real da
 (`app/api/*`, logic in `lib/server/*`). Only the cart, wishlist and chosen delivery city stay in the browser. 
 No payments and no emails yet — orders are *requests* that JOLOF confirms, then an invoice is issued.
 
-## Setup
+## Setup   
  
 ```bash
 cp .env.example .env          # DATABASE_URL, AUTH_SECRET, GOOGLE_MAPS_API_KEY
