@@ -6,12 +6,16 @@ import { SEED_PRODUCTS, productImg } from '@/lib/catalogue';
 import { Drawer, Field } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Toggle } from '@/components/admin/common';
+import { useDepartments } from '@/lib/departments';
 
 const IMAGES = [...new Set(SEED_PRODUCTS.map((p) => p.img))];
 const blank = { name: '', dept: 'Food', cat: 'Spices & Seasonings', size: '', pack: '', price: '', priceMode: 'fixed', tag: '', desc: '', img: IMAGES[0], stock: 0, lowStock: 10, moq: 1, status: 'active', featured: false, bestSeller: false, newArrival: true, recommended: false };
 
 export default function ProductEditor({ product, open, onClose, onDelete }) {
   const categories = useStore((s) => s.categories);
+  const depts = useDepartments();
+  const firstDept = depts.product[0] || { name: '' };
+  const firstCat = categories.find((c) => c.dept === firstDept.name)?.name || '';
   const saveProduct = useStore((s) => s.saveProduct);
   const toast = useToast();
   const [f, setF] = useState(blank);
@@ -21,7 +25,7 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
   useEffect(() => {
     if (!open) return;
     setErr(''); setUrl('');
-    setF(product ? { ...blank, ...product, pack: product.pack || '', size: product.size || '', tag: product.tag || '', desc: product.desc || '', priceMode: typeof product.price === 'number' ? 'fixed' : 'request', price: typeof product.price === 'number' ? product.price : '' } : blank);
+    setF(product ? { ...blank, ...product, pack: product.pack || '', size: product.size || '', tag: product.tag || '', desc: product.desc || '', priceMode: typeof product.price === 'number' ? 'fixed' : 'request', price: typeof product.price === 'number' ? product.price : '' } : { ...blank, dept: firstDept.name, cat: firstCat });
   }, [open, product]);
 
   const cats = useMemo(() => categories.filter((c) => c.dept === f.dept), [categories, f.dept]);
@@ -76,7 +80,7 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
           <Field label="Product name *" className="sm:col-span-2"><input className="dash-input" value={f.name} onChange={(e) => set({ name: e.target.value })} /></Field>
           <Field label="Department">
             <select className="dash-input" value={f.dept} onChange={(e) => { const dept = e.target.value; set({ dept, cat: categories.find((c) => c.dept === dept)?.name || '' }); }}>
-              <option>Food</option><option>Cosmetics</option>
+              {depts.product.map((d) => <option key={d.id}>{d.name}</option>)}
             </select>
           </Field>
           <Field label="Category">

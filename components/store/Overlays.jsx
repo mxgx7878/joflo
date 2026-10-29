@@ -38,7 +38,7 @@ export function Scrim() {
 export function MobileMenu() {
   const open = useUI((s) => s.panel === 'menu');
   const { closeAll, openEnquiry } = useUI.getState();
-  const { categories } = useCatalogue();
+  const { categories, departments } = useCatalogue();
   const ready = useStoreReady();
   const user = useCurrentUser();
   const u = ready ? user : null;
@@ -51,29 +51,29 @@ export function MobileMenu() {
         <button className="icon-btn border border-navy/10" data-close aria-label="Close menu" onClick={closeAll}><X /></button>
       </div>
       <nav className="flex-1 overflow-y-auto px-5 py-4" aria-label="Mobile">
-        <a href="#top" className={row} onClick={closeAll}>Home</a>
+        <a href="/#top" className={row} onClick={closeAll}>Home</a>
         <FilterLink dept="" className={row}>Shop All</FilterLink>
-        <details className="border-b border-navy/10 group" open>
-          <summary className="flex items-center justify-between py-3.5 font-bold text-navy cursor-pointer list-none">Food <ChevronDown className="w-4 h-4 transition group-open:rotate-180" /></summary>
-          <div className="pb-3 pl-3 space-y-1 text-[14.5px]">
-            {cats('Food').map((c) => <FilterLink key={c.id} dept="Food" cat={c.name} className="block py-1.5 text-charcoal/70">{c.name}</FilterLink>)}
-          </div>
-        </details>
-        <details className="border-b border-navy/10 group">
-          <summary className="flex items-center justify-between py-3.5 font-bold text-navy cursor-pointer list-none">Cosmetics <ChevronDown className="w-4 h-4 transition group-open:rotate-180" /></summary>
-          <div className="pb-3 pl-3 space-y-1 text-[14.5px]">
-            {cats('Cosmetics').map((c) => <CosLink key={c.id} cat={c.name} className="block py-1.5 text-charcoal/70">{c.name}</CosLink>)}
-          </div>
-        </details>
-        <details className="border-b border-navy/10 group">
-          <summary className="flex items-center justify-between py-3.5 font-bold text-navy cursor-pointer list-none">Trading <ChevronDown className="w-4 h-4 transition group-open:rotate-180" /></summary>
-          <div className="pb-3 pl-3 space-y-1 text-[14.5px]">
-            {cats('Trading').map((c) => <a key={c.id} href="#trading" className="block py-1.5 text-charcoal/70" onClick={closeAll}>{c.name}</a>)}
-            <a href="#trading" className="block py-1.5 font-bold text-emerald" onClick={closeAll}>View all commodities</a>
-          </div>
-        </details>
-        <a href="#new-arrivals" className={row} onClick={closeAll}>New Arrivals <span className="text-[9px] font-extrabold bg-gold-soft rounded-full px-2 py-0.5">NEW</span></a>
-        <a href="#about" className={row} onClick={closeAll}>About Us</a>
+        {departments.map((d, i) => (
+          <details key={d.id} className="border-b border-navy/10 group" open={i === 0}>
+            <summary className="flex items-center justify-between py-3.5 font-bold text-navy cursor-pointer list-none">{d.name} <ChevronDown className="w-4 h-4 transition group-open:rotate-180" /></summary>
+            <div className="pb-3 pl-3 space-y-1 text-[14.5px]">
+              {d.kind === 'trading' ? (
+                <>
+                  {cats(d.name).map((c) => <a key={c.id} href="/#trading" className="block py-1.5 text-charcoal/70" onClick={closeAll}>{c.name}</a>)}
+                  <a href="/#trading" className="block py-1.5 font-bold text-emerald" onClick={closeAll}>View all commodities</a>
+                  <Link href="/trading" className="block py-1.5 font-bold text-emerald" onClick={closeAll}>About JOLOF TRADE CENTER</Link>
+                </>
+              ) : (
+                <>
+                  {cats(d.name).map((c) => <FilterLink key={c.id} dept={d.name} cat={c.name} className="block py-1.5 text-charcoal/70">{c.name}</FilterLink>)}
+                  <FilterLink dept={d.name} className="block py-1.5 font-bold text-emerald">Shop all {d.name}</FilterLink>
+                </>
+              )}
+            </div>
+          </details>
+        ))}
+        <a href="/#new-arrivals" className={row} onClick={closeAll}>New Arrivals <span className="text-[9px] font-extrabold bg-gold-soft rounded-full px-2 py-0.5">NEW</span></a>
+        <a href="/#about" className={row} onClick={closeAll}>About Us</a>
         <button type="button" className={`w-full text-left ${row}`} onClick={() => openEnquiry({ type: 'contact' })}>Contact</button>
       </nav>
       <div className="p-5 bg-ivory border-t border-navy/10 space-y-3">
@@ -256,7 +256,7 @@ export function QuickView() {
 }
 
 /* ---------------- Enquiry modal ---------------- */
-const DEPTS = ['Food', 'Cosmetics', 'Trading', 'Multiple departments'];
+
 
 export function EnquiryModal() {
   const open = useUI((s) => s.panel === 'enquiry');
@@ -266,6 +266,7 @@ export function EnquiryModal() {
   const user = useCurrentUser();
   const products = useStore((s) => s.products);
   const commodities = useStore((s) => s.commodities);
+  const DEPTS = [...useCatalogue().departments.map((d) => d.name), 'Multiple departments'];
   const cart = useStore((s) => s.cart);
   const submitInquiry = useStore((s) => s.submitInquiry);
 
@@ -290,7 +291,7 @@ export function EnquiryModal() {
         return { kicker: 'Wholesale', title: 'Request Bulk Quote for Cart', dept: depts.length === 1 ? depts[0] : 'Multiple departments', message: rows.map((r) => `${r.q} × ${r.p.name} (${r.p.size})`).join('\n'), rows };
       })(),
       product: p ? { kicker: `${p.dept} Wholesale`, title: 'Enquire Now', dept: p.dept, message: `Product: ${p.name} (${sizeLine(p)})\n`, product: p } : { kicker: 'Wholesale', title: 'Enquire Now', dept: '', message: '' },
-      commodity: { kicker: 'Commodity Trading', title: 'Request a Quote', dept: 'Trading', message: '' },
+      commodity: { kicker: 'Commodity Trading', title: 'Request a Quote', dept: enquiry.dept || 'Trading', message: '' },
     }[type];
     return { type, ...base, ...(enquiry.kicker ? { kicker: enquiry.kicker } : {}), ...(enquiry.title ? { title: enquiry.title } : {}), ...(enquiry.message ? { message: enquiry.message } : {}) };
   }, [enquiry, cart, products]);

@@ -5,7 +5,8 @@ import { useStore, useStoreReady, useCurrentUser } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
 import { money, priced, catLine, sizeLine } from '@/lib/format';
 import { useUI } from './ui';
-import { useCatalogue, FilterLink, CosLink } from './shared';
+import { usePathname } from 'next/navigation';
+import { useCatalogue, FilterLink, CosLink, useGoShop } from './shared';
 import { LocationButton } from '@/components/LocationPicker';
 import { Globe2, BadgeCheck, Ship, Menu, Search, UserRound, Heart, ShoppingBag, LayoutGrid, ChevronDown, PackageCheck, ArrowRight } from './icons';
 
@@ -60,7 +61,9 @@ function DesktopSearch() {
   const [idx, setIdx] = useState(-1);
   const wrap = useRef(null);
   const list = useMatches(q, dept);
-  const { openQuick, setFilter } = useUI.getState();
+  const { openQuick } = useUI.getState();
+  const setFilter = useGoShop();
+  const { departments } = useCatalogue();
 
   useEffect(() => {
     const onDoc = (e) => { if (!wrap.current?.contains(e.target)) setOpen(false); };
@@ -77,7 +80,7 @@ function DesktopSearch() {
       <form className="searchbox flex items-center h-[52px] rounded-full bg-ivory pl-2 pr-1.5" role="search" autoComplete="off" onSubmit={(e) => { e.preventDefault(); run(); }}>
         <label htmlFor="searchDept" className="sr-only">Department</label>
         <select id="searchDept" value={dept} onChange={(e) => { setDept(e.target.value); setOpen(true); setIdx(-1); }} className="h-10 bg-transparent text-[13px] font-bold text-navy pl-4 pr-2 rounded-full focus:outline-none cursor-pointer">
-          <option value="">All Departments</option><option>Food</option><option>Cosmetics</option><option>Trading</option>
+          <option value="">All Departments</option>{departments.map((d) => <option key={d.id}>{d.name}</option>)}
         </select>
         <span className="w-px h-6 bg-navy/15 mx-2" />
         <label htmlFor="searchInput" className="sr-only">Search products</label>
@@ -109,7 +112,8 @@ function MobileSearch() {
   const [open, setOpen] = useState(false);
   const wrap = useRef(null);
   const list = useMatches(q, '');
-  const { openQuick, setFilter } = useUI.getState();
+  const { openQuick } = useUI.getState();
+  const setFilter = useGoShop();
   useEffect(() => {
     const onDoc = (e) => { if (!wrap.current?.contains(e.target)) setOpen(false); };
     document.addEventListener('click', onDoc);
@@ -137,7 +141,7 @@ function MobileSearch() {
 function MegaMenu() {
   const megaOpen = useUI((s) => s.megaOpen);
   const setMega = useUI((s) => s.setMega);
-  const { categories, count, commodities } = useCatalogue();
+  const { categories, count, commodities, departments } = useCatalogue();
   const group = (g) => commodities.filter((c) => c.group === g).length;
   const cats = (dept) => categories.filter((c) => c.dept === dept && c.status !== 'hidden');
   return (
@@ -150,33 +154,34 @@ function MegaMenu() {
       onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget) && e.relatedTarget?.id !== 'megaBtn') setMega(false); }}
     >
       <div className="max-w-site mx-auto px-8 py-10 grid grid-cols-12 gap-10">
-        <div className="col-span-3">
-          <p className="kicker">Food</p>
-          <h3 className="font-display text-2xl text-navy mt-3 mb-4">Food Wholesale</h3>
-          {cats('Food').map((c) => (
-            <FilterLink key={c.id} className="mega-link" dept="Food" cat={c.name}>
-              {c.name} <span className="text-xs text-charcoal/40">{c.status === 'coming_soon' ? 'Soon' : count('Food', c.name)}</span>
-            </FilterLink>
+        <div className="col-span-9 grid gap-10" style={{ gridTemplateColumns: `repeat(${Math.min(Math.max(departments.length, 1), 4)}, minmax(0, 1fr))` }}>
+          {departments.map((d) => (
+            <div key={d.id} className="min-w-0">
+              <p className="kicker">{d.name}</p>
+              <h3 className="font-display text-2xl text-navy mt-3 mb-4">{d.kind === 'trading' ? 'Commodity Trading' : `${d.name} Wholesale`}</h3>
+              {d.status === 'coming_soon' && <p className="text-[13px] text-gold font-bold mb-2">Coming soon</p>}
+              {d.kind === 'trading' ? (
+                <>
+                  {cats(d.name).map((c) => (
+                    <a key={c.id} className="mega-link" href="/#trading" onClick={() => setMega(false)}>{c.name} <span className="text-xs text-charcoal/40">{group(c.name)}</span></a>
+                  ))}
+                  <a className="mega-link !text-emerald font-bold" href="/#trading" onClick={() => setMega(false)}>View all commodities →</a>
+                  <Link className="mega-link !text-emerald font-bold" href="/trading" onClick={() => setMega(false)}>About JOLOF TRADE CENTER →</Link>
+                </>
+              ) : (
+                <>
+                  {cats(d.name).map((c) => (
+                    <FilterLink key={c.id} className="mega-link" dept={d.name} cat={c.name}>
+                      {c.name} <span className="text-xs text-charcoal/40">{c.status === 'coming_soon' ? 'Soon' : count(d.name, c.name)}</span>
+                    </FilterLink>
+                  ))}
+                  <FilterLink className="mega-link !text-emerald font-bold" dept={d.name}>Shop all {d.name} →</FilterLink>
+                </>
+              )}
+            </div>
           ))}
-          <FilterLink className="mega-link !text-emerald font-bold" dept="Food">Shop all Food →</FilterLink>
         </div>
-        <div className="col-span-3">
-          <p className="kicker">Cosmetics</p>
-          <h3 className="font-display text-2xl text-navy mt-3 mb-4">Beauty &amp; Personal Care</h3>
-          {cats('Cosmetics').map((c) => (
-            <CosLink key={c.id} className="mega-link" cat={c.name}>{c.name} <span className="text-xs text-charcoal/40">{count('Cosmetics', c.name)}</span></CosLink>
-          ))}
-          <CosLink className="mega-link !text-emerald font-bold" cat="">Shop all Cosmetics →</CosLink>
-        </div>
-        <div className="col-span-3">
-          <p className="kicker">Trading</p>
-          <h3 className="font-display text-2xl text-navy mt-3 mb-4">Commodity Trading</h3>
-          {cats('Trading').map((c) => (
-            <a key={c.id} className="mega-link" href="#trading" onClick={() => setMega(false)}>{c.name} <span className="text-xs text-charcoal/40">{group(c.name)}</span></a>
-          ))}
-          <a className="mega-link !text-emerald font-bold" href="#trading" onClick={() => setMega(false)}>View all commodities →</a>
-        </div>
-        <a href="#wholesale" onClick={() => setMega(false)} className="col-span-3 relative rounded-2xl overflow-hidden min-h-[240px] group block">
+        <a href="/#wholesale" onClick={() => setMega(false)} className="col-span-3 relative rounded-2xl overflow-hidden min-h-[240px] group block">
           <img src="https://images.unsplash.com/photo-1602018342965-6dd19657e145?auto=format&fit=crop&w=700&q=75" alt="Golden grain field ready for harvest" className="absolute inset-0 w-full h-full object-cover transition duration-1000 group-hover:scale-105" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/30 to-transparent" />
           <div className="absolute bottom-0 p-6 text-white">
@@ -196,7 +201,10 @@ export default function SiteHeader() {
   const { cartCount, cartTotal, wishCount } = useCounts();
   const ready = useStoreReady();
   const user = useCurrentUser();
-  const { openPanel, openEnquiry, setMega, setFilter } = useUI.getState();
+  const { openPanel, openEnquiry, setMega } = useUI.getState();
+  const goShop = useGoShop();
+  const path = usePathname();
+  const navDepts = useCatalogue().departments;
   const megaOpen = useUI((s) => s.megaOpen);
   const panel = useUI((s) => s.panel);
 
@@ -249,7 +257,7 @@ export default function SiteHeader() {
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-[76px] lg:h-[92px] flex items-center gap-3 lg:gap-8">
             <button id="menuBtn" className="icon-btn lg:hidden -ml-2" aria-label="Open menu" aria-controls="menuDrawer" aria-expanded={panel === 'menu'} onClick={() => openPanel('menu')}><Menu /></button>
-            <a href="#top" className="logo h-[58px] lg:h-[72px] shrink-0" aria-label="JOLOF TRADING home">
+            <a href="/#top" className="logo h-[58px] lg:h-[72px] shrink-0" aria-label="JOLOF TRADING home">
               <img src="/brand/logo.webp" alt="JOLOF logo" className="h-full w-auto block" />
             </a>
 
@@ -282,17 +290,19 @@ export default function SiteHeader() {
               <LayoutGrid className="w-[18px] h-[18px]" /> All Categories <ChevronDown className="w-4 h-4" />
             </button>
             <ul className="flex items-center gap-7 xl:gap-9">
-              <li><a className="navlink active" href="#top">Home</a></li>
+              <li><a className={`navlink ${path === '/' ? 'active' : ''}`} href="/#top">Home</a></li>
               <li>
-                <a className="navlink" href="#shop" onMouseEnter={hoverOpen} onMouseLeave={hoverLater} onFocus={hoverOpen} onClick={(e) => { e.preventDefault(); setFilter({}); }}>
+                <a className="navlink" href="/#shop" onMouseEnter={hoverOpen} onMouseLeave={hoverLater} onFocus={hoverOpen} onClick={(e) => { e.preventDefault(); goShop({}); }}>
                   Shop All <ChevronDown className="w-3.5 h-3.5" />
                 </a>
               </li>
-              <li><a className="navlink" href="#trading">Trading</a></li>
-              <li><FilterLink className="navlink" dept="Food">Food</FilterLink></li>
-              <li><a className="navlink" href="#cosmetics">Cosmetics</a></li>
-              <li><a className="navlink" href="#new-arrivals">New Arrivals <span className="ml-1 text-[9px] font-extrabold tracking-wider bg-gold-soft text-navy rounded-full px-1.5 py-0.5">NEW</span></a></li>
-              <li><a className="navlink" href="#about">About Us</a></li>
+              {navDepts.map((d) => (
+                <li key={d.id}>{d.kind === 'trading'
+                  ? <Link className={`navlink ${path === '/trading' ? 'active' : ''}`} href="/trading">{d.name}</Link>
+                  : <FilterLink className="navlink" dept={d.name}>{d.name}</FilterLink>}</li>
+              ))}
+              <li><a className="navlink" href="/#new-arrivals">New Arrivals <span className="ml-1 text-[9px] font-extrabold tracking-wider bg-gold-soft text-navy rounded-full px-1.5 py-0.5">NEW</span></a></li>
+              <li><a className="navlink" href="/#about">About Us</a></li>
               <li><button type="button" className="navlink" onClick={() => openEnquiry({ type: 'contact' })}>Contact</button></li>
             </ul>
             <button type="button" onClick={() => openEnquiry({ type: 'bulk' })} className="ml-auto text-[12.5px] font-bold text-gold-soft flex items-center gap-2 hover:text-white transition"><PackageCheck className="w-4 h-4" /> Wholesale Enquiries</button>

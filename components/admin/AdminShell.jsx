@@ -15,7 +15,7 @@ const NAV = [
   { href: '/admin/inquiries', label: 'Inquiries', icon: MessageSquareText, badge: 'inquiries' },
   { href: '/admin/products', label: 'Products', icon: Package },
   { href: '/admin/product-requests', label: 'Product requests', icon: ClipboardCheck, badge: 'requests' },
-  { href: '/admin/categories', label: 'Categories', icon: FolderTree },
+  { href: '/admin/departments', label: 'Departments', icon: FolderTree },
   { href: '/admin/inventory', label: 'Inventory', icon: Boxes, badge: 'inventory' },
   { href: '/admin/vendors', label: 'Suppliers', icon: Warehouse, badge: 'vendors' },
   { href: '/admin/drivers', label: 'Drivers', icon: Truck, badge: 'drivers' },

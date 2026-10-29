@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, Mail, Phone, Building2, Send, Plus, Trash2, FileText, StickyNote, CheckCircle2, ExternalLink, Wheat, Pencil, Route } from 'lucide-react';
 import { STATES } from '@/lib/locations';
+import { useDepartments } from '@/lib/departments';
 import { useStore, useStoreReady, quoteTotal } from '@/lib/store';
 import { money, fmtDate, fmtDateTime, INQUIRY_STATUS, INQUIRY_TYPE, sizeLine, qtyUnit } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
@@ -17,6 +18,7 @@ const k = () => `l${++keySeq}`;
 
 function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
   const sendQuote = useStore((s) => s.sendQuote);
+  const productDepts = useDepartments().product;
   const estimateDelivery = useStore((s) => s.estimateDelivery);
   const users = useStore((s) => s.users);
   const toast = useToast();
@@ -122,7 +124,7 @@ function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
         <select className="h-10 rounded-full bg-white border-[1.5px] border-[#E2DED2] px-4 text-[13px] font-semibold text-navy focus:outline-none focus:border-gold max-w-full" value={pick} onChange={(e) => addProduct(e.target.value)}>
           <option value="">Add a product from the catalogue…</option>
           <option value="__custom">＋ Custom line (free text)</option>
-          {['Food', 'Cosmetics'].map((d) => (
+          {productDepts.map((d) => d.name).map((d) => (
             <optgroup key={d} label={d}>{products.filter((p) => p.dept === d).map((p) => <option key={p.id} value={p.id}>{p.name} {sizeLine(p) ? `(${sizeLine(p)})` : ''}</option>)}</optgroup>
           ))}
         </select>

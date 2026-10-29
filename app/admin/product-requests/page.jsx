@@ -8,10 +8,12 @@ import { productImg } from '@/lib/catalogue';
 import { PageHeader, Pill, Tabs, EmptyState, Drawer, Field } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, TableWrap, Skeleton } from '@/components/admin/common';
+import { useDepartments } from '@/lib/departments';
 
 /** Admin reviews a supplier's new product → edits the master record → approves (or rejects). */
 function Review({ req, onClose }) {
   const categories = useStore((s) => s.categories);
+  const depts = useDepartments();
   const warehouses = useStore((s) => s.warehouses);
   const review = useStore((s) => s.reviewProductRequest);
   const toast = useToast();
@@ -58,7 +60,7 @@ function Review({ req, onClose }) {
           <Field label="Product name" className="sm:col-span-2"><input className="dash-input" value={f.name} onChange={set('name')} /></Field>
           <Field label="Category">
             <select className="dash-input" value={f.categoryId} onChange={set('categoryId')}>
-              {categories.filter((c) => c.dept !== 'Trading').map((c) => <option key={c.id} value={c.id}>{c.dept} · {c.name}</option>)}
+              {categories.filter((c) => !depts.isTrading(c.dept)).map((c) => <option key={c.id} value={c.id}>{c.dept} · {c.name}</option>)}
             </select>
           </Field>
           <Field label="Size"><input className="dash-input" value={f.size} onChange={set('size')} /></Field>

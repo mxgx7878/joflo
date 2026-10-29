@@ -1,17 +1,19 @@
 'use client';
 import { useUI } from './ui';
-import { FilterLink, SoonLink } from './shared';
+import Link from 'next/link';
+import { FilterLink, SoonLink, useCatalogue } from './shared';
 import { useCounts } from './SiteHeader';
 import { Home, Store, Search, Heart, ShoppingBag } from './icons';
 
 export default function SiteFooter() {
   const openEnquiry = useUI((s) => s.openEnquiry);
+  const { departments } = useCatalogue();
   return (
     <footer className="bg-navy-950 text-white/70">
       <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-20">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
-            <a href="#top" className="inline-block bg-ivory rounded-2xl p-4 border-b-2 border-gold" aria-label="JOLOF TRADING home">
+            <a href="/#top" className="inline-block bg-ivory rounded-2xl p-4 border-b-2 border-gold" aria-label="JOLOF TRADING home">
               <span className="logo block h-[104px]"><img src="/brand/logo.webp" alt="JOLOF logo" className="h-full w-auto block" /></span>
             </a>
             <p className="mt-6 text-[14.5px] leading-[1.85] max-w-[360px]">JOLOF TRADING brings together international commodity trading, food wholesale, and cosmetics distribution with a commitment to lasting commercial relationships.</p>
@@ -20,10 +22,12 @@ export default function SiteFooter() {
             <h3 className="text-white font-display text-lg">Shop</h3><div className="w-8 h-0.5 bg-gold mt-3 mb-5" />
             <ul className="space-y-3 text-[14.5px]">
               <li><FilterLink className="hover:text-gold-soft transition" dept="">Shop All</FilterLink></li>
-              <li><a className="hover:text-gold-soft transition" href="#trading">Trading</a></li>
-              <li><FilterLink className="hover:text-gold-soft transition" dept="Food">Food</FilterLink></li>
-              <li><a className="hover:text-gold-soft transition" href="#cosmetics">Cosmetics</a></li>
-              <li><a className="hover:text-gold-soft transition" href="#new-arrivals">New Arrivals</a></li>
+              {departments.map((d) => (
+                <li key={d.id}>{d.kind === 'trading'
+                  ? <Link className="hover:text-gold-soft transition" href="/trading">{d.name}</Link>
+                  : <FilterLink className="hover:text-gold-soft transition" dept={d.name}>{d.name}</FilterLink>}</li>
+              ))}
+              <li><a className="hover:text-gold-soft transition" href="/#new-arrivals">New Arrivals</a></li>
             </ul>
           </nav>
           <nav className="lg:col-span-3" aria-label="Customer support">
@@ -38,7 +42,8 @@ export default function SiteFooter() {
           <nav className="lg:col-span-3" aria-label="Company">
             <h3 className="text-white font-display text-lg">Company</h3><div className="w-8 h-0.5 bg-gold mt-3 mb-5" />
             <ul className="space-y-3 text-[14.5px]">
-              <li><a className="hover:text-gold-soft transition" href="#about">About JOLOF TRADING</a></li>
+              <li><a className="hover:text-gold-soft transition" href="/#about">About JOLOF TRADING</a></li>
+              <li><Link className="hover:text-gold-soft transition" href="/trading">JOLOF TRADE CENTER</Link></li>
               <li><SoonLink className="hover:text-gold-soft transition">Privacy Policy</SoonLink></li>
               <li><SoonLink className="hover:text-gold-soft transition">Terms &amp; Conditions</SoonLink></li>
             </ul>
@@ -58,7 +63,7 @@ export function BottomNav() {
   const openPanel = useUI((s) => s.openPanel);
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-navy/10 grid grid-cols-5 h-[68px] text-[10.5px] font-bold text-navy" aria-label="Quick actions">
-      <a href="#top" className="flex flex-col items-center justify-center gap-1"><Home className="w-5 h-5" />Home</a>
+      <a href="/#top" className="flex flex-col items-center justify-center gap-1"><Home className="w-5 h-5" />Home</a>
       <FilterLink dept="" className="flex flex-col items-center justify-center gap-1"><Store className="w-5 h-5" />Shop</FilterLink>
       <button type="button" className="flex flex-col items-center justify-center gap-1" onClick={() => {
         const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;

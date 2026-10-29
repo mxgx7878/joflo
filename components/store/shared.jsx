@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useStore } from '@/lib/store';
 import { FEATURED, BEST, NEW, RECO } from '@/lib/catalogue';
 import { useToast } from '@/components/Providers';
@@ -21,16 +22,27 @@ export function Reveal({ as: Tag = 'div', className = '', children, ...rest }) {
 }
 
 /* ---------- Links that drive the shop filter / cosmetics tab ---------- */
-export function FilterLink({ dept = '', cat = '', className = '', children, ...rest }) {
+/** On the home page: filter + scroll. Elsewhere (e.g. /trading): set the filter and go home to the shop. */
+export function useGoShop() {
   const setFilter = useUI((s) => s.setFilter);
+  const router = useRouter();
+  const path = usePathname();
+  return (f = {}) => {
+    if (path === '/') { setFilter(f); return; }
+    setFilter(f, false);
+    router.push('/#shop');
+  };
+}
+export function FilterLink({ dept = '', cat = '', className = '', children, ...rest }) {
+  const go = useGoShop();
   return (
-    <a href="#shop" className={className} onClick={(e) => { e.preventDefault(); setFilter({ dept, cat }); }} {...rest}>{children}</a>
+    <a href="/#shop" className={className} onClick={(e) => { e.preventDefault(); go({ dept, cat }); }} {...rest}>{children}</a>
   );
 }
 export function CosLink({ cat = '', className = '', children, ...rest }) {
   const setCosCat = useUI((s) => s.setCosCat);
   const closeAll = useUI((s) => s.closeAll);
-  return <a href="#cosmetics" className={className} onClick={() => { setCosCat(cat); closeAll(); }} {...rest}>{children}</a>;
+  return <a href="/#cosmetics" className={className} onClick={() => { setCosCat(cat); closeAll(); }} {...rest}>{children}</a>;
 }
 export function SoonLink({ className = '', children }) {
   const toast = useToast();
@@ -48,8 +60,10 @@ export function useCatalogue() {
   const products = useStore((s) => s.products);
   const categories = useStore((s) => s.categories);
   const commodities = useStore((s) => s.commodities);
+  const departments = useStore((s) => s.departments);
   return useMemo(() => {
     const catStatus = (dept, cat) => categories.find((c) => c.dept === dept && c.name === cat)?.status || 'active';
+    const depts = departments.filter((d) => d.status !== 'hidden');
     const visible = products.filter((p) => p.status === 'active' && catStatus(p.dept, p.cat) !== 'hidden');
     const byId = Object.fromEntries(products.map((p) => [p.id, p]));
     const activeCommodities = commodities.filter((c) => c.status === 'active');
@@ -57,6 +71,9 @@ export function useCatalogue() {
       products: visible,
       byId,
       categories,
+      departments: depts,
+      productDepts: depts.filter((d) => d.kind === 'products'),
+      tradingDepts: depts.filter((d) => d.kind === 'trading'),
       catStatus,
       commodities: activeCommodities,
       featured: visible.filter((p) => p.featured).sort(orderBy(FEATURED)),
@@ -67,7 +84,7 @@ export function useCatalogue() {
       cosmetics: visible.filter((p) => p.dept === 'Cosmetics' && !['k1', 'k2'].includes(p.id)),
       count: (dept, cat) => visible.filter((p) => p.dept === dept && p.cat === cat).length,
     };
-  }, [products, categories, commodities]);
+  }, [products, categories, commodities, departments]);
 }
 
 /* ---------- Product actions with toasts ---------- */
