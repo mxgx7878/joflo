@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Plus, Save, Trash2, Wheat, ArrowRight } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
+import { useDepartments } from '@/lib/departments';
 import { money, timeAgo, INQUIRY_STATUS, qtyUnit } from '@/lib/format';
 import { PageHeader, Pill, Drawer, Field, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
@@ -11,6 +12,7 @@ import { Card, TableWrap, Skeleton, useConfirm, Toggle } from '@/components/admi
 const blank = { name: '', line: '', group: 'Grains & Cereals', origin: '', unit: 'MT', minQty: 10, indicative: '', img: '', alt: '', status: 'active' };
 
 export default function TradingPage() {
+  const depts = useDepartments();
   const ready = useStoreReady();
   const commodities = useStore((s) => s.commodities);
   const categories = useStore((s) => s.categories);
@@ -23,7 +25,7 @@ export default function TradingPage() {
   const [err, setErr] = useState('');
 
   const requests = useMemo(() => inquiries.filter((i) => i.type === 'commodity'), [inquiries]);
-  const groups = categories.filter((c) => c.dept === 'Trading').map((c) => c.name);
+  const groups = categories.filter((c) => depts.isTrading(c.dept)).map((c) => c.name);
 
   if (!ready) return <Skeleton />;
 

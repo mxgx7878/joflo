@@ -3,7 +3,7 @@
 // customers, suppliers with US warehouses and stock, drivers, orders, inquiries and settings.
 // Used by `npm run db:seed` and Admin → Settings → Reset demo data.
 import bcrypt from 'bcryptjs';
-import { SEED_PRODUCTS, SEED_COMMODITIES, BASE_CATEGORIES } from '../lib/catalogue.js';
+import { SEED_PRODUCTS, SEED_COMMODITIES, BASE_CATEGORIES, BASE_DEPARTMENTS } from '../lib/catalogue.js';
 import { getLocation, locationFromAddress } from '../lib/locations.js';
 import { planLines } from '../lib/server/routing.js';
 import { haversineMiles, ROAD_FACTOR } from '../lib/server/maps.js';
@@ -175,13 +175,15 @@ export async function seedDatabase(prisma) {
   await prisma.$transaction([
     prisma.invoice.deleteMany(), prisma.fulfilment.deleteMany(), prisma.orderItem.deleteMany(), prisma.order.deleteMany(),
     prisma.inquiry.deleteMany(), prisma.stockLog.deleteMany(), prisma.stockLevel.deleteMany(), prisma.supplierOffer.deleteMany(),
-    prisma.productRequest.deleteMany(), prisma.product.deleteMany(), prisma.category.deleteMany(), prisma.warehouse.deleteMany(),
+    prisma.productRequest.deleteMany(), prisma.product.deleteMany(), prisma.category.deleteMany(), prisma.department.deleteMany(), prisma.warehouse.deleteMany(),
     prisma.address.deleteMany(), prisma.driver.deleteMany(), prisma.user.deleteMany(), prisma.commodity.deleteMany(),
     prisma.setting.deleteMany(), prisma.subscriber.deleteMany(), prisma.counter.deleteMany(),
   ]);
 
   /* catalogue */
-  await prisma.category.createMany({ data: BASE_CATEGORIES.map((c, i) => ({ id: c.id, dept: c.dept, name: c.name, status: c.status, sort: i })) });
+  await prisma.department.createMany({ data: BASE_DEPARTMENTS.map((d) => ({ ...d, status: 'active' })) });
+  const depId = Object.fromEntries(BASE_DEPARTMENTS.map((d) => [d.name, d.id]));
+  await prisma.category.createMany({ data: BASE_CATEGORIES.map((c, i) => ({ id: c.id, departmentId: depId[c.dept], name: c.name, status: c.status, sort: i })) });
   const catId = Object.fromEntries(BASE_CATEGORIES.map((c) => [`${c.dept}|${c.name}`, c.id]));
   await prisma.product.createMany({
     data: SEED_PRODUCTS.map((p, i) => ({

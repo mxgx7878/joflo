@@ -37,6 +37,8 @@ Also: lonestar@cosmetics.demo, sunshine@wholesale.demo, rocky@distribution.demo 
 
 ## How it works
 
+**Departments & categories (Admin → Departments).** Departments are the top level of the store (Trading, Food, Cosmetics, …) and the admin can add, rename, re-order, hide or mark them “coming soon”. Each department is either a **Products** department (shop items) or a **Trading** department (commodities, quote only). Every category belongs to one department; products belong to a category. The storefront menus, home page department cards, search and shop tabs are built from this list. The Trading department has its own page at `/trading` (JOLOF TRADE CENTER).
+
 **Catalogue = master products + supplier offers.** `Product` is the master record (admin owns name, category, price).
 A supplier *offers* a master product (`SupplierOffer`: supply price, active/paused) and holds stock per warehouse
 (`StockLevel`). New items a supplier carries go in as a `ProductRequest` → Admin → Product requests → approve
@@ -70,11 +72,11 @@ driver once the order ships.
 
 | Area | Routes |
 |---|---|
-| Storefront | `/` |
+| Storefront | `/`, `/trading` |
 | Auth | `/login`, `/register` |
 | Checkout | `/checkout`, `/checkout/success` |
 | Customer | `/account`, `/account/orders`, `/account/invoices/[id]`, `/account/orders/[id]`, `/account/quotes`, `/account/quotes/[id]`, `/account/quotes/new`, `/account/saved`, `/account/profile` |
-| Admin | `/admin`, `/admin/orders`, `/admin/invoices/[id]`, `/admin/drivers`, `/admin/product-requests`, `/admin/orders/[id]`, `/admin/inquiries`, `/admin/inquiries/[id]`, `/admin/products`, `/admin/categories`, `/admin/inventory`, `/admin/vendors`, `/admin/vendors/[id]`, `/admin/trading`, `/admin/customers`, `/admin/customers/[id]`, `/admin/settings` |
+| Admin | `/admin`, `/admin/orders`, `/admin/invoices/[id]`, `/admin/drivers`, `/admin/product-requests`, `/admin/orders/[id]`, `/admin/inquiries`, `/admin/inquiries/[id]`, `/admin/products`, `/admin/departments`, `/admin/inventory`, `/admin/vendors`, `/admin/vendors/[id]`, `/admin/trading`, `/admin/customers`, `/admin/customers/[id]`, `/admin/settings` |
 | Supplier | `/vendor`, `/vendor/orders`, `/vendor/orders/[id]`, `/vendor/products`, `/vendor/warehouses` |
 
 ## Project layout

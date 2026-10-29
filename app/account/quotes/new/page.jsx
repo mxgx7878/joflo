@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Boxes, Package, Plus, Send, Ship, Trash2 } from 'lucide-react';
 import { useStore, useCurrentUser } from '@/lib/store';
+import { useDepartments } from '@/lib/departments';
 import { productImg } from '@/lib/catalogue';
 import { money, sizeLine } from '@/lib/format';
 import { Field, PageHeader } from '@/components/ui';
@@ -31,6 +32,7 @@ function NewRequest() {
   const [pick, setPick] = useState('');
   const [onlyPOR, setOnlyPOR] = useState(true);
   const [trade, setTrade] = useState({ commodityId: preCommodity || '', qty: '', incoterm: 'CIF', port: '', frequency: 'One-off', targetPrice: '' });
+  const depts = useDepartments();
   const [dept, setDept] = useState('Food');
   const [message, setMessage] = useState('');
   const [err, setErr] = useState('');
@@ -57,7 +59,7 @@ function NewRequest() {
       if (!(Number(trade.qty) > 0)) { setErr('Enter the quantity in metric tonnes.'); return; }
       if (!trade.port.trim()) { setErr('Enter the delivery port or destination.'); return; }
       payload = {
-        type: 'commodity', dept: 'Trading', message,
+        type: 'commodity', dept: depts.trading[0]?.name || 'Trading', message,
         items: [{ commodityId: commodity.id, name: commodity.name, qty: Number(trade.qty), unit: commodity.unit || 'MT' }],
         trade: { incoterm: trade.incoterm, port: trade.port.trim(), frequency: trade.frequency, targetPrice: trade.targetPrice ? Number(trade.targetPrice) : null },
       };
@@ -94,7 +96,7 @@ function NewRequest() {
             <div className="mt-4 flex flex-col sm:flex-row gap-2">
               <select value={pick} onChange={(e) => setPick(e.target.value)} className="dash-input flex-1" aria-label="Choose a product">
                 <option value="">Choose a product…</option>
-                {['Cosmetics', 'Food'].map((d) => (
+                {depts.product.map((x) => x.name).map((d) => (
                   <optgroup key={d} label={d}>
                     {options.filter((p) => p.dept === d).map((p) => <option key={p.id} value={p.id}>{p.name} — {sizeLine(p) || p.cat}{p.price === null ? '' : ` (${money(p.price)})`}</option>)}
                   </optgroup>
@@ -166,7 +168,7 @@ function NewRequest() {
           <>
             <h2 className="font-display text-[1.3rem] text-navy">Bulk request</h2>
             <Field label="Department" className="mt-4 max-w-xs">
-              <select value={dept} onChange={(e) => setDept(e.target.value)} className="dash-input">{['Food', 'Cosmetics', 'Trading', 'Mixed'].map((d) => <option key={d}>{d}</option>)}</select>
+              <select value={dept} onChange={(e) => setDept(e.target.value)} className="dash-input">{[...depts.visible.map((x) => x.name), 'Mixed'].map((d) => <option key={d}>{d}</option>)}</select>
             </Field>
           </>
         )}

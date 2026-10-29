@@ -55,16 +55,32 @@ model Address {
   lng       Float?
 }
 
-model Category {
-  id       String    @id @default(cuid())
-  dept     String // Food | Cosmetics | Trading
-  name     String
-  status   String    @default("active") // active | coming_soon | hidden
-  sort     Int       @default(0)
-  products Product[]
-  requests ProductRequest[]
+// Top level of the catalogue (Food, Cosmetics, Trading, …) — managed by the admin.
+model Department {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  kind        String     @default("products") // products = shop items · trading = commodities, quote only
+  tagline     String     @default("") // one line on cards and menus
+  description String     @default("")
+  image       String     @default("")
+  status      String     @default("active") // active | coming_soon | hidden
+  sort        Int        @default(0)
+  createdAt   DateTime   @default(now())
+  categories  Category[]
+}
 
-  @@unique([dept, name])
+model Category {
+  id           String           @id @default(cuid())
+  departmentId String
+  department   Department       @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  name         String
+  status       String           @default("active") // active | coming_soon | hidden
+  sort         Int              @default(0)
+  products     Product[]
+  requests     ProductRequest[]
+
+  @@unique([departmentId, name])
 }
 
 model Product {

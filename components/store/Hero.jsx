@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FilterLink } from './shared';
+import { FilterLink, useCatalogue } from './shared';
 import { ArrowRight, ChevronLeft, ChevronRight, Layers3, PackageOpen, BadgeCheck, Globe2 } from './icons';
 
 const DUR = 6500;
@@ -129,8 +129,13 @@ export default function Hero() {
 }
 
 export function ServiceStrip() {
+  const depts = useCatalogue().departments;
+  const words = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+  const n = depts.length;
+  const names = depts.map((d) => d.name.toLowerCase());
+  const list = names.length > 1 ? `${names.slice(0, -1).join(', ')} & ${names.at(-1)}` : names[0] || 'Our range';
   const items = [
-    [Layers3, 'Three Departments', 'Food, cosmetics & trading in one cart', 'border-b sm:border-r lg:border-b-0'],
+    [Layers3, `${words.at(n) || n} Department${n === 1 ? '' : 's'}`, `${list.charAt(0).toUpperCase()}${list.slice(1)} in one place`, 'border-b sm:border-r lg:border-b-0'],
     [PackageOpen, 'Bulk Quantities', 'Wholesale pricing on request', 'border-b lg:border-b-0 lg:border-r'],
     [BadgeCheck, 'Quality-Focused', 'Carefully selected categories', 'border-b sm:border-b-0 sm:border-r'],
     [Globe2, 'Global Outlook', 'From Africa to the world', ''],
