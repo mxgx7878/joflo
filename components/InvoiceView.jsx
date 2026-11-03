@@ -1,7 +1,7 @@
 'use client';
 import { Printer } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { money, fmtDate, INVOICE_STATUS } from '@/lib/format';
+import { money, fmtDate, INVOICE_STATUS, COD_NOTE } from '@/lib/format';
 import { Pill } from '@/components/ui';
 
 /** Printable invoice (browser print → PDF). Used in the customer account and the admin. */
@@ -29,7 +29,7 @@ export default function InvoiceView({ invoice, back }) {
             <div className="mt-2 sm:flex sm:justify-end"><Pill meta={INVOICE_STATUS[invoice.status] || INVOICE_STATUS.unpaid} /></div>
             <dl className="mt-3 text-[12.5px] text-charcoal/70 space-y-0.5">
               <div><dt className="inline">Issued: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.issuedAt)}</dd></div>
-              {invoice.dueAt && <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div>}
+              {invoice.dueAt ? <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div> : <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">On delivery (cash)</dd></div>}
               <div><dt className="inline">Order: </dt><dd className="inline font-bold text-navy">{invoice.orderId}</dd></div>
             </dl>
           </div>
@@ -76,7 +76,7 @@ export default function InvoiceView({ invoice, back }) {
         </div>
 
         <footer className="mt-8 pt-5 border-t border-navy/10 text-[12.5px] text-charcoal/65 space-y-2">
-          <p><b className="text-navy">Payment:</b> {invoice.notes || inv.payTo} Please use <b className="text-navy">{invoice.id}</b> as your payment reference.</p>
+          <p><b className="text-navy">Payment:</b> {invoice.notes || inv.payTo || COD_NOTE} Invoice reference <b className="text-navy">{invoice.id}</b>.</p>
           {inv.footer && <p>{inv.footer}</p>}
         </footer>
       </article>

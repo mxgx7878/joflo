@@ -228,7 +228,7 @@ model Order {
   locationId    String?
   status        String    @default("pending") // pending | confirmed | packed | shipped | delivered | cancelled
   payment       String    @default("unpaid") // unpaid | paid
-  paymentMethod String    @default("invoice")
+  paymentMethod String    @default("cod") // cod (cash on delivery) — the only method
   source        String    @default("checkout") // checkout | quote
   inquiryId     String?
   notes         String    @default("")

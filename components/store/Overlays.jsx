@@ -137,7 +137,7 @@ export function CartDrawer() {
         <div className="border-t border-navy/10 p-6 bg-ivory">
           {buyable ? (<>
             <div className="flex items-center justify-between"><span className="font-bold text-navy">Subtotal</span><span className="font-extrabold text-xl text-navy">{money(cartTotal)}</span></div>
-            <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Delivery is calculated by distance at checkout. No payment now — we confirm your order and send an invoice.</p>
+            <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Delivery is calculated by distance at checkout. Cash on delivery — nothing to pay online.</p>
             <button type="button" className="btn btn-navy w-full mt-5" onClick={() => { closeAll(); router.push('/checkout'); }}><Lock />Checkout</button>
           </>) : (
             <p className="text-[13px] text-charcoal/65">These items are priced on request — send them to our team and we&apos;ll reply with a quote.</p>

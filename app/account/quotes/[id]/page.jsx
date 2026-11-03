@@ -193,7 +193,7 @@ export default function QuoteDetail() {
         </>}>
         <div className="space-y-6">
           <div><p className="dash-label">Deliver to</p><AddressPicker value={addressId} onChange={setAddressId} /></div>
-          <p className="text-[13px] text-charcoal/65 rounded-xl bg-ivory px-4 py-3">Your order is confirmed straight away and the invoice ({q ? money(quoteTotal(q)) : ''}) appears in your account — pay by bank transfer using the invoice number as reference.</p>
+          <p className="text-[13px] text-charcoal/65 rounded-xl bg-ivory px-4 py-3">Your order is confirmed straight away and the invoice ({q ? money(quoteTotal(q)) : ''}) appears in your account — pay in cash to our driver on delivery.</p>
           {err && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{err}</p>}
         </div>
       </Modal>

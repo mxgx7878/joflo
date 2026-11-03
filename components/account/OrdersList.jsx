@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { money, fmtDate, ORDER_STATUS, PAYMENT_STATUS } from '@/lib/format';
+import { money, fmtDate, ORDER_STATUS, paymentMeta } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
 import { Pill } from '@/components/ui';
 
@@ -35,7 +35,7 @@ export default function OrdersList({ orders, compact = false }) {
                 <td className="text-charcoal/70 whitespace-nowrap">{fmtDate(o.createdAt)}</td>
                 <td><div className="flex items-center gap-3"><Thumbs items={o.items} />{!compact && <span className="text-[12.5px] text-charcoal/60 whitespace-nowrap">{o.items.reduce((a, i) => a + i.qty, 0)} units</span>}</div></td>
                 <td><Pill meta={ORDER_STATUS[o.status]} /></td>
-                {!compact && <td><Pill meta={PAYMENT_STATUS[o.payment]} /></td>}
+                {!compact && <td><Pill meta={paymentMeta(o)} /></td>}
                 <td className="text-right font-extrabold text-navy whitespace-nowrap">{money(o.total)}</td>
                 <td className="text-right"><Link href={`/account/orders/${o.id}`} className="inline-flex items-center gap-1 text-[12.5px] font-bold text-emerald hover:text-navy">View <ChevronRight className="w-4 h-4" /></Link></td>
               </tr>

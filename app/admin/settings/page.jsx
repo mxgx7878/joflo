@@ -53,7 +53,7 @@ export default function SettingsPage() {
         <Card title="Storefront pricing" action={<Tag className="w-4 h-4 text-gold" />}>
           <Toggle label="Show prices on the website" checked={settings.showPricing !== false} onChange={(v) => save({ showPricing: v }, v ? 'Prices are now visible — priced products can be ordered online' : 'Prices hidden — every product now goes through inquiry')} />
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
-            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order request (no payment) → you confirm and the invoice is issued. Products without a price stay “Inquire now”.<br />
+            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order placed (cash on delivery, nothing paid online) → you confirm and the invoice is issued → the driver collects cash on delivery. Products without a price stay “Inquire now”.<br />
             <b className="text-navy">Off:</b> no prices anywhere on the site; everything goes to Inquiries. Customers see pricing only in the quote you send them, and the invoice after they accept.
           </p>
         </Card>
@@ -92,8 +92,8 @@ export default function SettingsPage() {
         </Card>
 
         <Card title="Invoices" action={<FileText className="w-4 h-4 text-gold" />}>
-          <Field label="Payment due (days after issue)"><input type="number" min="0" className="dash-input" value={inv.dueDays} onChange={(e) => setInv({ ...inv, dueDays: e.target.value })} /></Field>
-          <Field label="Payment instructions (printed on every invoice)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="Bank name, routing and account number…" /></Field>
+          <p className="text-[12.5px] text-charcoal/60 leading-relaxed">All orders are <b className="text-navy">cash on delivery</b> — invoices are due when the order is delivered.</p>
+          <Field label="Cash on delivery note (printed on every invoice)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="e.g. Please have the full amount ready in cash for our driver." /></Field>
           <Field label="Footer" className="mt-4"><input className="dash-input" value={inv.footer} onChange={(e) => setInv({ ...inv, footer: e.target.value })} /></Field>
           <button className="dash-btn dash-btn-ghost w-full mt-4" onClick={() => save({ invoice: inv }, 'Invoice details saved')}><Save /> Save invoice details</button>
         </Card>

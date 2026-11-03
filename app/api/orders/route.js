@@ -8,7 +8,7 @@ import { orderForCustomer } from '@/lib/server/state';
 
 const cleanAddress = (a) => ({ label: str(a?.label, 40) || 'Delivery', line1: str(a?.line1, 160), city: str(a?.city, 80), state: str(a?.state, 4).toUpperCase(), postcode: str(a?.postcode, 12), country: 'United States' });
 
-/** Order request from the storefront cart (no payment — JOLOF confirms prices and issues the invoice). */
+/** Order from the storefront cart — cash on delivery only (no card payments). JOLOF confirms and issues the invoice. */
 export const POST = route(async (req) => {
   const d = await body(req);
   const user = await getUser();
@@ -16,6 +16,7 @@ export const POST = route(async (req) => {
   if (!settings.showPricing) fail(400, 'Online ordering is paused — please send an inquiry instead.');
   if (user && user.role !== 'customer') fail(400, 'Sign in with a customer account to place an order.');
   if (user?.status === 'pending') fail(403, 'Your trade account is awaiting approval — send a quote request meanwhile.');
+  if (d.paymentMethod && d.paymentMethod !== 'cod') fail(400, 'Only cash on delivery is available.');
   const guest = !user;
   const g = d.guest || {};
   if (guest && (str(g.name).length < 2 || !EMAIL.test(str(g.email)) || !str(g.phone))) fail(400, 'Please enter your name, email and phone.');

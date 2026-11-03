@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Printer, Truck, MapPin, User, FileText, CheckCircle2, Circle } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
-import { money, fmtDate, fmtDateTime, ORDER_STATUS, ORDER_FLOW, PAYMENT_STATUS, PAYMENT_METHODS } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, ORDER_STATUS, ORDER_FLOW, PAYMENT_METHODS, paymentMeta } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
 import { Pill, OrderProgress, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
@@ -55,7 +55,7 @@ export default function OrderDetail() {
           <div className="flex flex-wrap items-center gap-3 mt-2">
             <h1 className="h-display text-navy text-[2rem]">{order.id}</h1>
             <Pill meta={ORDER_STATUS[order.status]} />
-            <Pill meta={PAYMENT_STATUS[order.payment]} />
+            <Pill meta={paymentMeta(order)} />
             {order.source === 'quote' && <span className="pill bg-[#EEE9F8] text-[#5B3FA0]">From quote</span>}
             {order.guest && <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Guest checkout</span>}
             {order.items.some((i) => i.productId && !i.warehouseId) && order.status !== 'cancelled' && <span className="pill bg-[#F8E7E3] text-[#B4432F]">Needs a supplier</span>}
@@ -145,10 +145,12 @@ export default function OrderDetail() {
           <DriverCard order={order} />
 
           <Card title="Payment" className="print:hidden">
-            <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod]} />
-            <KV k="Status" v={<Pill meta={PAYMENT_STATUS[order.payment]} />} />
-            <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={order.status === 'pending'} onClick={async () => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; const r = await setOrderPayment(order.id, p); if (r.ok) toast({ text: `Payment marked as ${p}` }); }}>
-              Mark as {order.payment === 'paid' ? 'unpaid' : 'paid'}
+            <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} />
+            <KV k="Status" v={<Pill meta={paymentMeta(order)} />} />
+            {order.payment !== 'paid' && order.status !== 'cancelled' && <KV k="Driver collects" v={<b className="text-navy">{money(order.total)}</b>} />}
+            <p className="text-[12px] text-charcoal/55 mt-2">Cash is marked as collected automatically when the order is marked Delivered.</p>
+            <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={order.status === 'pending' || order.status === 'cancelled'} onClick={async () => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; const r = await setOrderPayment(order.id, p); if (r.ok) toast({ text: p === 'paid' ? 'Cash marked as collected' : 'Cash marked as not collected' }); }}>
+              {order.payment === 'paid' ? 'Mark cash as not collected' : 'Mark cash collected'}
             </button>
           </Card>
 

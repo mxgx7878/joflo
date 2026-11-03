@@ -242,7 +242,7 @@ export async function seedDatabase(prisma) {
     await prisma.order.create({
       data: {
         id, userId, guest: !!extra.guest, customer, address, lat: dest.lat, lng: dest.lng, locationId: dest.id, status,
-        payment: ['delivered', 'shipped'].includes(status) ? 'paid' : 'unpaid', paymentMethod: 'invoice', source: extra.source || 'checkout', inquiryId: extra.inquiryId || null,
+        payment: status === 'delivered' ? 'paid' : 'unpaid', paymentMethod: 'cod', source: extra.source || 'checkout', inquiryId: extra.inquiryId || null,
         tracking: ['shipped', 'delivered'].includes(status) ? `JLF-${id.replace(/\D/g, '')}-D` : '', subtotal, deliveryFee: fee, deliveryMiles: ships.length ? Math.max(...ships.map(([, m]) => m || 0)) : null,
         total, driverId: status === 'pending' || status === 'cancelled' ? null : extra.driverId || null, createdAt: new Date(createdAt), confirmedAt: status === 'pending' ? null : new Date(t0 + 26 * 3600e3),
         timeline: steps.map((s, i) => ({ status: s, at: new Date(t0 + i * 26 * 3600e3).toISOString(), note: s === 'pending' ? 'Order request placed online' : s === 'confirmed' ? 'Confirmed by JOLOF TRADING — invoice issued' : '' })),
@@ -256,8 +256,8 @@ export async function seedDatabase(prisma) {
         data: {
           id: id.replace('JT-', 'INV-'), orderId: id, billTo: customer, shipTo: address, subtotal, deliveryFee: fee, discount: 0, total,
           lines: items.map((i) => ({ name: i.name, size: i.size, unit: null, qty: i.qty, price: i.price, amount: r2(i.price * i.qty) })),
-          status: status === 'cancelled' ? 'void' : ['delivered', 'shipped'].includes(status) ? 'paid' : 'unpaid',
-          issuedAt: new Date(t0 + 26 * 3600e3), dueAt: new Date(t0 + 8 * 864e5), notes: 'Bank transfer (ACH / wire).',
+          status: status === 'cancelled' ? 'void' : status === 'delivered' ? 'paid' : 'unpaid', // COD: cash is collected on delivery
+          issuedAt: new Date(t0 + 26 * 3600e3), dueAt: null, notes: 'Cash on delivery — please have the full amount ready in cash for our driver when your order arrives.',
         },
       });
     }
