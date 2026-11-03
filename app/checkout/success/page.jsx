@@ -2,7 +2,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight, Check, FileText, PackageCheck, Truck, MailCheck, UserPlus } from 'lucide-react';
+import { ArrowRight, Banknote, Check, FileText, PackageCheck, Truck, MailCheck, UserPlus } from 'lucide-react';
 import { useStore, useStoreReady, useCurrentUser } from '@/lib/store';
 import { money, fmtDateTime } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
@@ -23,9 +23,9 @@ function Success() {
     );
   }
   const steps = [
-    { icon: MailCheck, t: 'Request received', d: `Stock is held for you. Reference ${order.id}.` },
-    { icon: FileText, t: 'We confirm & invoice', d: 'Our team confirms prices and delivery, then issues your invoice — usually within one business day.' },
-    { icon: Truck, t: 'Delivered', d: order.userId ? 'Follow progress and download your invoice in your account.' : `We'll contact you at ${order.customer.email}.` },
+    { icon: MailCheck, t: 'Order received', d: `Stock is held for you. Reference ${order.id}.` },
+    { icon: FileText, t: 'We confirm', d: 'Our team confirms availability and delivery, then issues your invoice — usually within one business day.' },
+    { icon: Banknote, t: 'Pay cash on delivery', d: `Have ${money(order.total)} ready in cash for our driver.${order.userId ? ' Follow progress in your account.' : ` We'll contact you at ${order.customer.email}.`}` },
   ];
   const guestNoAccount = !order.userId && !user;
   return (
@@ -34,8 +34,8 @@ function Success() {
         <div className="dash-card p-6 sm:p-9 relative overflow-hidden">
           <span className="w-16 h-16 rounded-full bg-emerald text-white grid place-items-center shadow-[0_14px_30px_-12px_rgba(7,86,60,.7)]"><Check className="w-8 h-8" strokeWidth={2.4} /></span>
           <p className="kicker mt-6">Thank you, {order.customer.name.split(' ')[0]}</p>
-          <h1 className="h-display text-navy text-[2rem] sm:text-[2.6rem] mt-2">Your order request is in.</h1>
-          <p className="text-[15px] text-charcoal/65 mt-3">Order <b className="text-navy">{order.id}</b> · {fmtDateTime(order.createdAt)} · estimated {money(order.total)}</p>
+          <h1 className="h-display text-navy text-[2rem] sm:text-[2.6rem] mt-2">Your order is placed.</h1>
+          <p className="text-[15px] text-charcoal/65 mt-3">Order <b className="text-navy">{order.id}</b> · {fmtDateTime(order.createdAt)} · {money(order.total)} · <b className="text-navy">Cash on delivery</b></p>
           <div className="mt-7 flex flex-wrap gap-3">
             {guestNoAccount
               ? <Link href={`/register?email=${encodeURIComponent(order.customer.email)}&name=${encodeURIComponent(order.customer.name)}&next=${encodeURIComponent(`/account/orders/${order.id}`)}`} className="btn btn-navy"><UserPlus /> Create an account to track it</Link>
@@ -73,8 +73,9 @@ function Success() {
         <dl className="px-6 py-4 space-y-1.5 text-[13.5px] bg-ivory/50 border-t border-navy/5">
           <div className="flex justify-between"><dt className="text-charcoal/60">Subtotal</dt><dd className="font-bold">{money(order.subtotal)}</dd></div>
           <div className="flex justify-between"><dt className="text-charcoal/60">Delivery{order.deliveryMiles ? ` · ~${Math.round(order.deliveryMiles)} mi` : ''}</dt><dd className="font-bold">{order.shipping ? money(order.shipping) : 'Free'}</dd></div>
-          <div className="flex justify-between pt-2 border-t border-navy/10 text-[15px]"><dt className="font-extrabold text-navy">Estimated total</dt><dd className="font-extrabold text-navy">{money(order.total)}</dd></div>
-          <p className="text-[11.5px] text-charcoal/50">Final amount is confirmed on your invoice.</p>
+          <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold">Cash on delivery</dd></div>
+          <div className="flex justify-between pt-2 border-t border-navy/10 text-[15px]"><dt className="font-extrabold text-navy">Total to pay on delivery</dt><dd className="font-extrabold text-navy">{money(order.total)}</dd></div>
+          <p className="text-[11.5px] text-charcoal/50">Paid in cash to our driver. Final amount is confirmed on your invoice.</p>
         </dl>
         <div className="px-6 py-5 border-t border-navy/5">
           <p className="dash-label">Deliver to</p><AddressBlock address={order.address} />

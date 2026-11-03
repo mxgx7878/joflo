@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Check, Clock3, Copy, FileText, RotateCcw, Truck, XCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
-import { money, fmtDate, fmtDateTime, ORDER_FLOW, ORDER_STATUS, PAYMENT_STATUS, PAYMENT_METHODS } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, ORDER_FLOW, ORDER_STATUS, PAYMENT_METHODS, paymentMeta } from '@/lib/format';
 import { Pill, OrderProgress, Modal, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { AddressBlock, SectionCard, useMyOrders } from '@/components/account/shared';
@@ -44,7 +44,7 @@ export default function OrderDetail() {
           <div className="flex items-center gap-3 flex-wrap mt-2">
             <h1 className="h-display text-navy text-[1.9rem] sm:text-[2.3rem]">{order.id}</h1>
             <Pill meta={statusMeta} />
-            <Pill meta={PAYMENT_STATUS[order.payment]} />
+            <Pill meta={paymentMeta(order)} />
           </div>
           <p className="text-[13.5px] text-charcoal/60 mt-1.5">Placed {fmtDateTime(order.createdAt)} · {order.items.length} products · {money(order.total)}</p>
         </div>
@@ -58,13 +58,13 @@ export default function OrderDetail() {
       {order.status === 'pending' && (
         <div className="mb-6 rounded-2xl bg-gold-pale border border-gold/30 p-4 sm:p-5 flex gap-3 text-[13.5px] text-[#6d4f12]">
           <Clock3 className="w-5 h-5 shrink-0 mt-0.5" />
-          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Prices below are estimates — our team confirms the final prices and delivery, then your invoice appears here.</p></div>
+          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Our team confirms availability and delivery, then your invoice appears here. You pay in cash when the order is delivered.</p></div>
         </div>
       )}
       {order.invoiceId && order.status !== 'cancelled' && order.payment !== 'paid' && (
         <div className="mb-6 rounded-2xl bg-[#E6EEF8] p-4 sm:p-5 flex flex-wrap items-center gap-3 text-[13.5px] text-navy-600">
           <FileText className="w-5 h-5 shrink-0" />
-          <p className="flex-1 min-w-[200px]"><b>Invoice {order.invoiceId}</b> is ready — {money(order.total)} due by bank transfer.</p>
+          <p className="flex-1 min-w-[200px]"><b>Invoice {order.invoiceId}</b> is ready — pay {money(order.total)} in cash to our driver on delivery.</p>
           <Link href={`/account/invoices/${order.invoiceId}`} className="dash-btn dash-btn-navy">Open invoice</Link>
         </div>
       )}
@@ -120,7 +120,7 @@ export default function OrderDetail() {
             <div className="space-y-5">
               <div><p className="dash-label">Delivery address</p><AddressBlock address={order.address} /></div>
               <div><p className="dash-label">Customer</p><p className="text-[13.5px] text-charcoal/80">{order.customer.name}{order.customer.company ? ` · ${order.customer.company}` : ''}<br />{order.customer.email}</p></div>
-              <div><p className="dash-label">Payment</p><p className="text-[13.5px] text-charcoal/80">{PAYMENT_METHODS[order.paymentMethod]} · <span className={order.payment === 'paid' ? 'text-emerald font-bold' : 'text-[#B4432F] font-bold'}>{PAYMENT_STATUS[order.payment].label}</span></p></div>
+              <div><p className="dash-label">Payment</p><p className="text-[13.5px] text-charcoal/80">{PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} · <span className={order.payment === 'paid' ? 'text-emerald font-bold' : 'text-[#8a6417] font-bold'}>{order.payment === 'paid' ? paymentMeta(order).label : order.status === 'cancelled' ? 'No payment' : 'Due on delivery'}</span></p></div>
               {order.notes && <div><p className="dash-label">Your notes</p><p className="text-[13.5px] text-charcoal/80">{order.notes}</p></div>}
               {order.inquiryId && <div className="no-print"><p className="dash-label">Quote</p><Link href={`/account/quotes/${order.inquiryId}`} className="text-[13.5px] font-bold text-emerald hover:text-navy">View quote {order.inquiryId}</Link></div>}
             </div>

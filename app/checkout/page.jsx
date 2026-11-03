@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Building2, Clock3, FileText, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, UserRound } from 'lucide-react';
+import { ArrowRight, Banknote, Building2, CheckCircle2, Clock3, FileText, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, UserRound } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { rateLabel } from '@/lib/delivery';
 import { productImg } from '@/lib/catalogue';
@@ -122,7 +122,7 @@ export default function CheckoutPage() {
       if (Object.keys(e).length) { setError('Please complete the highlighted fields.'); jump(e.name || e.email || e.phone ? 'step-details' : 'step-address'); return; }
     } else if (!address) { setError('Please choose or add a delivery address.'); jump('step-address'); return; }
     setPlacing(true);
-    const r = await placeOrder({ address: isGuest ? address : undefined, addressId: isGuest ? undefined : addressId, notes, guest: isGuest ? guest : undefined });
+    const r = await placeOrder({ address: isGuest ? address : undefined, addressId: isGuest ? undefined : addressId, notes, guest: isGuest ? guest : undefined, paymentMethod: 'cod' });
     if (!r.ok) { setError(r.error); setPlacing(false); return; }
     router.push(`/checkout/success?order=${r.id}`);
   };
@@ -149,7 +149,7 @@ export default function CheckoutPage() {
       <MinimalHeader secure />
       <main className="max-w-site mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-28 lg:py-12">
         <p className="kicker">Checkout</p>
-        <h1 className="h-display text-navy text-[2rem] sm:text-[2.5rem] mt-2">{lines.length && showPricing ? 'Send your order request' : 'Request a quote'}</h1>
+        <h1 className="h-display text-navy text-[2rem] sm:text-[2.5rem] mt-2">{lines.length && showPricing ? 'Place your order' : 'Request a quote'}</h1>
 
         {(!lines.length || !showPricing) && quoteOnly.length + lines.length > 0 ? (
           <div className="dash-card mt-8 p-6 sm:p-8 max-w-2xl">
@@ -266,9 +266,23 @@ export default function CheckoutPage() {
                 </Step>
               </div>
 
-              <Step n={isGuest ? '4' : '3'} title="How it works">
+              <Step n={isGuest ? '4' : '3'} title="Payment method">
+                <div role="radiogroup" aria-label="Payment method">
+                  <div role="radio" aria-checked="true" tabIndex={0} className="flex items-center gap-4 rounded-2xl border-[1.5px] border-emerald bg-[#F2F8F5] p-4">
+                    <span className="w-11 h-11 rounded-xl bg-emerald text-white grid place-items-center shrink-0"><Banknote className="w-5 h-5" strokeWidth={1.8} /></span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-extrabold text-navy text-[15px]">Cash on delivery</p>
+                      <p className="text-[12.5px] text-charcoal/60">Pay our driver in cash when your order arrives. Nothing to pay online.</p>
+                    </div>
+                    <CheckCircle2 className="w-6 h-6 text-emerald shrink-0" strokeWidth={2} />
+                  </div>
+                </div>
+                <p className="mt-3 text-[12px] text-charcoal/55">Card and online payments aren&apos;t available — all orders are cash on delivery.</p>
+              </Step>
+
+              <Step n={isGuest ? '5' : '4'} title="How it works">
                 <ol className="grid sm:grid-cols-3 gap-3 text-[13px]">
-                  {[[Clock3, 'You send the request', 'No payment now. Stock is held for you.'], [FileText, 'We confirm & invoice', 'Our team confirms prices, delivery and sends your invoice.'], [Truck, 'We deliver', 'Pay by bank transfer per the invoice. We deliver to your door.']].map(([Icon, t, d]) => (
+                  {[[Clock3, 'You place the order', 'Nothing to pay now. Stock is held for you.'], [FileText, 'We confirm', 'Our team confirms availability and delivery, and issues your invoice.'], [Truck, 'Pay cash on delivery', 'Our driver brings your order — pay the total in cash on arrival.']].map(([Icon, t, d]) => (
                     <li key={t} className="rounded-2xl border border-navy/10 bg-white p-4">
                       <Icon className="w-5 h-5 text-emerald" strokeWidth={1.8} />
                       <p className="font-extrabold text-navy mt-2">{t}</p>
@@ -279,7 +293,7 @@ export default function CheckoutPage() {
                 <p className="mt-4 text-[12px] text-charcoal/55 flex items-center gap-2"><Lock className="w-3.5 h-3.5" /> Delivery is {rateLabel(settings.delivery)}{Number(settings.delivery?.baseFee) ? ` + $${Number(settings.delivery.baseFee).toFixed(2)} per shipment` : ''}, by road distance.</p>
               </Step>
 
-              <Step n={isGuest ? '5' : '4'} title="Order notes">
+              <Step n={isGuest ? '6' : '5'} title="Order notes">
                 <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className="dash-input resize-y" placeholder="Delivery instructions, loading dock hours, purchase order number…" />
               </Step>
             </div>
@@ -316,18 +330,19 @@ export default function CheckoutPage() {
                 {estimate?.freeOver > 0 && shipping > 0 && subtotal < estimate.freeOver && <p className="text-[11.5px] text-emerald font-semibold">Add {money(estimate.freeOver - subtotal)} more for free delivery</p>}
                 {unavailable > 0 && <p className="text-[11.5px] text-[#8a6417] font-semibold">{unavailable} item{unavailable > 1 ? 's are' : ' is'} low on stock — our team will confirm availability.</p>}
                 {quoteOnly.length > 0 && <p className="text-[11.5px] text-charcoal/55">{quoteOnly.length} price-on-request item{quoteOnly.length > 1 ? 's stay' : ' stays'} in your cart — send {quoteOnly.length > 1 ? 'them' : 'it'} as a quote request after this order.</p>}
-                <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">Estimated total</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
-                <p className="text-[11px] text-charcoal/50">Final prices are confirmed on your invoice.</p>
+                <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold text-navy flex items-center gap-1.5"><Banknote className="w-4 h-4 text-emerald" />Cash on delivery</dd></div>
+                <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">Total to pay on delivery</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
+                <p className="text-[11px] text-charcoal/50">Paid in cash to our driver. The final amount is confirmed on your invoice.</p>
               </dl>
               <div className="px-5 sm:px-6 pb-6 pt-1 space-y-2.5">
                 {error && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{error}</p>}
                 <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold w-full">
-                  {placing ? 'Sending…' : 'Send order request'} <ArrowRight className="mv" />
+                  {placing ? 'Placing order…' : 'Place order · Cash on delivery'} <ArrowRight className="mv" />
                 </button>
                 {(isGuest || user.role === 'customer') && (
                   <button type="button" onClick={requestQuote} className="btn btn-line-dark w-full !min-h-[44px] !py-2.5">Request a bulk quote instead</button>
                 )}
-                <p className="text-[11.5px] text-center text-charcoal/50">No payment now. By sending this request you agree to our Terms &amp; Conditions.</p>
+                <p className="text-[11.5px] text-center text-charcoal/50">Nothing to pay now — pay cash on delivery. By placing this order you agree to our Terms &amp; Conditions.</p>
               </div>
             </aside>
           </div>
@@ -340,7 +355,7 @@ export default function CheckoutPage() {
             <p className="text-[10.5px] font-extrabold uppercase tracking-[.14em] text-charcoal/50">Total</p>
             <p className="text-[17px] font-extrabold text-navy leading-tight">{money(total)}</p>
           </div>
-          <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold flex-1 !min-h-[46px] !py-2.5">Send request <ArrowRight className="mv" /></button>
+          <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold flex-1 !min-h-[46px] !py-2.5">Place order <ArrowRight className="mv" /></button>
         </div>
       )}
     </div>

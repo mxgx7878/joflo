@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ShoppingCart } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
-import { money, fmtDate, ORDER_STATUS, PAYMENT_STATUS } from '@/lib/format';
+import { money, fmtDate, ORDER_STATUS, paymentMeta } from '@/lib/format';
 import { PageHeader, Pill, Tabs, EmptyState } from '@/components/ui';
 import { Card, TableWrap, SearchBox, Skeleton } from '@/components/admin/common';
 import { shortName } from '@/components/admin/suppliers';
@@ -57,7 +57,7 @@ function OrdersInner() {
                     </td>
                     <td className="whitespace-nowrap text-[12.5px]">{o.driverId ? <span className="text-navy font-semibold">{dById[o.driverId]?.name}</span> : ['confirmed', 'packed'].includes(o.status) ? <span className="pill bg-gold-pale text-[#8a6417]">Assign</span> : <span className="text-charcoal/35">—</span>}</td>
                     <td>{o.source === 'quote' ? <span className="pill bg-[#EEE9F8] text-[#5B3FA0]">From quote</span> : o.guest ? <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Guest</span> : <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Online</span>}</td>
-                    <td><Pill meta={PAYMENT_STATUS[o.payment]} /></td>
+                    <td><Pill meta={paymentMeta(o)} /></td>
                     <td><Pill meta={ORDER_STATUS[o.status]} /></td>
                     <td className="text-right font-bold text-navy whitespace-nowrap">{money(o.total)}</td>
                   </tr>
