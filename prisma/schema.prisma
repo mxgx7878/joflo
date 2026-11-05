@@ -89,6 +89,7 @@ model Product {
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
   name        String
+  brand       String?
   size        String?
   pack        String?
   price       Float? // null = price on request (inquiry only)
