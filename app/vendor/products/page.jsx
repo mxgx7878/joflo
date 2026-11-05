@@ -7,6 +7,7 @@ import { money, sizeLine, catLine, priced, fmtDate, REQUEST_STATUS } from '@/lib
 import { useDepartments } from '@/lib/departments';
 import { PageHeader, Pill, Modal, Drawer, Field, EmptyState, Tabs } from '@/components/ui';
 import { useToast } from '@/components/Providers';
+import { ImageInput } from '@/components/ImageInput';
 import { Card, TableWrap, SearchBox, Select, Thumb, Skeleton, useConfirm } from '@/components/admin/common';
 import { useVendor, totalStock } from '@/components/vendor/hooks';
 
@@ -102,7 +103,7 @@ function RequestProduct({ open, onClose, warehouses }) {
           <Field label="Category *"><select className="dash-input" value={f.categoryId} onChange={set('categoryId')}><option value="">Choose…</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.dept} · {c.name}</option>)}</select></Field>
           <Field label="Size"><input className="dash-input" value={f.size} onChange={set('size')} placeholder="e.g. 400 g" /></Field>
           <Field label="Wholesale pack"><input className="dash-input" value={f.pack} onChange={set('pack')} placeholder="e.g. 24 units" /></Field>
-          <Field label="Image URL"><input className="dash-input" value={f.img} onChange={set('img')} placeholder="https://…" /></Field>
+          <Field label="Image"><ImageInput folder="product-requests" value={f.img} onChange={(img) => setF((x) => ({ ...x, img }))} /></Field>
           <Field label="Your supply price (USD)"><input type="number" min="0" step="0.01" className="dash-input" value={f.cost} onChange={set('cost')} /></Field>
           <Field label="Suggested store price (USD)"><input type="number" min="0" step="0.01" className="dash-input" value={f.suggestedPrice} onChange={set('suggestedPrice')} /></Field>
           <Field label="Description" className="sm:col-span-2"><textarea rows={3} className="dash-input" value={f.desc} onChange={set('desc')} /></Field>

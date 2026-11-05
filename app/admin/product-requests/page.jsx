@@ -7,6 +7,7 @@ import { money, fmtDate, REQUEST_STATUS } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
 import { PageHeader, Pill, Tabs, EmptyState, Drawer, Field } from '@/components/ui';
 import { useToast } from '@/components/Providers';
+import { ImageInput } from '@/components/ImageInput';
 import { Card, TableWrap, Skeleton } from '@/components/admin/common';
 import { useDepartments } from '@/lib/departments';
 
@@ -65,7 +66,7 @@ function Review({ req, onClose }) {
           </Field>
           <Field label="Size"><input className="dash-input" value={f.size} onChange={set('size')} /></Field>
           <Field label="Wholesale pack"><input className="dash-input" value={f.pack} onChange={set('pack')} /></Field>
-          <Field label="Image (file name or URL)"><input className="dash-input" value={f.img} onChange={set('img')} /></Field>
+          <Field label="Image"><ImageInput compact folder="products" value={f.img} onChange={(img) => setF((x) => ({ ...x, img }))} /></Field>
           <Field label="Description" className="sm:col-span-2"><textarea rows={3} className="dash-input" value={f.desc} onChange={set('desc')} /></Field>
         </div>
         <div>
