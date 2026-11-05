@@ -1,0 +1,740 @@
+[
+ {
+  "id": "jc56",
+  "sku": "JLF-COS-086",
+  "name": "Carowhite Soap",
+  "size": "180Gx72",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/Caro_White_Soap_7_oz_1.webp?v=1746506727",
+  "match": "approx",
+  "source": "https://www.kismetbeautybrands.com/products/caro-white-lightening-beauty-soap-3-5oz-100g"
+ },
+ {
+  "id": "jc57",
+  "sku": "JLF-COS-087",
+  "name": "Carowhite Soap",
+  "size": "100Gx96",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/CAWH_SOLI3_50__50524.1446914852.1280.1280.jpg?v=1746506727",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/caro-white-lightening-beauty-soap-3-5oz-100g"
+ },
+ {
+  "id": "jc61",
+  "sku": "JLF-COS-091",
+  "name": "Clairmen Soap",
+  "size": "180Gx72",
+  "img": "https://img.everymarket.com/gg7e18arbvyez42dun19cpk2vtav?width=800&height=800&format=jpg",
+  "match": "exact",
+  "source": "https://everymarket.com/products/clairmen-soap-180g"
+ },
+ {
+  "id": "jc66",
+  "sku": "JLF-COS-096",
+  "name": "Serum Clear Therapy CT+",
+  "size": "75MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0743/4173/products/CT_Clear_Therapy_Intensive_Lightening_Serum_75_ml.jpg?v=1544043248",
+  "match": "exact",
+  "source": "https://www.bargainside.com/products/ct-clear-therapy-intensive-lightening-serum-75-ml"
+ },
+ {
+  "id": "jc71",
+  "sku": "JLF-COS-101",
+  "name": "Gel Douche Clear Therapy Carotte",
+  "size": "1000ML",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/IMG_2873__96322.jpg?v=1740531315",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/ct-carrot-shower-gel-1000-ml"
+ },
+ {
+  "id": "jc72",
+  "sku": "JLF-COS-102",
+  "name": "Gel Douche Clear Therapy",
+  "size": "1000ML",
+  "img": "https://cdn.shopify.com/s/files/1/0620/6871/9689/files/s-l1600.webp?v=1726764433",
+  "match": "approx",
+  "source": "https://talasbeauty.com/products/ct-clear-therapy-lightening-body-wash"
+ },
+ {
+  "id": "jc77",
+  "sku": "JLF-COS-107",
+  "name": "DSR Paw Paw",
+  "size": "25MLx144 (12 packs)",
+  "img": "https://cdn.shopify.com/s/files/1/0743/4173/products/PawPawDSRDarkSpotRemover25ml.jpg?v=1638893169",
+  "match": "exact",
+  "source": "https://www.bargainside.com/products/paw-paw-dsr-dark-spot-remover-25-ml"
+ },
+ {
+  "id": "jc79",
+  "sku": "JLF-COS-109",
+  "name": "Paw Paw Tube",
+  "size": "50Gx100",
+  "img": "https://cdn.shopify.com/s/files/1/0743/4173/products/PawPawIntensiveCream50ml.jpg?v=1676322143",
+  "match": "exact",
+  "source": "https://www.bargainside.com/products/paw-paw-intensive-cream-50-ml"
+ },
+ {
+  "id": "jc80",
+  "sku": "JLF-COS-110",
+  "name": "Paw Paw Booster",
+  "size": "7MLx240",
+  "img": "https://cdn.shopify.com/s/files/1/0743/4173/files/PawPawBoosterRadianceActivatingSerum20x7mlVials.jpg?v=1738186036",
+  "match": "approx",
+  "source": "https://www.bargainside.com/products/paw-paw-booster-radiance-activating-serum-20x7-ml-vials"
+ },
+ {
+  "id": "jc82",
+  "sku": "JLF-COS-112",
+  "name": "Crème Yellow Tone",
+  "size": "450MLx24",
+  "img": "https://mymetacosmetics.com/wp-content/uploads/2022/12/Cream-450-Yellow-Tone.webp",
+  "match": "approx",
+  "source": "https://mymetacosmetics.com/en/product/yellow-tone-cream-450ml/"
+ },
+ {
+  "id": "jc83",
+  "sku": "JLF-COS-113",
+  "name": "Savon Yellow Tone",
+  "size": "200Gx48",
+  "img": "https://mymetacosmetics.com/wp-content/uploads/2022/12/Soap-Yellow-Tone.webp",
+  "match": "exact",
+  "source": "https://mymetacosmetics.com/en/product/yellow-tone-soap/"
+ },
+ {
+  "id": "jc84",
+  "sku": "JLF-COS-114",
+  "name": "Serum Yellow Tone",
+  "size": "30MLx48",
+  "img": "https://mymetacosmetics.com/wp-content/uploads/2022/12/Serum-Yellow-Tone.webp",
+  "match": "exact",
+  "source": "https://mymetacosmetics.com/en/product/yellow-tone-serum-30ml/"
+ },
+ {
+  "id": "jc85",
+  "sku": "JLF-COS-115",
+  "name": "Lotion Yellow Tone",
+  "size": "400MLx24",
+  "img": "https://mymetacosmetics.com/wp-content/uploads/2022/12/Lotion-400-Yellow-Tone.webp",
+  "match": "exact",
+  "source": "https://mymetacosmetics.com/en/product/yellow-tone-lotion-400ml/"
+ },
+ {
+  "id": "jc88",
+  "sku": "JLF-COS-118",
+  "name": "Crème Clinic Clear",
+  "size": "150Gx48",
+  "img": "https://cdn.shopify.com/s/files/1/0346/2427/4569/products/clinic_clear_jar__39016.1616502954.jpg?v=1617083888",
+  "match": "approx",
+  "source": "https://karis-beauty-supply.myshopify.com/products/clinic-clear-whitening-body-jar-cream-330g"
+ },
+ {
+  "id": "jc89",
+  "sku": "JLF-COS-119",
+  "name": "Crème Clinic Clear",
+  "size": "330Gx24",
+  "img": "https://cdn.shopify.com/s/files/1/0346/2427/4569/products/clinic_clear_jar__39016.1616502954.jpg?v=1617083888",
+  "match": "exact",
+  "source": "https://karis-beauty-supply.myshopify.com/products/clinic-clear-whitening-body-jar-cream-330g"
+ },
+ {
+  "id": "jc90",
+  "sku": "JLF-COS-120",
+  "name": "Gel Douche Clinic Chocol",
+  "size": "750MLx24",
+  "img": "https://myrlene.fr/wp-content/uploads/2019/08/CLINIC-CLEAR-GEL-DOUCHE-AU-CHOCOLAT-scaled.jpg",
+  "match": "exact",
+  "source": "https://myrlene.fr/boutique/soins-corporels/clinic-clear-gel-douche-au-chocolat-eclaircissant-750-ml/"
+ },
+ {
+  "id": "jc91",
+  "sku": "JLF-COS-121",
+  "name": "Gel Douche Clinic Clear",
+  "size": "750MLx24",
+  "img": "https://cdn.shopify.com/s/files/1/0346/2427/4569/products/clinic-clear-whitening-shower-gel-750-ml-1.png?v=1617084175",
+  "match": "exact",
+  "source": "https://karis-beauty-supply.myshopify.com/products/clinic-clear-shower-gel-750ml"
+ },
+ {
+  "id": "jc93",
+  "sku": "JLF-COS-123",
+  "name": "Serum Clinic Clear",
+  "size": "50MLx120",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/C689AE08-9349-4B4D-AE0F-AC8D8D022A59.png?v=1727628333",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/clinic-clear-whitening-serum-1-76oz-50ml-1"
+ },
+ {
+  "id": "jc94",
+  "sku": "JLF-COS-124",
+  "name": "Lotion Clinic Clear",
+  "size": "125MLx72",
+  "img": "https://cdn.shopify.com/s/files/1/0346/2427/4569/products/clinic-clear-whitening-body-lotion-500ml__53829.1617412823.jpg?v=1618390110",
+  "match": "approx",
+  "source": "https://karis-beauty-supply.myshopify.com/products/clinic-clear-whitening-body-lotion-500ml"
+ },
+ {
+  "id": "jc95",
+  "sku": "JLF-COS-125",
+  "name": "Crème DSR Clinic",
+  "size": "50MLx120",
+  "img": "https://cdn.shopify.com/s/files/1/0346/2427/4569/products/IMG_20180714_215228_resized_20180714_095653356_jpg.jpg?v=1617083966",
+  "match": "exact",
+  "source": "https://karis-beauty-supply.myshopify.com/products/clinic-clear-whitening-dark-spot-remover-50g"
+ },
+ {
+  "id": "jc96",
+  "sku": "JLF-COS-126",
+  "name": "Savon GLY Clinic Clear",
+  "size": "180Gx72",
+  "img": "https://outreplus.com/wp-content/uploads/2020/05/Etui_Savon_CC_glyceffectsResult-savon-glyc%C3%A9rine.png",
+  "match": "approx",
+  "source": "https://outreplus.com/produit/clinic-clear-savon-glycerine-eclaircissant-gommage-exfoliant-dsr-90-grs/"
+ },
+ {
+  "id": "jc97",
+  "sku": "JLF-COS-127",
+  "name": "Tube Clinic Clear",
+  "size": "50Gx120",
+  "img": "https://cdn.shopify.com/s/files/1/0346/2427/4569/products/clinic_clear_tube_cream__26986.1615557082.jpg?v=1617083739",
+  "match": "exact",
+  "source": "https://karis-beauty-supply.myshopify.com/products/clinic-clear-whitening-body-tube-cream-50ml"
+ },
+ {
+  "id": "jc98",
+  "sku": "JLF-COS-128",
+  "name": "White Gold Carrot Oil",
+  "size": "500MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0231/1703/7645/files/image_61_-Photoroom_0715ad8a-0fd7-4161-977d-38c6431dfdb5.jpg?v=1753890374",
+  "match": "exact",
+  "source": "https://intimamentebella.com/products/white-gold-super-whitening-carrot-oil-extra-whitening-in-7-days"
+ },
+ {
+  "id": "jc100",
+  "sku": "JLF-COS-130",
+  "name": "White Gold Carrot Scrub",
+  "size": "521MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0231/1703/7645/files/Carrot-Photoroom_d54b77bd-86d9-4f2e-a0f8-48d3a1b28ce7.jpg?v=1753736220",
+  "match": "exact",
+  "source": "https://intimamentebella.com/products/white-gold-carrot-super-whitening-face-body-scrub"
+ },
+ {
+  "id": "jc101",
+  "sku": "JLF-COS-131",
+  "name": "White Gold Carrot Lotion",
+  "size": "500MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0691/8330/7819/files/IMG-1163.png?v=1785505198",
+  "match": "exact",
+  "source": "https://sampoliahairbeauty.store/products/white-gold-carrot-super-whitening-body-repair-lotion-500ml"
+ },
+ {
+  "id": "jc102",
+  "sku": "JLF-COS-132",
+  "name": "White Gold Carrot Cream",
+  "size": "360Gx96",
+  "img": "https://cdn.shopify.com/s/files/1/0691/8330/7819/files/IMG-1168.png?v=1785542362",
+  "match": "exact",
+  "source": "https://sampoliahairbeauty.store/products/whitegold-carrot-super-whitening-hand-body-cream-360ml"
+ },
+ {
+  "id": "jc105",
+  "sku": "JLF-COS-135",
+  "name": "White Gold Turmeric Scrub",
+  "size": "521MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0743/4173/files/WhiteGoldSuperWhiteningFace_BodyScrub17.6oz.jpg?v=1758811201",
+  "match": "exact",
+  "source": "https://www.bargainside.com/products/white-gold-super-whitening-face-body-scrub-17-6-oz"
+ },
+ {
+  "id": "jc106",
+  "sku": "JLF-COS-136",
+  "name": "White Gold Turmeric Cleanser",
+  "size": "125MLx96",
+  "img": "https://cdn.shopify.com/s/files/1/0691/8330/7819/files/IMG-1166.png?v=1785540504",
+  "match": "exact",
+  "source": "https://sampoliahairbeauty.store/products/title-white-gold-turmeric-super-whitening-skin-cleanser-125ml"
+ },
+ {
+  "id": "jc107",
+  "sku": "JLF-COS-137",
+  "name": "White Gold Turmeric Lotion",
+  "size": "500MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0743/4173/files/WhiteGoldTumericSuperWhiteningLotion16.9oz.jpg?v=1758725006",
+  "match": "exact",
+  "source": "https://www.bargainside.com/products/white-gold-turmeric-super-whitening-lotion-16-9-oz"
+ },
+ {
+  "id": "jc108",
+  "sku": "JLF-COS-138",
+  "name": "White Gold Turmeric Oil",
+  "size": "500MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0231/1703/7645/files/white-Photoroom_0f53ca1f-9c95-410e-ba08-280b82a526dc.jpg?v=1753885523",
+  "match": "exact",
+  "source": "https://intimamentebella.com/products/%E2%9C%A8-white-gold-turmeric-super-whitening-oil-extra-whitening-in-just-7-days"
+ },
+ {
+  "id": "jc109",
+  "sku": "JLF-COS-139",
+  "name": "White Gold Turmeric Cream",
+  "size": "360Gx96",
+  "img": "https://cdn.shopify.com/s/files/1/0743/4173/files/WhiteGoldTurmericSuperWhiteningHand_BodyCream12oz.jpg?v=1758722564",
+  "match": "exact",
+  "source": "https://www.bargainside.com/products/white-gold-turmeric-super-whitening-hand-body-cream-12-oz"
+ },
+ {
+  "id": "jc110",
+  "sku": "JLF-COS-140",
+  "name": "White Gold Turmeric Serum",
+  "size": "Case",
+  "img": "https://cdn.shopify.com/s/files/1/0691/8330/7819/files/IMG-1167.png?v=1785541507",
+  "match": "exact",
+  "source": "https://sampoliahairbeauty.store/products/white-gold-turmeric-super-whitening-serum-30ml"
+ },
+ {
+  "id": "jc111",
+  "sku": "JLF-COS-141",
+  "name": "Amalico Batana Oil Hair Mask",
+  "size": "360Gx72",
+  "img": "https://cdn.shopify.com/s/files/1/0681/1729/9451/files/30F482B7-8041-41AD-9A35-CCEA2B15FE6A.jpg?v=1738074897",
+  "match": "exact",
+  "source": "https://amalicostore.com/products/100-batana-mask"
+ },
+ {
+  "id": "jc112",
+  "sku": "JLF-COS-142",
+  "name": "Amalico Batana Oil Hair Cream",
+  "size": "360Gx72",
+  "img": "https://cdn.shopify.com/s/files/1/0681/1729/9451/files/CD03AC12-1D0D-4ABF-BFA2-47C9D1E8DC5A.jpg?v=1738074938",
+  "match": "exact",
+  "source": "https://amalicostore.com/products/100-batana-cream-360ml"
+ },
+ {
+  "id": "jc113",
+  "sku": "JLF-COS-143",
+  "name": "Amalico Batana Oil Hair Serum",
+  "size": "100MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0681/1729/9451/files/D93D1477-8DC0-4E44-AB34-BAFF3DD64346.jpg?v=1738075111",
+  "match": "exact",
+  "source": "https://amalicostore.com/products/100-batana-serum-100ml"
+ },
+ {
+  "id": "jc114",
+  "sku": "JLF-COS-144",
+  "name": "Amalico Batana Oil",
+  "size": "250MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0681/1729/9451/files/9B69CA27-3698-496A-BE06-77AABAB81983.jpg?v=1738074850",
+  "match": "exact",
+  "source": "https://amalicostore.com/products/100-refined-batana-oil"
+ },
+ {
+  "id": "jc115",
+  "sku": "JLF-COS-145",
+  "name": "Amalico Batana Oil Shampoo",
+  "size": "500MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0681/1729/9451/files/553CE936-8DB9-40EF-BA25-EB38F1D6F127.jpg?v=1738757983",
+  "match": "exact",
+  "source": "https://amalicostore.com/products/batana-oil-pro-natural-honduran-miracle-oil-shampoo-500ml"
+ },
+ {
+  "id": "jc116",
+  "sku": "JLF-COS-146",
+  "name": "Amalico Batana Conditioner",
+  "size": "500MLx48",
+  "img": "https://cdn.shopify.com/s/files/1/0681/1729/9451/files/3117B083-17BC-476A-A45B-AA437DC60D76.jpg?v=1759761161",
+  "match": "exact",
+  "source": "https://amalicostore.com/products/untitled-sep30_15-38"
+ },
+ {
+  "id": "jc134",
+  "sku": "JLF-COS-164",
+  "name": "Lait H20 Jours Papaya",
+  "size": "500MLx24",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/H20_Jours_Natural_Papaya_Lightening_Body_Lotion_500ml__11729.jpg?v=1666523330",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/h20-natural-papaya-lightening-body-milk-lotion-16-9-oz-500-ml"
+ },
+ {
+  "id": "jc135",
+  "sku": "JLF-COS-165",
+  "name": "Cream H20 Jours Papaya",
+  "size": "300Gx48",
+  "img": "https://cdn.shopify.com/s/files/1/0421/1890/6014/files/71qBBGkUeIL.SS700.jpg?v=1696076820",
+  "match": "exact",
+  "source": "https://afrobodyglow.com/products/creme-lightening-cream-anti-taches-against-spots"
+ },
+ {
+  "id": "jc136",
+  "sku": "JLF-COS-166",
+  "name": "Labidjanaise Soap Carrot",
+  "size": "200Gx72",
+  "img": "https://www.ladyedna.com/3221-thickbox_default/l-abidjanaise-lightening-carrot-toilet-soap.jpg",
+  "match": "exact",
+  "source": "https://www.ladyedna.com/en/shower-gel-and-soap/787-l-abidjanaise-lightening-carrot-toilet-soap.html"
+ },
+ {
+  "id": "jc137",
+  "sku": "JLF-COS-167",
+  "name": "Labidjanaise Lotion Carrot",
+  "size": "500MLx24",
+  "img": "https://cdn.shopify.com/s/files/1/0580/1171/3707/files/1999.jpg?v=1689748209",
+  "match": "exact",
+  "source": "https://saffronskins.com/en-us/products/labidjanaise-carotte-lait-500-ml"
+ },
+ {
+  "id": "jc139",
+  "sku": "JLF-COS-169",
+  "name": "Labidjanaise Soap Curcuma",
+  "size": "200Gx72",
+  "img": "https://usbeautybazaar.com/wp-content/uploads/2026/10/shopify-273067338db68af96b20.png",
+  "match": "exact",
+  "source": "https://usbeautybazaar.com/products/labidjanaise-curcuma-clarifying-repairing-soap-200-frm"
+ },
+ {
+  "id": "jc146",
+  "sku": "JLF-COS-176",
+  "name": "Labidjanaise Lotion Nature",
+  "size": "500MLx24",
+  "img": "https://cdn.shopify.com/s/files/1/0346/2427/4569/products/Labidjanaise_lightening_complexion_Lotion_500_ml__12971.1615412393.jpg?v=1617595544",
+  "match": "exact",
+  "source": "https://karis-beauty-supply.myshopify.com/products/labidjanaise-reg-lotion-500ml"
+ },
+ {
+  "id": "jc147",
+  "sku": "JLF-COS-177",
+  "name": "Labidjanaise Cream Nature",
+  "size": "300Gx48",
+  "img": "https://cdn.shopify.com/s/files/1/0580/1171/3707/files/2001.jpg?v=1689776334",
+  "match": "exact",
+  "source": "https://saffronskins.com/en-us/products/labidjanaise-nature-cream-300g"
+ },
+ {
+  "id": "jc148",
+  "sku": "JLF-COS-178",
+  "name": "Labidjanaise Cream Carotte",
+  "size": "300Gx48",
+  "img": "https://cdn.shopify.com/s/files/1/0580/1171/3707/files/2002.jpg?v=1689776175",
+  "match": "exact",
+  "source": "https://saffronskins.com/en-us/products/labidjanaise-carotte-cream-300g"
+ },
+ {
+  "id": "jc149",
+  "sku": "JLF-COS-179",
+  "name": "Lait Belle Vie Curcuma",
+  "size": "475MLx24",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/6181100548648_937x937_f1148a32-0cb7-43f6-85a9-b1039c532601.webp?v=1746687427",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/bellevie-lait-clarifiant-extra-fort-475ml"
+ },
+ {
+  "id": "jc150",
+  "sku": "JLF-COS-180",
+  "name": "Gel Douche Belle Vie Curcuma",
+  "size": "700MLx24",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/6181100730531_869x869_264ad03e-ee60-4a30-a8d0-1ce73293ddbd.webp?v=1697399055",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-extrait-de-curcuma-700ml"
+ },
+ {
+  "id": "jc152",
+  "sku": "JLF-COS-182",
+  "name": "Gel Douche Gommage Belle Vie Curcuma",
+  "size": "700MLx24",
+  "img": "https://cdn.shopify.com/s/files/1/0569/0382/7661/files/6181100730531_49c66a38-c454-4436-9a00-ae40baa0ee0b.jpg?v=1727699312",
+  "match": "exact",
+  "source": "https://bhbdistributorsinc.com/products/bellevie-gel-douche-gommant-700g"
+ },
+ {
+  "id": "jc154",
+  "sku": "JLF-COS-184",
+  "name": "Savon Belle Vie Gommant Argil & Miel",
+  "size": "670G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/6181100548068__09719.webp?v=1697398445",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-argile-miel-soap-clarifying-exfoliating-670g"
+ },
+ {
+  "id": "jc155",
+  "sku": "JLF-COS-185",
+  "name": "Savon Belle Vie Gommant Avocat",
+  "size": "670G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/6181100548129__78115.webp?v=1697398338",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-avocat-soap-clarifying-exfoliating-670g"
+ },
+ {
+  "id": "jc156",
+  "sku": "JLF-COS-186",
+  "name": "Savon Belle Vie Gommant Carotte",
+  "size": "670G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/6181100548082__96574.webp?v=1746685482",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-carotte-soap-clarifying-exfoliating-670g"
+ },
+ {
+  "id": "jc157",
+  "sku": "JLF-COS-187",
+  "name": "Savon Belle Vie Gommant Collagene",
+  "size": "670G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/6181100548075__75037_1.webp?v=1697398548",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-collage-soap-clarifying-exfoliating-670g-1"
+ },
+ {
+  "id": "jc159",
+  "sku": "JLF-COS-189",
+  "name": "Savon Belle Vie Gommant Glutathione",
+  "size": "670G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/6181100548235__98087.webp?v=1697397714",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-glutathion-soap-clarifying-exfoliating-670g"
+ },
+ {
+  "id": "jc160",
+  "sku": "JLF-COS-190",
+  "name": "Savon Belle Vie Gommant Lemon",
+  "size": "670G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/6181100548044__20904.webp?v=1672380233",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-lemon-soap-clarifying-exfoliating-670g"
+ },
+ {
+  "id": "jc161",
+  "sku": "JLF-COS-191",
+  "name": "Savon Belle Vie Gommant Papaye",
+  "size": "670G",
+  "img": "https://serinacosmetics.com/wp-content/uploads/2024/06/Belle-Vie-Papaye-Soap-Clarifying-Exfoliating-670g.jpg",
+  "match": "exact",
+  "source": "https://serinacosmetics.com/shop/skincare/scrubs/belle-vie-papaye-soap-clarifying-exfoliating-670g/"
+ },
+ {
+  "id": "jc162",
+  "sku": "JLF-COS-192",
+  "name": "Savon Belle Vie Gommant Tomate",
+  "size": "670G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/products/6181100548051__61749.webp?v=1746685891",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-tomate-soap-clarifying-exfoliatino-670g"
+ },
+ {
+  "id": "jc163",
+  "sku": "JLF-COS-193",
+  "name": "Concentré Belle Vie Curcuma",
+  "size": "125ML",
+  "img": "https://cdn.shopify.com/s/files/1/0569/0382/7661/files/6181100730043.jpg?v=1705928039",
+  "match": "approx",
+  "source": "https://bhbdistributorsinc.com/products/bellevie-concentrated-curcuma-135g"
+ },
+ {
+  "id": "jc164",
+  "sku": "JLF-COS-194",
+  "name": "Serum Belle Vie Curcuma",
+  "size": "125MLx60",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/6181100730050_869x869_8dad2ca2-e599-46ce-9349-50b70f88e8fc.webp?v=1693644128",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/belle-vie-extrait-de-curcuma-pour-usage-exterme-125ml"
+ },
+ {
+  "id": "jc165",
+  "sku": "JLF-COS-195",
+  "name": "Lotion Belle Vie Curcuma",
+  "size": "125MLx60",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/IMG-8137.jpg?v=1697400014",
+  "match": "approx",
+  "source": "https://www.kismetbeautybrands.com/products/bellevie-lotion-reparatrice-125ml"
+ },
+ {
+  "id": "jc166",
+  "sku": "JLF-COS-196",
+  "name": "Tube Belle Vie Curcuma",
+  "size": "50G",
+  "img": "https://cdn.shopify.com/s/files/1/0764/6439/0474/files/photo_2025-02-20_13-12-29.jpg?v=1740046645",
+  "match": "exact",
+  "source": "https://mohsenistore.com/products/belle-vie-curcuma-cream-50gr"
+ },
+ {
+  "id": "jc168",
+  "sku": "JLF-COS-198",
+  "name": "Crème Belle Vie Curcuma",
+  "size": "150G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/IMG-8148.jpg?v=1693649537",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/bellevie-creme-de-corps-clarifiante-extra-forte-150g"
+ },
+ {
+  "id": "jc169",
+  "sku": "JLF-COS-199",
+  "name": "Crème Belle Vie Curcuma",
+  "size": "40Gx48",
+  "img": "https://cdn.shopify.com/s/files/1/0580/1171/3707/files/257.jpg?v=1700395122",
+  "match": "exact",
+  "source": "https://saffronskins.com/en-us/products/belle-vie-extrait-curcuma-clarifying-face-cream"
+ },
+ {
+  "id": "jc170",
+  "sku": "JLF-COS-200",
+  "name": "Crème Miracle Belle Vie Curcuma",
+  "size": "100G",
+  "img": "https://cdn.shopify.com/s/files/1/0567/0128/8599/files/6181100730562_d4feae15-875a-4886-8e66-d193b0b7652d.webp?v=1737145147",
+  "match": "exact",
+  "source": "https://www.kismetbeautybrands.com/products/bellevie-curcuma-extract-miracle-cream-100g"
+ },
+ {
+  "id": "jc171",
+  "sku": "JLF-COS-201",
+  "name": "Cream Egyptian Beauty",
+  "size": "300MLx24",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Cream-300-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-cream-125ml-300ml/"
+ },
+ {
+  "id": "jc172",
+  "sku": "JLF-COS-202",
+  "name": "Savon Egyptian Beauty",
+  "size": "180Gx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Soap-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-soap/"
+ },
+ {
+  "id": "jc173",
+  "sku": "JLF-COS-203",
+  "name": "Gel Douche Exfoliant Egyptian Beauty",
+  "size": "1Lx12",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Shower-Gel-EXF-1000-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-exfoliating-shower-gel-500ml-1000ml/"
+ },
+ {
+  "id": "jc174",
+  "sku": "JLF-COS-204",
+  "name": "Gel Douche Clarifiant Egyptian Beauty",
+  "size": "1Lx12",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Shower-Gel-CLR-1000-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-clarifying-shower-gel-500ml-1000ml/"
+ },
+ {
+  "id": "jc175",
+  "sku": "JLF-COS-205",
+  "name": "Cream Egyptian Beauty",
+  "size": "125MLx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Cream-125-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-cream-125ml-300ml/"
+ },
+ {
+  "id": "jc176",
+  "sku": "JLF-COS-206",
+  "name": "Gel Douche Exfoliant Egyptian Beauty",
+  "size": "500MLx12",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Shower-Gel-EXF-500-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-exfoliating-shower-gel-500ml-1000ml/"
+ },
+ {
+  "id": "jc177",
+  "sku": "JLF-COS-207",
+  "name": "Gel Douche Clarifiant Egyptian Beauty",
+  "size": "500MLx12",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Shower-Gel-CLR-500-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-clarifying-shower-gel-500ml-1000ml/"
+ },
+ {
+  "id": "jc178",
+  "sku": "JLF-COS-208",
+  "name": "Serum Egyptian Beauty",
+  "size": "30MLx36",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Serum-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-unifying-serum/"
+ },
+ {
+  "id": "jc179",
+  "sku": "JLF-COS-209",
+  "name": "Huile Egyptian Beauty",
+  "size": "90MLx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Oil-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-clarifying-oil-90ml/"
+ },
+ {
+  "id": "jc180",
+  "sku": "JLF-COS-210",
+  "name": "DSR Egyptian Beauty",
+  "size": "30MLx72",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/DSR-Egyptian-Beauty.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/egyptian-beauty-dark-spot-remover-30ml/"
+ },
+ {
+  "id": "jc181",
+  "sku": "JLF-COS-211",
+  "name": "Lait Morocco Skin",
+  "size": "400MLx24",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Lotion-400ml-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-clarifying-body-lotion200ml400ml/"
+ },
+ {
+  "id": "jc182",
+  "sku": "JLF-COS-212",
+  "name": "Cream Morocco Skin",
+  "size": "300MLx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Cream-300ml-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-clarifying-body-cream150ml300ml/"
+ },
+ {
+  "id": "jc183",
+  "sku": "JLF-COS-213",
+  "name": "Savon Morocco Skin",
+  "size": "200Gx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Soap-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-soap/"
+ },
+ {
+  "id": "jc184",
+  "sku": "JLF-COS-214",
+  "name": "Gel Douche Morocco Skin Exfoliant",
+  "size": "1Lx12",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/ShowerGel-EXF-1000ml-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-exfoliating-shower-gel500ml1000ml/"
+ },
+ {
+  "id": "jc185",
+  "sku": "JLF-COS-215",
+  "name": "Gel Douche Morocco Skin Clarifiant",
+  "size": "1Lx12",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/ShowerGel-CLR-1000ml-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-clarifying-shower-gel500ml1000ml/"
+ },
+ {
+  "id": "jc186",
+  "sku": "JLF-COS-216",
+  "name": "Serum Morocco Skin",
+  "size": "30MLx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Serum-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-clarifying-serum/"
+ },
+ {
+  "id": "jc187",
+  "sku": "JLF-COS-217",
+  "name": "Huile Morocco Skin",
+  "size": "90MLx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/Oil-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-clarifying-body-oil-90ml/"
+ },
+ {
+  "id": "jc188",
+  "sku": "JLF-COS-218",
+  "name": "DSR Morocco Skin",
+  "size": "30MLx48",
+  "img": "https://rodistogo.com/wp-content/uploads/2025/01/DSR-MoroccoSkin.jpg",
+  "match": "exact",
+  "source": "https://rodistogo.com/product/morocco-skin-dark-spot-remover-30ml/"
+ }
+]

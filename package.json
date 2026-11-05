@@ -13,7 +13,9 @@
     "db:seed": "tsx prisma/seed.js",
     "db:import-foods": "tsx prisma/import-foods.js",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.js",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "images:check": "tsx scripts/set-product-images.mjs",
+    "images:set": "tsx scripts/set-product-images.mjs --apply"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
