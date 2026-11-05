@@ -3,7 +3,7 @@
 Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · Zustand · **PostgreSQL + Prisma** · Google Maps (Geocoding + Routes API)
 
 The storefront, customer account, supplier portal and admin now run on a real database and API
-(`app/api/*`, logic in `lib/server/*`). Only the cart, wishlist and chosen delivery city stay in the browser. 
+(`app/api/*`, logic in `lib/server/*`). Only the cart, wishlist and chosen delivery city stay in the browser.  
 No payments and no emails yet — orders are *requests* that JOLOF confirms, then an invoice is issued.
 
 ## Setup   
