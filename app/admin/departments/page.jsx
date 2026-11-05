@@ -5,6 +5,7 @@ import { useStore, useStoreReady } from '@/lib/store';
 import { CATEGORY_STATUS } from '@/lib/format';
 import { PageHeader, Pill, Modal, Field } from '@/components/ui';
 import { useToast } from '@/components/Providers';
+import { ImageInput } from '@/components/ImageInput';
 import { Card, Skeleton, useConfirm } from '@/components/admin/common';
 
 const KIND = {
@@ -141,7 +142,7 @@ export default function DepartmentsPage() {
               </div>
             </Field>
             <Field label="Tagline" hint="One line shown on the home page card and menus."><input className="dash-input" value={dept.tagline} onChange={(e) => setDept({ ...dept, tagline: e.target.value })} /></Field>
-            <Field label="Card image URL" hint="Shown on the home page “Shop by Department” card."><input className="dash-input" value={dept.image} onChange={(e) => setDept({ ...dept, image: e.target.value })} placeholder="https://…" /></Field>
+            <Field label="Card image" hint="Shown on the home page “Shop by Department” card."><ImageInput folder="departments" value={dept.image} onChange={(image) => setDept((x) => ({ ...x, image }))} /></Field>
             <Field label="Status">
               <select className="dash-input" value={dept.status} onChange={(e) => setDept({ ...dept, status: e.target.value })}>
                 {Object.entries(CATEGORY_STATUS).map(([v, m]) => <option key={v} value={v}>{m.label}</option>)}

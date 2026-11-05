@@ -18,6 +18,14 @@ npm run dev                   # http://localhost:3000
 `npm run db:seed` wipes and reloads the data at any time (also Admin → Settings → Reset demo data;
 disabled in production unless `ALLOW_DEMO_RESET=true`). `npm run db:studio` opens a DB browser.
 
+**Image uploads (Amazon S3):** every image field in the dashboards (products, departments, commodities,
+product requests, supplier "new product") takes a link **or** an uploaded file. Uploads go to
+`AWS_BUCKET` under `AWS_FOLDER` (default `jolof/`), e.g. `jolof/products/2026/11/<id>.webp`, through
+`POST /api/upload` (admins; suppliers only for their product requests; JPG/PNG/WebP/GIF/AVIF, max 5 MB).
+Set the `AWS_*` values in `.env` (see `.env.example`). The IAM user needs `s3:PutObject` on
+`arn:aws:s3:::<bucket>/jolof/*`, and the bucket must allow public read of `jolof/*`
+(bucket policy `s3:GetObject`, with "Block public access" off for policies) — or set `AWS_URL` to a CloudFront domain.
+
 **Google Maps:** enable *Geocoding API* and *Routes API* on the key. Without a key everything still works —
 addresses resolve to their city/state hub and distances are straight-line × 1.2 (marked approximate).
 

@@ -7,6 +7,7 @@ import { useDepartments } from '@/lib/departments';
 import { money, timeAgo, INQUIRY_STATUS, qtyUnit } from '@/lib/format';
 import { PageHeader, Pill, Drawer, Field, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
+import { ImageInput } from '@/components/ImageInput';
 import { Card, TableWrap, Skeleton, useConfirm, Toggle } from '@/components/admin/common';
 
 const blank = { name: '', line: '', group: 'Grains & Cereals', origin: '', unit: 'MT', minQty: 10, indicative: '', img: '', alt: '', status: 'active' };
@@ -106,7 +107,7 @@ export default function TradingPage() {
               <Field label="Unit"><input className="dash-input" value={f.unit} onChange={(e) => setF({ ...f, unit: e.target.value })} /></Field>
               <Field label="Indicative price (USD per unit)" hint="Internal guide — prefilled when you quote" className="sm:col-span-2"><input type="number" min="0" className="dash-input" value={f.indicative} onChange={(e) => setF({ ...f, indicative: e.target.value })} /></Field>
             </div>
-            <Field label="Image URL"><input className="dash-input" value={f.img} onChange={(e) => setF({ ...f, img: e.target.value })} /></Field>
+            <Field label="Image" className="sm:col-span-2"><ImageInput compact folder="commodities" value={f.img} onChange={(img) => setF((x) => ({ ...x, img }))} /></Field>
             <Toggle label="Listed on storefront" checked={f.status === 'active'} onChange={(v) => setF({ ...f, status: v ? 'active' : 'hidden' })} />
             {err && <p className="text-[13px] font-bold text-[#B4432F]">{err}</p>}
           </div>
