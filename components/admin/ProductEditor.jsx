@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import { Save, Trash2 } from 'lucide-react';
+import { ImageInput } from '@/components/ImageInput';
 import { useStore } from '@/lib/store';
 import { SEED_PRODUCTS, productImg } from '@/lib/catalogue';
 import { Drawer, Field } from '@/components/ui';
@@ -20,11 +21,10 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
   const toast = useToast();
   const [f, setF] = useState(blank);
   const [err, setErr] = useState('');
-  const [url, setUrl] = useState('');
 
   useEffect(() => {
     if (!open) return;
-    setErr(''); setUrl('');
+    setErr('');
     setF(product ? { ...blank, ...product, pack: product.pack || '', size: product.size || '', tag: product.tag || '', desc: product.desc || '', priceMode: typeof product.price === 'number' ? 'fixed' : 'request', price: typeof product.price === 'number' ? product.price : '' } : { ...blank, dept: firstDept.name, cat: firstCat });
   }, [open, product]);
 
@@ -69,9 +69,8 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
                 </button>
               ))}
             </div>
-            <div className="flex gap-2 mt-2">
-              <input className="dash-input !py-1.5 !text-[13px]" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="…or paste an image URL" />
-              <button type="button" className="dash-btn dash-btn-ghost !h-9 shrink-0" onClick={() => url.trim() && set({ img: url.trim() })}>Use</button>
+            <div className="mt-2">
+              <ImageInput compact folder="products" value={f.img} onChange={(img) => set({ img })} placeholder="…or paste an image link" />
             </div>
           </div>
         </section>
