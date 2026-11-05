@@ -9,7 +9,7 @@ import { Toggle } from '@/components/admin/common';
 import { useDepartments } from '@/lib/departments';
 
 const IMAGES = [...new Set(SEED_PRODUCTS.map((p) => p.img))];
-const blank = { name: '', dept: 'Food', cat: 'Spices & Seasonings', size: '', pack: '', price: '', priceMode: 'fixed', tag: '', desc: '', img: IMAGES[0], stock: 0, lowStock: 10, moq: 1, status: 'active', featured: false, bestSeller: false, newArrival: true, recommended: false };
+const blank = { name: '', brand: '', dept: 'Food', cat: 'Spices & Seasonings', size: '', pack: '', price: '', priceMode: 'fixed', tag: '', desc: '', img: IMAGES[0], stock: 0, lowStock: 10, moq: 1, status: 'active', featured: false, bestSeller: false, newArrival: true, recommended: false };
 
 export default function ProductEditor({ product, open, onClose, onDelete }) {
   const categories = useStore((s) => s.categories);
@@ -88,6 +88,7 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
               {cats.map((c) => <option key={c.id} value={c.name}>{c.name}{c.status !== 'active' ? ` (${c.status.replace('_', ' ')})` : ''}</option>)}
             </select>
           </Field>
+          <Field label="Brand" hint="optional"><input className="dash-input" value={f.brand || ''} onChange={(e) => set({ brand: e.target.value })} /></Field>
           <Field label="Size" hint="e.g. 500 g, 300MLx36"><input className="dash-input" value={f.size} onChange={(e) => set({ size: e.target.value })} /></Field>
           <Field label="Wholesale pack" hint="e.g. 48 Units"><input className="dash-input" value={f.pack} onChange={(e) => set({ pack: e.target.value })} /></Field>
         </section>

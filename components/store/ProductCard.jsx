@@ -32,7 +32,7 @@ export function ProductCard({ p }) {
         <h3 className="mt-1.5 font-bold text-navy text-[15px] sm:text-[16px] leading-snug">
           <button type="button" className="text-left hover:text-emerald transition" onClick={() => openQuick(p.id)}>{p.name}</button>
         </h3>
-        <p className="text-[12.5px] text-charcoal/55 mt-1">{sizeLine(p)}</p>
+        <p className="text-[12.5px] text-charcoal/55 mt-1">{p.brand && <span className="font-semibold text-charcoal/70">{p.brand}</span>}{p.brand && sizeLine(p) ? ' · ' : ''}{sizeLine(p)}</p>
         {priced(p) ? (
           <div className="mt-3 flex items-center justify-between gap-2">
             <p className="leading-tight">
