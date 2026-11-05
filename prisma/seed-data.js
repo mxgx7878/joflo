@@ -7,6 +7,7 @@ import { SEED_PRODUCTS, SEED_COMMODITIES, BASE_CATEGORIES, BASE_DEPARTMENTS } fr
 import { getLocation, locationFromAddress } from '../lib/locations.js';
 import { planLines } from '../lib/server/routing.js';
 import { haversineMiles, ROAD_FACTOR } from '../lib/server/maps.js';
+import { importFoods } from './foods.js';
 import { deliveryFee, orderDeliveryFee, DEFAULT_DELIVERY } from '../lib/delivery.js';
 
 const HOUSE = 'v-jolof';
@@ -294,7 +295,10 @@ export async function seedDatabase(prisma) {
   await prisma.counter.createMany({ data: [{ key: 'order', value: 10241 }, { key: 'inquiry', value: 2058 }] });
   await prisma.subscriber.createMany({ data: [{ email: 'kofi@demo.com', at: new Date('2026-10-20T10:00:00Z') }, { email: 'mariam.t@demo.com', at: new Date('2026-10-18T10:00:00Z') }, { email: 'olu@demo.com', at: new Date('2026-10-11T10:00:00Z') }] });
 
-  return { products: SEED_PRODUCTS.length, suppliers: USERS.filter((u) => u.role === 'vendor').length, warehouses: WAREHOUSES.length, offers: offers.length, orders: ORDERS.length };
+  /* JOLOF FOODS price list (DRY / DRINK / FROZEN) */
+  const foods = await importFoods(prisma);
+
+  return { products: SEED_PRODUCTS.length + foods.foods, suppliers: USERS.filter((u) => u.role === 'vendor').length, warehouses: WAREHOUSES.length, offers: offers.length, orders: ORDERS.length };
 }
 
 export const DEMO_LOGINS = USERS.map((u) => ({ email: u.email, password: u.password, role: u.role, status: u.status || 'active' }));

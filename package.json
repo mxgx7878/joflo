@@ -11,6 +11,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.js",
+    "db:import-foods": "tsx prisma/import-foods.js",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.js",
     "db:studio": "prisma studio"
   },
