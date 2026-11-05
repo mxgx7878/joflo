@@ -32,7 +32,7 @@
   "size": "500g",
   "pack": "50 Units",
   "price": 275.0,
-  "img": null,
+  "img": "foods/baobab-seed",
   "desc": "Baobab Seed — 500g · 50 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -80,7 +80,7 @@
   "size": "32 fl.oz",
   "pack": "12 Units",
   "price": 105.0,
-  "img": null,
+  "img": "foods/bama-mayonnaise",
   "desc": "Praise Bama Mayonnaise — 32 fl.oz · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -92,7 +92,7 @@
   "size": "800g",
   "pack": "15 Units",
   "price": 80.0,
-  "img": null,
+  "img": "foods/sankhal",
   "desc": "Praise Sankhal — 800g · 15 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -104,7 +104,7 @@
   "size": "400g",
   "pack": "20 Units",
   "price": 60.0,
-  "img": null,
+  "img": "foods/sankhal",
   "desc": "Praise Sankhal — 400g · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -188,7 +188,7 @@
   "size": "500g",
   "pack": "12 Units",
   "price": 28.0,
-  "img": null,
+  "img": "foods/vermicelle-tria",
   "desc": "Praise Vermicelle TRIA — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -272,7 +272,7 @@
   "size": null,
   "pack": "24 Units",
   "price": 100.0,
-  "img": null,
+  "img": "foods/nettetou-soumbra-dawadawa-powder",
   "desc": "Tawfex NETTETOU/SOUMBRA/ DAWADAWA POWDER — 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -284,7 +284,7 @@
   "size": null,
   "pack": "6 Units",
   "price": 50.0,
-  "img": null,
+  "img": "foods/peanut-butter",
   "desc": "Tawfex Peanut Butter — 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -296,7 +296,7 @@
   "size": null,
   "pack": "12 Units",
   "price": 80.0,
-  "img": null,
+  "img": "foods/peanut-butter",
   "desc": "Tawfex Peanut Butter — 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -320,7 +320,7 @@
   "size": "300g",
   "pack": "24 Units",
   "price": 58.0,
-  "img": null,
+  "img": "foods/athieke",
   "desc": "Mama's Choice ATHIEKE — 300g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -464,7 +464,7 @@
   "size": "3lbs",
   "pack": "20 Units",
   "price": 80.0,
-  "img": null,
+  "img": "foods/cassava-dough-placali",
   "desc": "Nestle Cassava Dough Placali — 3lbs · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -584,7 +584,7 @@
   "size": "10g",
   "pack": "24x60",
   "price": 120.0,
-  "img": null,
+  "img": "foods/maggi-tablette",
   "desc": "Nestle Maggi tablette — 10g · 24x60. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -596,7 +596,7 @@
   "size": "16 oz",
   "pack": "24 Units",
   "price": 70.0,
-  "img": null,
+  "img": "foods/sardine-mackerel-with-chilli",
   "desc": "Geisha Sardine Mackerel with chilli — 16 oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -764,7 +764,7 @@
   "size": "400g",
   "pack": "20 Units",
   "price": 60.0,
-  "img": null,
+  "img": "foods/farine-de-mil",
   "desc": "Belma Farine de Mil — 400g · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -788,7 +788,7 @@
   "size": "420g",
   "pack": "12 Units",
   "price": 76.0,
-  "img": null,
+  "img": "foods/maad",
   "desc": "Zena Maad — 420g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -812,7 +812,7 @@
   "size": "420g",
   "pack": "12 Units",
   "price": 76.0,
-  "img": null,
+  "img": "foods/spicy-pepper-sauce",
   "desc": "Zena Spicy Pepper Sauce — 420g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -824,7 +824,7 @@
   "size": "25 lbs",
   "pack": "1 Units",
   "price": 23.0,
-  "img": null,
+  "img": "foods/jasmine-rice",
   "desc": "Zena Jasmine Rice — 25 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -836,7 +836,7 @@
   "size": "10 lbs",
   "pack": "1 Units",
   "price": 11.0,
-  "img": null,
+  "img": "foods/jasmine-rice",
   "desc": "Zena Jasmine Rice — 10 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -848,7 +848,7 @@
   "size": "25 lbs",
   "pack": "1 Units",
   "price": 21.0,
-  "img": null,
+  "img": "foods/broken-rice",
   "desc": "Zena Broken Rice — 25 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -860,7 +860,7 @@
   "size": "10 lbs",
   "pack": "1 Units",
   "price": 9.0,
-  "img": null,
+  "img": "foods/broken-rice",
   "desc": "Zena Broken Rice — 10 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -872,7 +872,7 @@
   "size": "50 lbs",
   "pack": "1 Units",
   "price": 40.0,
-  "img": null,
+  "img": "foods/excellence-rice",
   "desc": "Zena Excellence Rice — 50 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -884,7 +884,7 @@
   "size": "32 oz",
   "pack": "30 Units",
   "price": 150.0,
-  "img": null,
+  "img": "foods/fonio",
   "desc": "Zena Fonio — 32 oz · 30 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -896,7 +896,7 @@
   "size": null,
   "pack": "1 Units",
   "price": 110.0,
-  "img": null,
+  "img": "foods/fleur-doranger-small",
   "desc": "Zena Fleur d'Oranger Small — 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -908,7 +908,7 @@
   "size": null,
   "pack": "1 Units",
   "price": 130.0,
-  "img": null,
+  "img": "foods/fleur-doranger",
   "desc": "Zena Fleur d'Oranger — 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -932,7 +932,7 @@
   "size": "24oz",
   "pack": "24 Units",
   "price": 145.0,
-  "img": null,
+  "img": "foods/plantain-fufu-flour",
   "desc": "Tropiway Plantain Fufu Flour — 24oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -944,7 +944,7 @@
   "size": "2.2 lbs",
   "pack": "12 Units",
   "price": 54.0,
-  "img": null,
+  "img": "foods/banku-mix",
   "desc": "Tropiway Banku Mix — 2.2 lbs · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1004,7 +1004,7 @@
   "size": "29 oz",
   "pack": "12 Units",
   "price": null,
-  "img": null,
+  "img": "foods/luncheon-loaf",
   "desc": "Al Haloub Luncheon Loaf — 29 oz · 12 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1028,7 +1028,7 @@
   "size": "800g",
   "pack": "12 Units",
   "price": 66.0,
-  "img": null,
+  "img": "foods/derica-tomato-paste",
   "desc": "Al Haloub Derica Tomato Paste — 800g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1088,7 +1088,7 @@
   "size": null,
   "pack": null,
   "price": null,
-  "img": null,
+  "img": "foods/tiger-nut",
   "desc": "SUNNY GOLD Tiger Nut. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1100,7 +1100,7 @@
   "size": null,
   "pack": "20 Units",
   "price": 90.0,
-  "img": null,
+  "img": "foods/moringa-leaves",
   "desc": "SUNNY GOLD Moringa Leaves — 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1148,7 +1148,7 @@
   "size": "125g",
   "pack": "100 Units",
   "price": null,
-  "img": null,
+  "img": "foods/hot-sardines-with-spicy-vegetable-oil",
   "desc": "Safi Hot Sardines with Spicy Vegetable Oil — 125g · 100 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1160,7 +1160,7 @@
   "size": "125g",
   "pack": "50 Units",
   "price": null,
-  "img": null,
+  "img": "foods/hot-sardines-with-spicy-vegetable-oil",
   "desc": "Safi Hot Sardines with Spicy Vegetable Oil — 125g · 50 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1184,7 +1184,7 @@
   "size": "800g",
   "pack": "12 Units",
   "price": null,
-  "img": null,
+  "img": "foods/palm-cream-concentrate",
   "desc": "Liberian Fresh Palm Cream Concentrate — 800g · 12 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1196,7 +1196,7 @@
   "size": "800g",
   "pack": "12 Units",
   "price": null,
-  "img": null,
+  "img": "foods/fresh-palm-fruit-extract",
   "desc": "Neat Fresh Palm Fruit Extract — 800g · 12 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1208,7 +1208,7 @@
   "size": "800g",
   "pack": "12 Units",
   "price": null,
-  "img": null,
+  "img": "foods/palm-soup-base",
   "desc": "Nkulenu’s Palm Soup Base — 800g · 12 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1220,7 +1220,7 @@
   "size": "3.8 oz",
   "pack": "50 Units",
   "price": null,
-  "img": null,
+  "img": "foods/hot-sardines",
   "desc": "Omega Hot Sardines — 3.8 oz · 50 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1256,7 +1256,7 @@
   "size": "500g",
   "pack": "24 Units",
   "price": 92.0,
-  "img": null,
+  "img": "foods/egusi-powder-ghana",
   "desc": "Omega Egusi Powder (Ghana) — 500g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1316,7 +1316,7 @@
   "size": "800g",
   "pack": "12 Units",
   "price": null,
-  "img": null,
+  "img": "foods/egg-plant",
   "desc": "Praise Egg Plant — 800g · 12 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1328,7 +1328,7 @@
   "size": null,
   "pack": null,
   "price": 46.0,
-  "img": null,
+  "img": "foods/begue-balla-gaye-candy",
   "desc": "Praise Begue Balla Gaye Candy. Wholesale — price shown is the JOLOF TRADING wholesale price."
  },
  {
@@ -1340,7 +1340,7 @@
   "size": "500g",
   "pack": "30 Units",
   "price": 135.0,
-  "img": null,
+  "img": "foods/thiere-no-lalo",
   "desc": "Praise Thiere No Lalo — 500g · 30 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1400,7 +1400,7 @@
   "size": null,
   "pack": null,
   "price": 66.0,
-  "img": null,
+  "img": "foods/menth-fraish",
   "desc": "Royal Menth Fraish. Wholesale — price shown is the JOLOF TRADING wholesale price."
  },
  {
@@ -1460,7 +1460,7 @@
   "size": "125g",
   "pack": "50 Units",
   "price": null,
-  "img": null,
+  "img": "foods/sardines-with-vegetable-oil",
   "desc": "Safi Sardines with Vegetable Oil — 125g · 50 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1496,7 +1496,7 @@
   "size": "800g",
   "pack": "16 Units",
   "price": null,
-  "img": null,
+  "img": "foods/egg-plant",
   "desc": "SupremeFresh Egg Plant — 800g · 16 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1520,7 +1520,7 @@
   "size": "225g",
   "pack": "24 Units",
   "price": null,
-  "img": null,
+  "img": "foods/mackerel-in-tomato-sauce-with-hot-chili-green",
   "desc": "Tinappa Mackerel in Tomato Sauce with Hot Chili (Green) — 225g · 24 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1532,7 +1532,7 @@
   "size": "225g",
   "pack": "24 Units",
   "price": null,
-  "img": null,
+  "img": "foods/mackerel-in-tomato-sauce-red",
   "desc": "Tinappa Mackerel in Tomato Sauce (Red) — 225g · 24 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1580,7 +1580,7 @@
   "size": "12 oz",
   "pack": "24 Units",
   "price": null,
-  "img": null,
+  "img": "foods/chicken-and-beef-luncheon-loaf",
   "desc": "Ziyad Chicken and Beef Luncheon Loaf — 12 oz · 24 Units. Contact our team for wholesale pricing and availability."
  },
  {
@@ -1748,7 +1748,7 @@
   "size": null,
   "pack": "20 Pcs",
   "price": 76.0,
-  "img": null,
+  "img": "foods/athieke",
   "desc": "ATHIEKE — 20 Pcs. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1820,7 +1820,7 @@
   "size": "1 lbs",
   "pack": null,
   "price": 3.7,
-  "img": null,
+  "img": "foods/croaker-fish-8-16",
   "desc": "Blessings Croaker Fish (8-16) — 1 lbs. Wholesale — price shown is the JOLOF TRADING wholesale price."
  },
  {
@@ -1832,7 +1832,7 @@
   "size": "4.58 oz",
   "pack": "80 Units",
   "price": 360.0,
-  "img": null,
+  "img": "foods/guedj-beure",
   "desc": "Blessings Guedj Beure — 4.58 oz · 80 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1856,7 +1856,7 @@
   "size": null,
   "pack": "80 Units",
   "price": 360.0,
-  "img": null,
+  "img": "foods/yett",
   "desc": "Blessings YETT — 80 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
@@ -1868,7 +1868,7 @@
   "size": "4.58 oz",
   "pack": "80 Units",
   "price": 360.0,
-  "img": null,
+  "img": "foods/guedj-kong",
   "desc": "Blessings Guedj Kong — 4.58 oz · 80 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
  },
  {
