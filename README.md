@@ -1,4 +1,4 @@
-# JOLOF TRADING — Storefront + Dashboards
+# JOLOF TRADING — Storefront + Dashboards 
 
 Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · Zustand · **PostgreSQL + Prisma** · Google Maps (Geocoding + Routes API)
 
