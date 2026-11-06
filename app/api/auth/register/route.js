@@ -27,8 +27,8 @@ export const POST = route(async (req) => {
   });
   // a guest who checked out / enquired with this email now sees those in their account
   if (!supplier) {
-    await prisma.order.updateMany({ where: { userId: null, guest: true, customer: { path: ['email'], equals: email } }, data: { userId: user.id } });
-    await prisma.inquiry.updateMany({ where: { userId: null, email: { equals: email, mode: 'insensitive' } }, data: { userId: user.id } });
+    await prisma.order.updateMany({ where: { userId: null, guest: true, customer: { path: '$.email', equals: email } }, data: { userId: user.id } });
+    await prisma.inquiry.updateMany({ where: { userId: null, email: { equals: email } }, data: { userId: user.id } });
   }
   await startSession(user.id);
   return { user: { id: user.id, role: user.role, status: user.status }, state: await buildState(user) };
