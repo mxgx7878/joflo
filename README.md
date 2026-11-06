@@ -1,13 +1,16 @@
 # JOLOF TRADING — Storefront + Dashboards 
 
-Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · Zustand · **PostgreSQL + Prisma** · Google Maps (Geocoding + Routes API)
+Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · Zustand · **MySQL 8 + Prisma** · Google Maps (Geocoding + Routes API)
 
 The storefront, customer account, supplier portal and admin now run on a real database and API
 (`app/api/*`, logic in `lib/server/*`). Only the cart, wishlist and chosen delivery city stay in the browser. 
 No payments and no emails yet — orders are *requests* that JOLOF confirms, then an invoice is issued.
 
-## Setup   
- 
+## Setup
+
+Local database: MySQL 8 (Laragon works out of the box). Create an empty database first,
+e.g. `joflo_dev` in Laragon → Database, then:
+
 ```bash
 cp .env.example .env          # DATABASE_URL, AUTH_SECRET, GOOGLE_MAPS_API_KEY
 npm install                   # also runs prisma generate
@@ -17,6 +20,19 @@ npm run dev                   # http://localhost:3000
 
 `npm run db:seed` wipes and reloads the data at any time (also Admin → Settings → Reset demo data;
 disabled in production unless `ALLOW_DEMO_RESET=true`). `npm run db:studio` opens a DB browser.
+
+### Moving existing data off Neon
+
+The project used PostgreSQL on Neon before. To bring that data across, run once against an empty MySQL database:
+
+```bash
+npm run db:migrate                                   # create the MySQL tables
+NEON_DATABASE_URL="postgresql://...neon.tech/..." npm run db:copy-from-neon
+```
+
+It only reads from Neon, empties the MySQL tables, then copies every row in foreign-key order
+and prints a count per table. On Windows PowerShell set the variable first:
+`$env:NEON_DATABASE_URL="postgresql://..."; npm run db:copy-from-neon`.
 
 **Image uploads (Amazon S3):** every image field in the dashboards (products, departments, commodities,
 product requests, supplier "new product") takes a link **or** an uploaded file. Uploads go to

@@ -1,4 +1,4 @@
-// JOLOF TRADING — database schema (PostgreSQL via Prisma)
+// JOLOF TRADING — database schema (MySQL 8 via Prisma)
 //
 // Catalogue model
 //   Product        = MASTER product (one row per item JOLOF sells, owned by admin)
@@ -13,7 +13,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -61,9 +61,9 @@ model Department {
   name        String     @unique
   slug        String     @unique
   kind        String     @default("products") // products = shop items · trading = commodities, quote only
-  tagline     String     @default("") // one line on cards and menus
-  description String     @default("")
-  image       String     @default("")
+  tagline     String     @default("") @db.VarChar(500) // one line on cards and menus
+  description String     @default("") @db.VarChar(2000)
+  image       String     @default("") @db.VarChar(1024)
   status      String     @default("active") // active | coming_soon | hidden
   sort        Int        @default(0)
   createdAt   DateTime   @default(now())
@@ -93,8 +93,8 @@ model Product {
   size        String?
   pack        String?
   price       Float? // null = price on request (inquiry only)
-  img         String?
-  desc        String   @default("")
+  img         String?  @db.VarChar(1024)
+  desc        String   @default("") @db.VarChar(5000)
   tag         String?
   real        Boolean  @default(false)
   lowStock    Int      @default(10)
@@ -160,7 +160,7 @@ model StockLog {
   warehouseId String?
   vendorId    String?
   change      Int
-  reason      String
+  reason      String   @db.VarChar(500)
   by          String   @default("System")
   at          DateTime @default(now())
 
@@ -176,13 +176,13 @@ model ProductRequest {
   category       Category  @relation(fields: [categoryId], references: [id])
   size           String?
   pack           String?
-  desc           String    @default("")
-  img            String?
+  desc           String    @default("") @db.VarChar(5000)
+  img            String?   @db.VarChar(1024)
   suggestedPrice Float? // supplier's suggested retail price
   cost           Float? // supplier's supply price
   stock          Json      @default("{}") // { warehouseId: qty } to load once approved
   status         String    @default("pending") // pending | approved | rejected
-  adminNote      String    @default("")
+  adminNote      String    @default("") @db.VarChar(2000)
   productId      String? // master product created on approval
   createdAt      DateTime  @default(now())
   reviewedAt     DateTime?
@@ -191,9 +191,9 @@ model ProductRequest {
 model Commodity {
   id         String @id @default(cuid())
   name       String
-  line       String @default("")
-  img        String @default("")
-  alt        String @default("")
+  line       String @default("") @db.VarChar(1000)
+  img        String @default("") @db.VarChar(1024)
+  alt        String @default("") @db.VarChar(500)
   group      String @default("Grains & Cereals")
   origin     String @default("")
   unit       String @default("MT")
@@ -212,7 +212,7 @@ model Driver {
   plate     String   @default("")
   homeBase  String? // locationId
   status    String   @default("active") // active | off_duty | inactive
-  notes     String   @default("")
+  notes     String   @default("") @db.VarChar(2000)
   createdAt DateTime @default(now())
   orders    Order[]
 }
@@ -232,8 +232,8 @@ model Order {
   paymentMethod String    @default("cod") // cod (cash on delivery) — the only method
   source        String    @default("checkout") // checkout | quote
   inquiryId     String?
-  notes         String    @default("")
-  tracking      String    @default("")
+  notes         String    @default("") @db.VarChar(2000)
+  tracking      String    @default("") @db.VarChar(500)
   subtotal      Float     @default(0)
   deliveryFee   Float     @default(0)
   deliveryMiles Float?
@@ -262,7 +262,7 @@ model OrderItem {
   productId   String?
   name        String
   size        String  @default("")
-  img         String?
+  img         String? @db.VarChar(1024)
   unit        String?
   qty         Int
   price       Float?
@@ -277,7 +277,7 @@ model Fulfilment {
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   warehouseId String
   status      String   @default("assigned") // assigned | accepted | packed | shipped | delivered
-  tracking    String   @default("")
+  tracking    String   @default("") @db.VarChar(500)
   miles       Float?
   fee         Float    @default(0)
   at          DateTime @default(now())
@@ -295,7 +295,7 @@ model Inquiry {
   email     String
   phone     String   @default("")
   dept      String   @default("")
-  message   String   @default("")
+  message   String   @default("") @db.VarChar(5000)
   items     Json     @default("[]")
   trade     Json?
   address   Json?
@@ -320,7 +320,7 @@ model Invoice {
   discount    Float     @default(0)
   total       Float
   status      String    @default("unpaid") // unpaid | paid | void
-  notes       String    @default("")
+  notes       String    @default("") @db.VarChar(2000)
   issuedAt    DateTime  @default(now())
   dueAt       DateTime?
 }

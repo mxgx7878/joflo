@@ -13,7 +13,8 @@
     "db:seed": "tsx prisma/seed.js",
     "db:import-foods": "tsx prisma/import-foods.js",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.js",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:copy-from-neon": "tsx prisma/neon-to-mysql.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1162.0",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "pg": "^8.23.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.19",
     "tsx": "^4.23.15"
