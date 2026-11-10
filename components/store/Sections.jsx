@@ -418,7 +418,7 @@ export function About() {
         <div className="grid lg:grid-cols-12 gap-10 items-center rounded-[2rem] border border-gold/30 p-6 sm:p-10 lg:p-14">
           <Reveal className="lg:col-span-4">
             <div className="bg-ivory rounded-3xl p-8 flex items-center justify-center">
-              <span className="logo block h-[190px] sm:h-[220px]"><img src="/brand/logo.webp" alt="JOLOF logo" className="h-full w-auto block" /></span>
+              <span className="logo block w-full max-w-[420px]"><img src="/brand/logo.webp" alt="JOLOF Trade Center logo" className="w-full h-auto block" /></span>
             </div>
           </Reveal>
           <Reveal className="lg:col-span-8">

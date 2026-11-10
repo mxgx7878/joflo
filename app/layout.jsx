@@ -8,7 +8,7 @@ const sans = Manrope({ subsets: ['latin'], weight: ['400', '500', '600', '700', 
 export const metadata = {
   title: 'JOLOF TRADING | Wholesale Food, Cosmetics & Trading Store',
   description: 'Shop wholesale food, cosmetics and trading essentials from JOLOF TRADING — spices, millet & grains, meat & fish, skin care, hair care, soaps and agricultural commodities.',
-  icons: { icon: '/brand/logo.webp' },
+  icons: { icon: '/brand/icon.png', apple: '/brand/icon.png' },
 };
 export const viewport = { themeColor: '#0B2347' };
 
