@@ -64,6 +64,7 @@ export default function OrderDetail() {
         </div>
         <div className="flex flex-wrap gap-2">
           <button className="dash-btn dash-btn-ghost" onClick={() => window.print()}><Printer /> Packing slip</button>
+          {order.status !== 'cancelled' && <Link href={`/admin/orders/${order.id}/driver-slip`} className="dash-btn dash-btn-ghost"><Truck /> Driver slip</Link>}
           {next && order.status !== 'pending' && <button className="dash-btn dash-btn-navy" onClick={() => move(next)}>Mark as {ORDER_STATUS[next].label} <ArrowRight /></button>}
         </div>
       </div>

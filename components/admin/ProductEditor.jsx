@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { Save, Trash2 } from 'lucide-react';
+import { Save, Trash2, Warehouse as WarehouseIcon } from 'lucide-react';
 import { ImageInput } from '@/components/ImageInput';
 import { useStore } from '@/lib/store';
 import { SEED_PRODUCTS, productImg } from '@/lib/catalogue';
@@ -8,6 +8,7 @@ import { Drawer, Field } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Toggle } from '@/components/admin/common';
 import { useDepartments } from '@/lib/departments';
+import { SUPPLIER_STATUS } from '@/components/admin/suppliers';
 
 const IMAGES = [...new Set(SEED_PRODUCTS.map((p) => p.img))];
 const blank = { name: '', brand: '', dept: 'Food', cat: 'Spices & Seasonings', size: '', pack: '', price: '', priceMode: 'fixed', tag: '', desc: '', img: IMAGES[0], stock: 0, lowStock: 10, moq: 1, status: 'active', featured: false, bestSeller: false, newArrival: true, recommended: false };
@@ -18,6 +19,12 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
   const firstDept = depts.product[0] || { name: '' };
   const firstCat = categories.find((c) => c.dept === firstDept.name)?.name || '';
   const saveProduct = useStore((s) => s.saveProduct);
+  const users = useStore((s) => s.users);
+  const warehouses = useStore((s) => s.warehouses);
+  const offers = useStore((s) => s.offers);
+  const vendors = useMemo(() => users.filter((u) => u.role === 'vendor').sort((a, b) => (b.isHouse ? 1 : 0) - (a.isHouse ? 1 : 0) || (a.company || a.name).localeCompare(b.company || b.name)), [users]);
+  // supplier assignment: { [vendorId]: { on, cost, stock: { warehouseId: qty } } }
+  const [sup, setSup] = useState({});
   const toast = useToast();
   const [f, setF] = useState(blank);
   const [err, setErr] = useState('');
@@ -26,7 +33,18 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
     if (!open) return;
     setErr('');
     setF(product ? { ...blank, ...product, pack: product.pack || '', size: product.size || '', tag: product.tag || '', desc: product.desc || '', priceMode: typeof product.price === 'number' ? 'fixed' : 'request', price: typeof product.price === 'number' ? product.price : '' } : { ...blank, dept: firstDept.name, cat: firstCat });
+    const init = {};
+    if (product) offers.filter((o) => o.productId === product.id).forEach((o) => {
+      init[o.vendorId] = { on: true, cost: o.cost ?? '', status: o.status, stock: { ...(o.stock || {}) }, had: Object.values(o.stock || {}).reduce((a, n) => a + (Number(n) || 0), 0) };
+    });
+    setSup(init);
   }, [open, product]);
+
+  const toggleSup = (vid, on) => setSup((x) => ({ ...x, [vid]: { cost: '', stock: {}, had: 0, ...x[vid], on } }));
+  const setSupField = (vid, patch) => setSup((x) => ({ ...x, [vid]: { ...x[vid], ...patch } }));
+  const setSupStock = (vid, wid, qty) => setSup((x) => ({ ...x, [vid]: { ...x[vid], stock: { ...(x[vid]?.stock || {}), [wid]: qty } } }));
+  const assigned = vendors.filter((v) => sup[v.id]?.on);
+  const totalStock = assigned.reduce((t, v) => t + Object.values(sup[v.id].stock || {}).reduce((a, n) => a + (parseInt(n, 10) || 0), 0), 0);
 
   const cats = useMemo(() => categories.filter((c) => c.dept === f.dept), [categories, f.dept]);
   const set = (patch) => setF((x) => ({ ...x, ...patch }));
@@ -40,9 +58,14 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
     const r = await saveProduct({
       ...rest, name: f.name.trim(), size: f.size.trim() || null, pack: f.pack.trim() || null, tag: f.tag || undefined, desc: f.desc.trim(),
       price: priceMode === 'fixed' ? Math.round(Number(f.price) * 100) / 100 : null,
-      stock: Math.max(0, parseInt(f.stock, 10) || 0), lowStock: Math.max(0, parseInt(f.lowStock, 10) || 0), moq: Math.max(1, parseInt(f.moq, 10) || 1),
+      stock: 0, lowStock: Math.max(0, parseInt(f.lowStock, 10) || 0), moq: Math.max(1, parseInt(f.moq, 10) || 1),
       ...(product ? { id: product.id } : {}),
       categoryId: categories.find((c) => c.dept === f.dept && c.name === f.cat)?.id,
+      suppliers: assigned.map((v) => ({
+        vendorId: v.id, status: sup[v.id].status || 'active',
+        cost: sup[v.id].cost === '' || sup[v.id].cost == null ? null : Math.round(Number(sup[v.id].cost) * 100) / 100,
+        stock: Object.fromEntries(Object.entries(sup[v.id].stock || {}).filter(([, q]) => q !== '' && q != null).map(([w, q]) => [w, Math.max(0, parseInt(q, 10) || 0)])),
+      })),
     });
     setBusy(false);
     if (!r.ok) { setErr(r.error); return; }
@@ -107,10 +130,66 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
           ) : <p className="mt-3 text-[12.5px] text-charcoal/60">Shoppers see “Price on request” and an Inquire button. Their inquiry lands in Inquiries, where you send a quote with final pricing.</p>}
         </section>
 
-        <section className="grid sm:grid-cols-3 gap-4">
-          {f.id
-            ? <Field label="Stock on hand" hint="Held by suppliers — change it in Inventory."><input className="dash-input" value={f.stock} disabled /></Field>
-            : <Field label="Opening stock" hint="Added to JOLOF's main warehouse (Port Newark)."><input type="number" min="0" className="dash-input" value={f.stock} onChange={(e) => set({ stock: e.target.value })} /></Field>}
+        <section>
+          <div className="flex items-end justify-between gap-3">
+            <span className="dash-label !mb-0">Suppliers</span>
+            <span className="text-[12px] text-charcoal/55">{assigned.length} assigned · <b className="text-navy">{totalStock}</b> units in stock</span>
+          </div>
+          <p className="text-[12px] text-charcoal/55 mt-1 mb-3">Tick the suppliers that carry this product, then set their supply price and stock per warehouse. Orders are routed to these suppliers by location.</p>
+          <ul className="space-y-2.5">
+            {vendors.map((v) => {
+              const row = sup[v.id];
+              const on = !!row?.on;
+              const wh = warehouses.filter((w) => w.vendorId === v.id);
+              return (
+                <li key={v.id} className={`rounded-2xl border transition ${on ? 'border-gold/70 bg-gold-pale/30' : 'border-navy/10'}`}>
+                  <label className="flex items-center gap-3 px-4 py-3 cursor-pointer">
+                    <input type="checkbox" className="w-4 h-4 accent-[#0B2347]" checked={on} onChange={(e) => toggleSup(v.id, e.target.checked)} />
+                    <span className="flex-1 min-w-0">
+                      <span className="block font-bold text-navy text-[13.5px] truncate">{v.isHouse ? 'JOLOF TRADING (own stock)' : v.company || v.name}</span>
+                      <span className="block text-[11.5px] text-charcoal/55 truncate">{wh.length ? wh.map((w) => w.suburb || w.city).filter(Boolean).join(' · ') : 'No warehouse yet'}</span>
+                    </span>
+                    {v.status !== 'active' && <span className={`pill ${SUPPLIER_STATUS[v.status]?.cls || ''}`}>{SUPPLIER_STATUS[v.status]?.label || v.status}</span>}
+                  </label>
+                  {on && (
+                    <div className="px-4 pb-4 pt-1 border-t border-navy/5 space-y-3">
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        <Field label="Supply price (USD)" hint="What JOLOF pays this supplier — optional">
+                          <input type="number" step="0.01" min="0" className="dash-input" value={row.cost ?? ''} onChange={(e) => setSupField(v.id, { cost: e.target.value })} />
+                        </Field>
+                        <Field label="Listing">
+                          <select className="dash-input" value={row.status || 'active'} onChange={(e) => setSupField(v.id, { status: e.target.value })}>
+                            <option value="active">Active — receives orders</option>
+                            <option value="paused">Paused</option>
+                          </select>
+                        </Field>
+                      </div>
+                      {wh.length ? (
+                        <div>
+                          <span className="dash-label">Stock per warehouse</span>
+                          <div className="grid sm:grid-cols-2 gap-2">
+                            {wh.map((w) => (
+                              <label key={w.id} className="flex items-center gap-2 rounded-xl bg-white border border-navy/10 px-3 py-2">
+                                <WarehouseIcon className="w-4 h-4 text-navy/40 shrink-0" />
+                                <span className="flex-1 min-w-0 text-[12.5px] leading-tight"><b className="block text-navy truncate">{w.name}</b><span className="text-charcoal/55">{w.suburb}{w.active === false ? ' · inactive' : ''}</span></span>
+                                <input type="number" min="0" className="dash-input !h-9 !w-24 text-right" value={row.stock?.[w.id] ?? ''} placeholder="0" onChange={(e) => setSupStock(v.id, w.id, e.target.value)} aria-label={`Stock at ${w.name}`} />
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      ) : <p className="text-[12px] text-charcoal/55">This supplier has no warehouse yet, so they can't hold stock or receive orders until one is added.</p>}
+                    </div>
+                  )}
+                  {!on && row?.had > 0 && <p className="px-4 pb-3 text-[12px] font-bold text-[#B4432F]">Saving will unassign this supplier and remove their {row.had} unit(s) of this product.</p>}
+                </li>
+              );
+            })}
+            {!vendors.length && <li className="text-[12.5px] text-charcoal/55">No suppliers yet — add them under Suppliers.</li>}
+          </ul>
+          {!assigned.length && <p className="mt-2 text-[12px] text-[#8a6417]">No supplier assigned — orders for this product will need a supplier picked by hand.</p>}
+        </section>
+
+        <section className="grid sm:grid-cols-2 gap-4">
           <Field label="Low-stock alert at"><input type="number" min="0" className="dash-input" value={f.lowStock} onChange={(e) => set({ lowStock: e.target.value })} /></Field>
           <Field label="Badge">
             <select className="dash-input" value={f.tag} onChange={(e) => set({ tag: e.target.value })}><option value="">None</option><option>New</option><option>Bulk</option></select>

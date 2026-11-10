@@ -37,7 +37,7 @@ export function ProductCard({ p }) {
           <div className="mt-3 flex items-center justify-between gap-2">
             <p className="leading-tight">
               <span className="text-[17px] font-extrabold text-navy">{money(p.price)}</span>
-              <span className={`block text-[10px] font-bold uppercase tracking-wider ${p.real ? 'text-emerald/80' : 'text-charcoal/40'}`}>{p.real ? 'Wholesale price / case' : 'Sample price'}</span>
+              {p.real && <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald/80">Wholesale price / case</span>}
             </p>
             <button type="button" className="add-mini" aria-label={`Add ${p.name} to cart`} onClick={() => add(p.id)}><ShoppingBag /></button>
           </div>

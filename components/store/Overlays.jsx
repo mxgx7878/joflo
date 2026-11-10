@@ -222,7 +222,7 @@ export function QuickView() {
               <p className="mt-2 text-charcoal/60 text-sm">{p.price === null ? [p.size && `Size: ${p.size}`, p.pack && `Wholesale pack: ${p.pack}`].filter(Boolean).join(' · ') : `Packaging: ${p.size}`}</p>
               <p className="mt-5 flex items-baseline gap-2">
                 <span className="text-[1.7rem] font-extrabold text-navy">{priced(p) ? money(p.price) : 'Price on request'}</span>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-charcoal/45">{p.real ? 'Wholesale price per case · USD' : priced(p) ? 'Sample price · USD' : 'Wholesale pricing'}</span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-charcoal/45">{p.real ? 'Wholesale price per case · USD' : priced(p) ? 'USD' : 'Wholesale pricing'}</span>
               </p>
               <p className="mt-5 text-charcoal/70 leading-relaxed">{p.desc}</p>
               <div className="mt-7 flex flex-wrap items-center gap-3">
