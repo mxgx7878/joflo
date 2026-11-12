@@ -9,7 +9,7 @@ import { PageHeader, StatCard, Pill, Drawer, Field, EmptyState } from '@/compone
 import { useToast } from '@/components/Providers';
 import { Card, TableWrap, SearchBox, Initials, Skeleton, useConfirm } from '@/components/admin/common';
 
-const blank = { name: '', phone: '', email: '', vehicle: '', plate: '', homeBase: 'newark', status: 'active', notes: '' };
+const blank = { name: '', phone: '', email: '', vehicle: '', plate: '', homeBase: 'bronx', status: 'active', notes: '' };
 const OPEN = ['confirmed', 'packed', 'shipped'];
 
 function DriverEditor({ open, driver, onClose }) {
