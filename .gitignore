@@ -4,3 +4,4 @@ out
 config.bat
 prisma/data
 SkinCare.xlsx
+.env
