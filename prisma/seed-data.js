@@ -43,7 +43,7 @@ const USERS = [
 ];
 
 const WAREHOUSES = [
-  { id: 'wh-jolof-nj', vendorId: HOUSE, name: 'JOLOF Port Newark DC', line1: '40 Doremus Ave', city: 'Newark', state: 'NJ', postcode: '07105', loc: 'newark' },
+  { id: 'wh-jolof-nj', vendorId: HOUSE, name: 'JOLOF HQ — Bronx Main Warehouse', line1: '1186 Randall Ave', city: 'Bronx', state: 'NY', postcode: '10474', loc: 'bronx', lat: 40.8152, lng: -73.8868 },
   { id: 'wh-jolof-atl', vendorId: HOUSE, name: 'JOLOF Atlanta Cross-dock', line1: '3500 Fulton Industrial Blvd SW', city: 'Atlanta', state: 'GA', postcode: '30336', loc: 'atlanta' },
   { id: 'wh-sahel-hou', vendorId: 'v-2001', name: 'Sahel — Houston', line1: '8600 Wallisville Rd', city: 'Houston', state: 'TX', postcode: '77029', loc: 'houston' },
   { id: 'wh-sahel-atl', vendorId: 'v-2001', name: 'Sahel — Atlanta', line1: '1350 Fulton Industrial Blvd NW', city: 'Atlanta', state: 'GA', postcode: '30336', loc: 'atlanta' },
@@ -57,10 +57,10 @@ const WAREHOUSES = [
   { id: 'wh-sun-orl', vendorId: 'v-2006', name: 'Sunshine — Orlando', line1: '2300 Principal Row', city: 'Orlando', state: 'FL', postcode: '32837', loc: 'orlando' },
   { id: 'wh-rmd-den', vendorId: 'v-2007', name: 'Rocky Mountain — Denver', line1: '5050 Osage St', city: 'Denver', state: 'CO', postcode: '80221', loc: 'denver' },
   { id: 'wh-rmd-phx', vendorId: 'v-2007', name: 'Rocky Mountain — Phoenix', line1: '4202 W Van Buren St', city: 'Phoenix', state: 'AZ', postcode: '85009', loc: 'phoenix' },
-].map((w) => { const l = getLocation(w.loc); return { ...w, lat: r2((l.lat + jitter(w.id, 'a')) * 1e4) / 1e4, lng: r2((l.lng + jitter(w.id, 'b')) * 1e4) / 1e4 }; });
+].map((w) => { if (w.lat != null) return w; const l = getLocation(w.loc); return { ...w, lat: r2((l.lat + jitter(w.id, 'a')) * 1e4) / 1e4, lng: r2((l.lng + jitter(w.id, 'b')) * 1e4) / 1e4 }; });
 
 const DRIVERS = [
-  { id: 'drv-1', name: 'Marcus Johnson', phone: '+1 (973) 555-0141', email: 'marcus.j@jolof.demo', vehicle: 'Ford Transit 350 (box)', plate: 'NJ X41-KRT', homeBase: 'newark' },
+  { id: 'drv-1', name: 'Marcus Johnson', phone: '+1 (973) 555-0141', email: 'marcus.j@jolof.demo', vehicle: 'Ford Transit 350 (box)', plate: 'NJ X41-KRT', homeBase: 'bronx' },
   { id: 'drv-2', name: 'Abdoulaye Cisse', phone: '+1 (212) 555-0178', email: 'abdoulaye.c@jolof.demo', vehicle: 'Isuzu NPR 16ft', plate: 'NY KTD-4471', homeBase: 'new-york' },
   { id: 'drv-3', name: 'Tanya Brooks', phone: '+1 (404) 555-0193', email: 'tanya.b@jolof.demo', vehicle: 'Mercedes Sprinter', plate: 'GA CQR-2280', homeBase: 'atlanta' },
   { id: 'drv-4', name: 'Kofi Boateng', phone: '+1 (713) 555-0126', email: 'kofi.b@jolof.demo', vehicle: 'Ram ProMaster 2500', plate: 'TX MLV-9034', homeBase: 'houston' },
