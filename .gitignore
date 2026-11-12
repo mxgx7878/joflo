@@ -1,6 +1,7 @@
 node_modules
 .next
 out
-config.bat
 prisma/data
 SkinCare.xlsx
+.env*.local
+config.bat
