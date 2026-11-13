@@ -3,6 +3,7 @@
 import SiteHeader from './SiteHeader';
 import { LocationGate } from '@/components/LocationPicker';
 import SiteFooter, { BottomNav } from './SiteFooter';
+import WhatsAppButton from './WhatsAppButton';
 import { Scrim, MobileMenu, CartDrawer, WishDrawer, QuickView, EnquiryModal, useOverlayBehaviour } from './Overlays';
 
 export { SiteHeader, SiteFooter };
@@ -19,6 +20,7 @@ export default function StoreChrome({ children }) {
       </main>
       <SiteFooter />
       <BottomNav />
+      <WhatsAppButton />
       <Scrim />
       <MobileMenu />
       <CartDrawer />

@@ -3,6 +3,8 @@ import { useUI } from './ui';
 import Link from 'next/link';
 import { FilterLink, SoonLink, useCatalogue } from './shared';
 import { useCounts } from './SiteHeader';
+import { WhatsAppIcon } from './WhatsAppButton';
+import { whatsappLink, WHATSAPP_DISPLAY } from '@/lib/contact';
 import { Home, Store, Search, Heart, ShoppingBag } from './icons';
 
 export default function SiteFooter() {
@@ -17,6 +19,7 @@ export default function SiteFooter() {
               <span className="logo block h-[104px]"><img src="/brand/logo.webp" alt="JOLOF logo" className="h-full w-auto block" /></span>
             </a>
             <p className="mt-6 text-[14.5px] leading-[1.85] max-w-[360px]">JOLOF TRADING brings together international commodity trading, food wholesale, and cosmetics distribution with a commitment to lasting commercial relationships.</p>
+            <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-[#25D366] text-white font-bold text-[14px] px-5 h-11 hover:bg-[#1ebe5b] transition"><WhatsAppIcon className="w-5 h-5" />WhatsApp: {WHATSAPP_DISPLAY}</a>
           </div>
           <nav className="lg:col-span-2" aria-label="Shop">
             <h3 className="text-white font-display text-lg">Shop</h3><div className="w-8 h-0.5 bg-gold mt-3 mb-5" />
@@ -34,6 +37,7 @@ export default function SiteFooter() {
             <h3 className="text-white font-display text-lg">Customer Support</h3><div className="w-8 h-0.5 bg-gold mt-3 mb-5" />
             <ul className="space-y-3 text-[14.5px]">
               <li><button type="button" className="hover:text-gold-soft transition" onClick={() => openEnquiry({ type: 'contact' })}>Contact Us</button></li>
+              <li><a className="hover:text-gold-soft transition" href={whatsappLink()} target="_blank" rel="noopener noreferrer">Chat on WhatsApp</a></li>
               <li><SoonLink className="hover:text-gold-soft transition">Shipping Information</SoonLink></li>
               <li><SoonLink className="hover:text-gold-soft transition">Returns &amp; Refunds</SoonLink></li>
               <li><button type="button" className="hover:text-gold-soft transition" onClick={() => openEnquiry({ type: 'bulk' })}>Wholesale Enquiries</button></li>
