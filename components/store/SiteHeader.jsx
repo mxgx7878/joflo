@@ -1,4 +1,6 @@
 'use client';
+import { WhatsAppIcon } from './WhatsAppButton';
+import { whatsappLink } from '@/lib/contact';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useStore, useStoreReady, useCurrentUser } from '@/lib/store';
@@ -244,6 +246,8 @@ export default function SiteHeader() {
             <button type="button" onClick={() => openEnquiry({ type: 'bulk' })} className="hover:text-gold-soft transition">Request Bulk Pricing</button>
             <span className="w-px h-3 bg-white/25" />
             <button type="button" onClick={() => openEnquiry({ type: 'contact' })} className="hover:text-gold-soft transition">Help &amp; Contact</button>
+            <span className="w-px h-3 bg-white/25" />
+            <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-gold-soft transition"><WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366]" />WhatsApp</a>
             <span className="w-px h-3 bg-white/25" />
             <Link href={accountHref(loggedIn ? user : null)} className="hover:text-gold-soft transition">
               {loggedIn ? (dashLabel(user) || `Hi, ${firstName}`) : 'Sign in / Register'}
