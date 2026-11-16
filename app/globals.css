@@ -47,7 +47,8 @@
   #suggest.open{ display:block; }
   .sug-item[aria-selected="true"], .sug-item:hover{ background:var(--ivory); }
 
-  .navlink{ position:relative; display:inline-flex; align-items:center; gap:.35rem; height:52px; font-size:.84rem; font-weight:600; color:rgba(255,255,255,.88); transition:color .3s; }
+  .navlink{ position:relative; display:inline-flex; align-items:center; gap:.35rem; height:52px; white-space:nowrap; font-size:.84rem; font-weight:600; color:rgba(255,255,255,.88); transition:color .3s; }
+  @media (max-width:1279px){ .navlink{ font-size:.78rem; } }
   .navlink::after{ content:""; position:absolute; left:0; right:0; bottom:12px; height:2px; background:var(--gold-soft); transform:scaleX(0); transform-origin:right; transition:transform .4s var(--ease); }
   .navlink:hover, .navlink.active, .navlink[aria-expanded="true"]{ color:var(--gold-soft); }
   .navlink:hover::after, .navlink.active::after, .navlink[aria-expanded="true"]::after{ transform:scaleX(1); transform-origin:left; }

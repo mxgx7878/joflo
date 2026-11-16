@@ -288,12 +288,12 @@ export default function SiteHeader() {
 
         {/* Navigation */}
         <nav className="hidden lg:block bg-navy relative" aria-label="Main">
-          <div className="max-w-site mx-auto px-8 flex items-center gap-8">
-            <button id="megaBtn" className="h-[52px] -ml-8 pl-8 pr-6 bg-emerald text-white text-[13px] font-bold tracking-wide flex items-center gap-3 hover:bg-emerald-500 transition" aria-expanded={megaOpen} aria-controls="mega"
+          <div className="max-w-site mx-auto px-8 flex items-center gap-6">
+            <button id="megaBtn" className="h-[52px] -ml-8 pl-8 pr-4 xl:pr-6 shrink-0 whitespace-nowrap bg-emerald text-white text-[13px] font-bold tracking-wide flex items-center gap-3 hover:bg-emerald-500 transition" aria-expanded={megaOpen} aria-controls="mega"
               onClick={() => setMega(!megaOpen)} onMouseEnter={hoverOpen} onMouseLeave={hoverLater}>
               <LayoutGrid className="w-[18px] h-[18px]" /> All Categories <ChevronDown className="w-4 h-4" />
             </button>
-            <ul className="flex items-center gap-7 xl:gap-9">
+            <ul className="flex flex-1 items-center justify-between gap-3">
               <li><a className={`navlink ${path === '/' ? 'active' : ''}`} href="/#top">Home</a></li>
               <li>
                 <a className="navlink" href="/#shop" onMouseEnter={hoverOpen} onMouseLeave={hoverLater} onFocus={hoverOpen} onClick={(e) => { e.preventDefault(); goShop({}); }}>
@@ -305,11 +305,11 @@ export default function SiteHeader() {
                   ? <Link className={`navlink ${path === '/trading' ? 'active' : ''}`} href="/trading">{d.name}</Link>
                   : <FilterLink className="navlink" dept={d.name}>{d.name}</FilterLink>}</li>
               ))}
-              <li><a className="navlink" href="/#new-arrivals">New Arrivals <span className="ml-1 text-[9px] font-extrabold tracking-wider bg-gold-soft text-navy rounded-full px-1.5 py-0.5">NEW</span></a></li>
-              <li><a className="navlink" href="/#about">About Us</a></li>
-              <li><button type="button" className="navlink" onClick={() => openEnquiry({ type: 'contact' })}>Contact</button></li>
+              <li><a className="navlink" href="/#new-arrivals">New Arrivals <span className="ml-1 shrink-0 text-[9px] font-extrabold tracking-wider bg-gold-soft text-navy rounded-full px-1.5 py-0.5">NEW</span></a></li>
+              <li className="hidden xl:block"><a className="navlink" href="/#about">About Us</a></li>
+              <li className="hidden xl:block"><button type="button" className="navlink" onClick={() => openEnquiry({ type: 'contact' })}>Contact</button></li>
             </ul>
-            <button type="button" onClick={() => openEnquiry({ type: 'bulk' })} className="ml-auto text-[12.5px] font-bold text-gold-soft flex items-center gap-2 hover:text-white transition"><PackageCheck className="w-4 h-4" /> Wholesale Enquiries</button>
+            <button type="button" onClick={() => openEnquiry({ type: 'bulk' })} className="hidden min-[1400px]:flex shrink-0 whitespace-nowrap text-[12.5px] font-bold text-gold-soft items-center gap-2 hover:text-white transition"><PackageCheck className="w-4 h-4" /> Wholesale Enquiries</button>
           </div>
           <MegaMenu />
         </nav>
