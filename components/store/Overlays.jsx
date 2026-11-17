@@ -92,6 +92,7 @@ export function CartDrawer() {
   const ready = useStoreReady();
   const cart = useStore((s) => s.cart);
   const products = useStore((s) => s.products);
+  const payOpts = useStore((s) => s.settings.checkoutPayments) || { cod: true };
   const setQty = useStore((s) => s.setQty);
   const removeFromCart = useStore((s) => s.removeFromCart);
   const { cartCount, cartTotal } = useCounts();
@@ -137,7 +138,7 @@ export function CartDrawer() {
         <div className="border-t border-navy/10 p-6 bg-ivory">
           {buyable ? (<>
             <div className="flex items-center justify-between"><span className="font-bold text-navy">Subtotal</span><span className="font-extrabold text-xl text-navy">{money(cartTotal)}</span></div>
-            <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Delivery is calculated by distance at checkout. Cash on delivery — nothing to pay online.</p>
+            <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Delivery is calculated by distance at checkout. {payOpts.card && payOpts.cod ? 'Pay by card or cash on delivery.' : payOpts.card ? 'Pay by card — charged when we confirm your order.' : 'Cash on delivery — nothing to pay online.'}</p>
             <button type="button" className="btn btn-navy w-full mt-5" onClick={() => { closeAll(); router.push('/checkout'); }}><Lock />Checkout</button>
           </>) : (
             <p className="text-[13px] text-charcoal/65">These items are priced on request — send them to our team and we&apos;ll reply with a quote.</p>

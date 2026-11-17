@@ -228,8 +228,8 @@ model Order {
   lng           Float?
   locationId    String?
   status        String    @default("pending") // pending | confirmed | packed | shipped | delivered | cancelled
-  payment       String    @default("unpaid") // unpaid | paid
-  paymentMethod String    @default("cod") // cod (cash on delivery) — the only method
+  payment       String    @default("unpaid") // unpaid | authorized | paid | partially_refunded | refunded | voided | failed
+  paymentMethod String    @default("cod") // cod (cash on delivery) | card (Square)
   source        String    @default("checkout") // checkout | quote
   inquiryId     String?
   notes         String    @default("")
@@ -250,8 +250,32 @@ model Order {
   items       OrderItem[]
   fulfilments Fulfilment[]
   invoice     Invoice?
+  payments    Payment[]
 
   @@index([userId])
+}
+
+// A card payment taken through Square for an order (amounts in dollars).
+// Card orders are authorized (held) at checkout and captured when JOLOF confirms the order.
+model Payment {
+  id           String    @id @default(cuid())
+  orderId      String
+  order        Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider     String    @default("square")
+  providerId   String    @unique // Square payment id
+  status       String // Square status: APPROVED (held) | COMPLETED (charged) | CANCELED | FAILED | PENDING
+  amount       Float // amount held / charged
+  refunded     Float     @default(0)
+  currency     String    @default("USD")
+  cardBrand    String    @default("")
+  last4        String    @default("")
+  receiptUrl   String    @default("")
+  delayedUntil DateTime? // when Square auto-cancels an uncaptured hold
+  raw          Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([orderId])
 }
 
 model OrderItem {

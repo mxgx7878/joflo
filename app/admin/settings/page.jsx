@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Download, RotateCcw, Store, Mail, Tag, Route, FileText, MapPinned, Save } from 'lucide-react';
+import { Download, RotateCcw, Store, Mail, Tag, Route, FileText, MapPinned, Save, CreditCard } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
 import { money, fmtDate } from '@/lib/format';
 import { deliveryFee, rateLabel } from '@/lib/delivery';
@@ -53,7 +53,7 @@ export default function SettingsPage() {
         <Card title="Storefront pricing" action={<Tag className="w-4 h-4 text-gold" />}>
           <Toggle label="Show prices on the website" checked={settings.showPricing !== false} onChange={(v) => save({ showPricing: v }, v ? 'Prices are now visible — priced products can be ordered online' : 'Prices hidden — every product now goes through inquiry')} />
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
-            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order placed (cash on delivery, nothing paid online) → you confirm and the invoice is issued → the driver collects cash on delivery. Products without a price stay “Inquire now”.<br />
+            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order placed (card held through Square, or cash on delivery) → you confirm, the card is charged and the invoice is issued → the driver delivers (and collects cash for COD orders). Products without a price stay “Inquire now”.<br />
             <b className="text-navy">Off:</b> no prices anywhere on the site; everything goes to Inquiries. Customers see pricing only in the quote you send them, and the invoice after they accept.
           </p>
         </Card>
@@ -91,8 +91,21 @@ export default function SettingsPage() {
           </p>
         </Card>
 
+        <Card title="Payment methods" action={<CreditCard className="w-4 h-4 text-gold" />}>
+          <Toggle label="Card payments (Square)" checked={settings.payments?.card !== false} onChange={(v) => save({ payments: { card: v, cod: settings.payments?.cod !== false } }, v ? 'Card payments switched on' : 'Card payments switched off')} />
+          <Toggle label="Cash on delivery" checked={settings.payments?.cod !== false} onChange={(v) => save({ payments: { card: settings.payments?.card !== false, cod: v } }, v ? 'Cash on delivery switched on' : 'Cash on delivery switched off')} />
+          <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
+            <b className="text-navy">Card:</b> the card is held at checkout and charged when you confirm the order (lower totals are fine, higher ones are not). Square releases an unconfirmed hold after 7 days. Cancelling releases the hold, or refunds the card if it was already charged.
+          </p>
+          <p className={`mt-3 text-[12.5px] rounded-xl px-3.5 py-2.5 ${settings.squareEnabled ? 'bg-[#E3F2EA] text-emerald' : 'bg-gold-pale text-[#6d4f12]'}`}>
+            {settings.squareEnabled
+              ? `Square is connected (${settings.squareEnvironment === 'production' ? 'live payments' : 'sandbox — test cards only'}).`
+              : 'Square keys not set — card payments stay hidden at checkout. Add SQUARE_ACCESS_TOKEN, SQUARE_LOCATION_ID and NEXT_PUBLIC_SQUARE_APP_ID / NEXT_PUBLIC_SQUARE_LOCATION_ID on the server.'}
+          </p>
+        </Card>
+
         <Card title="Invoices" action={<FileText className="w-4 h-4 text-gold" />}>
-          <p className="text-[12.5px] text-charcoal/60 leading-relaxed">All orders are <b className="text-navy">cash on delivery</b> — invoices are due when the order is delivered.</p>
+          <p className="text-[12.5px] text-charcoal/60 leading-relaxed">Cash on delivery invoices are due when the order is delivered. Card orders are invoiced as paid when you confirm them.</p>
           <Field label="Cash on delivery note (printed on every invoice)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="e.g. Please have the full amount ready in cash for our driver." /></Field>
           <Field label="Footer" className="mt-4"><input className="dash-input" value={inv.footer} onChange={(e) => setInv({ ...inv, footer: e.target.value })} /></Field>
           <button className="dash-btn dash-btn-ghost w-full mt-4" onClick={() => save({ invoice: inv }, 'Invoice details saved')}><Save /> Save invoice details</button>
