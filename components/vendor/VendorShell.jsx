@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, ShoppingCart, Package, Warehouse, Menu, X, ExternalLink, LogOut, Clock3, Ban } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { useVendor } from './hooks';
+import { FullPageLoader } from '@/components/Loading';
 
 const NAV = [
   { href: '/vendor', label: 'Overview', icon: LayoutDashboard, exact: true },
@@ -72,14 +73,7 @@ export default function VendorShell({ children }) {
   useEffect(() => { setOpen(false); }, [pathname]);
 
   if (!ready || !user || user.role !== 'vendor') {
-    return (
-      <div className="min-h-screen grid place-items-center bg-ivory">
-        <div className="text-center">
-          <div className="w-10 h-10 mx-auto rounded-full border-2 border-gold border-t-transparent animate-spin" />
-          <p className="mt-4 text-[13px] font-semibold text-charcoal/60">Loading supplier portal…</p>
-        </div>
-      </div>
-    );
+    return <FullPageLoader label="Loading supplier portal…" />;
   }
 
   return (

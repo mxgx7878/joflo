@@ -9,9 +9,10 @@ import { productImg } from '@/lib/catalogue';
 import { money, sizeLine } from '@/lib/format';
 import { locationFromAddress, locationLabel, STATES } from '@/lib/locations';
 import { useToast } from '@/components/Providers';
-import { MinimalHeader, AddressPicker, PageLoader } from '@/components/account/shared';
+import { MinimalHeader, AddressPicker } from '@/components/account/shared';
 import { LocationModal, useDeliveryLocation } from '@/components/LocationPicker';
 import SquareCardForm from '@/components/checkout/SquareCardForm';
+import { FullPageLoader, BusyOverlay } from '@/components/Loading';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -107,9 +108,7 @@ export default function CheckoutPage() {
 
   const isVendor = user?.role === 'vendor';
 
-  if (!ready || placing) {
-    return <div className="min-h-screen bg-ivory"><MinimalHeader secure /><div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8 py-10"><PageLoader /></div></div>;
-  }
+  if (!ready) return <FullPageLoader label="Loading checkout…" />;
 
   const jump = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   const place = async () => {
@@ -166,6 +165,8 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-ivory">
+      {/* stays up until the success page opens (the cart empties underneath) */}
+      {placing && <BusyOverlay label={isCard ? 'Taking payment & placing your order…' : 'Placing your order…'} delay={0} />}
       <MinimalHeader secure />
       <main className="max-w-site mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-28 lg:py-12">
         <p className="kicker">Checkout</p>
