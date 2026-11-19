@@ -71,7 +71,7 @@ function OrdersInner() {
 
   return (
     <>
-      <PageHeader kicker="Sales" title="Orders" sub="Order requests from the store and orders from accepted quotes. Confirm prices to issue the invoice, assign a driver, then track delivery." />
+      <PageHeader kicker="Sales" title="Orders" sub="Order requests from the store and orders from paid quotes. Confirm prices to issue the invoice, assign a driver, then track delivery." />
       <Card pad={false}>
         <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center gap-3 justify-between border-b border-navy/5">
           <Tabs value={tab} onChange={setTab} tabs={STATUSES.map((s) => ({ value: s, label: s === 'all' ? 'All' : ORDER_STATUS[s].label, count: counts[s] }))} />

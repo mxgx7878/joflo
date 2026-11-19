@@ -29,7 +29,7 @@ export default function InvoiceView({ invoice, back }) {
             <div className="mt-2 sm:flex sm:justify-end"><Pill meta={INVOICE_STATUS[invoice.status] || INVOICE_STATUS.unpaid} /></div>
             <dl className="mt-3 text-[12.5px] text-charcoal/70 space-y-0.5">
               <div><dt className="inline">Issued: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.issuedAt)}</dd></div>
-              {invoice.dueAt ? <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div> : <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{invoice.status === 'paid' ? 'Paid' : 'On delivery (cash)'}</dd></div>}
+              {invoice.dueAt ? <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div> : <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{invoice.status === 'paid' ? 'Paid' : invoice.status === 'partially_paid' ? 'Balance due by card' : 'On delivery (cash)'}</dd></div>}
               <div><dt className="inline">Order: </dt><dd className="inline font-bold text-navy">{invoice.orderId}</dd></div>
             </dl>
           </div>

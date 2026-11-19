@@ -3,7 +3,7 @@ import { syncOrderPayment } from '@/lib/server/orders';
 
 /**
  * Square webhook → keeps card payments in step when something changes outside the website
- * (a hold expiring after 7 days, a refund made in Square Dashboard, a refund finishing).
+ * (a refund made in Square Dashboard, a refund finishing, an old hold expiring).
  *
  * Register in Square Developer Console > Webhooks > Subscriptions:
  *   URL:    the exact value of SQUARE_WEBHOOK_URL (e.g. https://joloftradescenter.com/api/webhooks/square)

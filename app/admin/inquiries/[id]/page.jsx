@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Mail, Phone, Building2, Send, Plus, Trash2, FileText, StickyNote, CheckCircle2, ExternalLink, Wheat, Pencil, Route } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building2, Send, Plus, Trash2, FileText, StickyNote, CheckCircle2, ExternalLink, Wheat, Pencil, Route, Copy, Link2 } from 'lucide-react';
 import { STATES } from '@/lib/locations';
 import { useDepartments } from '@/lib/departments';
 import { useStore, useStoreReady, quoteTotal } from '@/lib/store';
@@ -11,6 +11,7 @@ import { productImg } from '@/lib/catalogue';
 import { Pill, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, KV, Skeleton, Initials } from '@/components/admin/common';
+import EmailLogCard from '@/components/admin/EmailLogCard';
 
 const plusDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
 let keySeq = 0;
@@ -155,10 +156,30 @@ function QuoteBuilder({ inq, products, commodities, onSent, onCancel }) {
           <p className="text-[12px] text-white/55">{lines.filter((l) => l.name).length} lines · valid to {fmtDate(validUntil)}</p>
           {err && <p className="mt-3 text-[12.5px] font-bold text-gold-soft">{err}</p>}
           <button className="dash-btn dash-btn-gold mt-auto pt-0 w-full !mt-5" disabled={sending} onClick={send}><Send /> {sending ? 'Sending…' : inq.quote ? 'Send revised quote' : 'Send quote to customer'}</button>
-          <p className="text-[11px] text-white/45 mt-2 text-center">{inq.userId ? 'Appears in the customer’s account to accept.' : 'Guest — they’ll see it when they register with this email.'}</p>
+          <p className="text-[11px] text-white/45 mt-2 text-center">Emails {inq.email} a private link to review & pay by card{inq.userId ? ' — also shown in their account' : ''}.{inq.quote ? ' The old link stops working.' : ''}</p>
         </div>
       </div>
     </Card>
+  );
+}
+
+/** Private pay link for the current quote: copy / email again. */
+function QuoteLink({ inq }) {
+  const paymentRequestAction = useStore((s) => s.paymentRequestAction);
+  const toast = useToast();
+  const [busy, setBusy] = useState(false);
+  const link = inq.payRequest;
+  if (!link) return <p className="mt-4 text-[12.5px] font-semibold text-[#8a6417] bg-gold-pale rounded-xl px-3 py-2">No active payment link — send a revised quote to issue one.</p>;
+  const resend = async () => { setBusy(true); const r = await paymentRequestAction(link.id, 'resend'); setBusy(false); toast({ text: r.ok ? `Quote link emailed again to ${inq.email}` : r.error }); };
+  return (
+    <div className="mt-4 rounded-xl bg-[#EEE9F8] px-3 py-3 text-[12.5px] text-[#5B3FA0]">
+      <p className="font-semibold flex items-center gap-1.5"><Link2 className="w-3.5 h-3.5" /> Waiting for the customer to pay ({link.id}). Paying confirms the order automatically.</p>
+      <div className="flex flex-wrap gap-2 mt-2.5">
+        <button className="dash-btn dash-btn-ghost !h-8 !bg-white" onClick={() => { navigator.clipboard?.writeText(link.url || `${window.location.origin}/pay/${link.token}`); toast({ text: 'Payment link copied' }); }}><Copy /> Copy link</button>
+        <button className="dash-btn dash-btn-ghost !h-8 !bg-white" disabled={busy} onClick={resend}><Mail /> Email again</button>
+        <a className="dash-btn dash-btn-ghost !h-8 !bg-white" href={`/pay/${link.token}`} target="_blank" rel="noreferrer"><ExternalLink /> Open</a>
+      </div>
+    </div>
   );
 }
 
@@ -234,7 +255,7 @@ export default function InquiryDetail() {
           {inq.status === 'accepted' && inq.orderId && (
             <div className="rounded-2xl bg-[#E3F2EA] border border-emerald/15 p-4 flex flex-wrap items-center gap-3">
               <CheckCircle2 className="w-6 h-6 text-emerald" />
-              <p className="flex-1 text-[14px] text-emerald font-bold">Quote accepted — order {inq.orderId} was created.</p>
+              <p className="flex-1 text-[14px] text-emerald font-bold">Quote paid — order {inq.orderId} was created and confirmed.</p>
               <Link href={`/admin/orders/${inq.orderId}`} className="dash-btn dash-btn-navy">Open order <ExternalLink /></Link>
             </div>
           )}
@@ -279,7 +300,7 @@ export default function InquiryDetail() {
                 {quotable && <button className="dash-btn dash-btn-ghost !h-8" onClick={() => setRevising(true)}><Pencil /> Revise</button>}
               </span>}>
               <QuoteSummary quote={inq.quote} />
-              {inq.status === 'quoted' && <p className="mt-4 text-[12.5px] font-semibold text-[#5B3FA0] bg-[#EEE9F8] rounded-xl px-3 py-2">Waiting for the customer to accept or decline in their account.</p>}
+              {inq.status === 'quoted' && <QuoteLink inq={inq} />}
             </Card>
           )}
 
@@ -305,6 +326,8 @@ export default function InquiryDetail() {
             </div>
             {customer && <Link href={`/admin/customers/${customer.id}`} className="mt-3 inline-block text-[12.5px] font-bold text-emerald hover:text-navy">View customer profile →</Link>}
           </Card>
+
+          <EmailLogCard inquiryId={inq.id} />
 
           <Card title="Internal notes" action={<StickyNote className="w-4 h-4 text-gold" />}>
             {inq.notes.length === 0 && <p className="text-[13px] text-charcoal/50">No notes yet. Notes are only visible to your team.</p>}

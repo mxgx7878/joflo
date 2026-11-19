@@ -27,8 +27,8 @@ function Success() {
   const follow = order.userId ? ' Follow progress in your account.' : ` We'll contact you at ${order.customer.email}.`;
   const steps = isCard
     ? [
-      { icon: MailCheck, t: 'Order received', d: `Stock is held for you. ${money(order.total)} is held on your card${card ? ` (${card})` : ''} — not charged yet.` },
-      { icon: CreditCard, t: 'We confirm & charge', d: 'Our team confirms availability and delivery, charges your card and issues your invoice — usually within one business day.' },
+      { icon: MailCheck, t: 'Order paid', d: `Stock is held for you. ${money(order.total)} was charged to your card${card ? ` (${card})` : ''}. A confirmation is on its way to ${order.customer.email}.` },
+      { icon: CreditCard, t: 'We confirm', d: 'Our team confirms availability and delivery and emails your invoice — usually within one business day. If the final total is lower we refund the difference; if higher, we email you a link to pay just the extra.' },
       { icon: Truck, t: 'We deliver', d: `Our driver brings your order. Nothing to pay on arrival.${follow}` },
     ]
     : [
@@ -44,7 +44,7 @@ function Success() {
           <span className="w-16 h-16 rounded-full bg-emerald text-white grid place-items-center shadow-[0_14px_30px_-12px_rgba(7,86,60,.7)]"><Check className="w-8 h-8" strokeWidth={2.4} /></span>
           <p className="kicker mt-6">Thank you, {order.customer.name.split(' ')[0]}</p>
           <h1 className="h-display text-navy text-[2rem] sm:text-[2.6rem] mt-2">Your order is placed.</h1>
-          <p className="text-[15px] text-charcoal/65 mt-3">Order <b className="text-navy">{order.id}</b> · {fmtDateTime(order.createdAt)} · {money(order.total)} · <b className="text-navy">{isCard ? `Card${card ? ` ${card}` : ''} — held, not charged yet` : 'Cash on delivery'}</b></p>
+          <p className="text-[15px] text-charcoal/65 mt-3">Order <b className="text-navy">{order.id}</b> · {fmtDateTime(order.createdAt)} · {money(order.total)} · <b className="text-navy">{isCard ? `Paid by card${card ? ` ${card}` : ''}` : 'Cash on delivery'}</b></p>
           <div className="mt-7 flex flex-wrap gap-3">
             {guestNoAccount
               ? <Link href={`/register?email=${encodeURIComponent(order.customer.email)}&name=${encodeURIComponent(order.customer.name)}&next=${encodeURIComponent(`/account/orders/${order.id}`)}`} className="btn btn-navy"><UserPlus /> Create an account to track it</Link>
@@ -83,7 +83,7 @@ function Success() {
           <div className="flex justify-between"><dt className="text-charcoal/60">Subtotal</dt><dd className="font-bold">{money(order.subtotal)}</dd></div>
           <div className="flex justify-between"><dt className="text-charcoal/60">Delivery{order.deliveryMiles ? ` · ~${Math.round(order.deliveryMiles)} mi` : ''}</dt><dd className="font-bold">{order.shipping ? money(order.shipping) : 'Free'}</dd></div>
           <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold">{isCard ? `Card${card ? ` · ${card}` : ''}` : 'Cash on delivery'}</dd></div>
-          <div className="flex justify-between pt-2 border-t border-navy/10 text-[15px]"><dt className="font-extrabold text-navy">{isCard ? 'Total (held on card)' : 'Total to pay on delivery'}</dt><dd className="font-extrabold text-navy">{money(order.total)}</dd></div>
+          <div className="flex justify-between pt-2 border-t border-navy/10 text-[15px]"><dt className="font-extrabold text-navy">{isCard ? 'Total (paid by card)' : 'Total to pay on delivery'}</dt><dd className="font-extrabold text-navy">{money(order.total)}</dd></div>
           <p className="text-[11.5px] text-charcoal/50">{isCard ? 'Your card is charged when we confirm the order — only the final amount, never more than this.' : 'Paid in cash to our driver. Final amount is confirmed on your invoice.'}</p>
         </dl>
         <div className="px-6 py-5 border-t border-navy/5">
