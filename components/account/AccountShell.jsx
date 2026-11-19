@@ -5,7 +5,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft, Clock3, FileText, Heart, LayoutDashboard, LogOut, Package, ShieldCheck, Store, UserRound } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { Logo } from '@/components/ui';
-import { PageLoader, useMyInquiries } from './shared';
+import { useMyInquiries } from './shared';
+import { FullPageLoader } from '@/components/Loading';
 
 const NAV = [
   { href: '/account', label: 'Overview', short: 'Overview', icon: LayoutDashboard, exact: true },
@@ -44,7 +45,7 @@ export default function AccountShell({ children }) {
   const doLogout = async () => { await logout(); router.push('/'); };
 
   if (!ready || !user) {
-    return <div className="min-h-screen bg-ivory p-6 lg:p-10"><PageLoader /></div>;
+    return <FullPageLoader label="Loading your account…" />;
   }
 
   if (user.role === 'admin' || user.role === 'vendor') {
