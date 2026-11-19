@@ -2,6 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHydrateStore } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
+import { GlobalLoading } from '@/components/Loading';
 
 const ToastCtx = createContext(() => {});
 export const useToast = () => useContext(ToastCtx);
@@ -28,6 +29,7 @@ export default function Providers({ children }) {
   return (
     <ToastCtx.Provider value={toast}>
       {children}
+      <GlobalLoading />
       <div
         role="status"
         aria-live="polite"

@@ -8,7 +8,8 @@ import { ArrowRight, Banknote, CheckCircle2, Clock3, CreditCard, FileText, Lock,
 import { money, fmtDate, fmtDateTime, qtyUnit } from '@/lib/format';
 import { STATES } from '@/lib/locations';
 import { useStore } from '@/lib/store';
-import { MinimalHeader, PageLoader } from '@/components/account/shared';
+import { MinimalHeader } from '@/components/account/shared';
+import { FullPageLoader, BusyOverlay } from '@/components/Loading';
 import SquareCardForm from '@/components/checkout/SquareCardForm';
 
 function Lines({ lines }) {
@@ -61,7 +62,7 @@ export default function PayPage() {
     return () => { live = false; };
   }, [token]);
 
-  if (!page && !loadErr) return <div className="min-h-screen bg-ivory"><MinimalHeader secure /><main className="max-w-3xl mx-auto px-4 sm:px-6 py-10"><PageLoader /></main></div>;
+  if (!page && !loadErr) return <FullPageLoader label="Loading your secure payment page…" />;
 
   if (loadErr) {
     return (
@@ -118,6 +119,7 @@ export default function PayPage() {
 
   return (
     <div className="min-h-screen bg-ivory">
+      {busy && <BusyOverlay label={payCard ? 'Processing your payment…' : 'Confirming your order…'} delay={0} />}
       <MinimalHeader secure />
       <main className="max-w-site mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 lg:py-12">
         <p className="kicker">{isQuote ? `Quote ${quote.id}` : `Payment ${req.id}`}</p>

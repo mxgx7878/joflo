@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { stockState } from '@/lib/format';
+import { FullPageLoader } from '@/components/Loading';
 
 const NAV = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
@@ -100,14 +101,7 @@ export default function AdminShell({ children }) {
   useEffect(() => { setOpen(false); }, [pathname]);
 
   if (!ready || !user || user.role !== 'admin') {
-    return (
-      <div className="min-h-screen grid place-items-center bg-ivory">
-        <div className="text-center">
-          <div className="w-10 h-10 mx-auto rounded-full border-2 border-gold border-t-transparent animate-spin" />
-          <p className="mt-4 text-[13px] font-semibold text-charcoal/60">Loading admin…</p>
-        </div>
-      </div>
-    );
+    return <FullPageLoader label="Loading admin dashboard…" />;
   }
 
   const onSearch = (e) => {
