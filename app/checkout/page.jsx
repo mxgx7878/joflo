@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Banknote, Building2, CheckCircle2, Clock3, FileText, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, UserRound } from 'lucide-react';
+import { ArrowRight, Banknote, Building2, CheckCircle2, Circle, Clock3, CreditCard, FileText, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, UserRound } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { rateLabel } from '@/lib/delivery';
 import { productImg } from '@/lib/catalogue';
@@ -11,6 +11,7 @@ import { locationFromAddress, locationLabel, STATES } from '@/lib/locations';
 import { useToast } from '@/components/Providers';
 import { MinimalHeader, AddressPicker, PageLoader } from '@/components/account/shared';
 import { LocationModal, useDeliveryLocation } from '@/components/LocationPicker';
+import SquareCardForm from '@/components/checkout/SquareCardForm';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -55,6 +56,11 @@ export default function CheckoutPage() {
   const [notes, setNotes] = useState('');
   const [error, setError] = useState('');
   const [placing, setPlacing] = useState(false);
+  const cardRef = useRef(null);
+  const payOpts = settings.checkoutPayments || { cod: true, card: false };
+  const [method, setMethod] = useState(null);
+  const payMethod = method && payOpts[method] ? method : payOpts.card ? 'card' : 'cod';
+  const isCard = payMethod === 'card';
 
   useEffect(() => {
     if (user && !addressId) { const d = user.addresses.find((a) => a.isDefault) || user.addresses[0]; if (d) setAddressId(d.id); }
@@ -121,8 +127,22 @@ export default function CheckoutPage() {
       setGErr(e);
       if (Object.keys(e).length) { setError('Please complete the highlighted fields.'); jump(e.name || e.email || e.phone ? 'step-details' : 'step-address'); return; }
     } else if (!address) { setError('Please choose or add a delivery address.'); jump('step-address'); return; }
+    // card: get a one-time token from Square's secure form first (the form unmounts while the order is placed)
+    let sourceId; let verificationToken;
+    if (isCard) {
+      const who = isGuest ? guest : user;
+      const [givenName, ...rest] = String(who.name || '').trim().split(/\s+/);
+      try {
+        const t = await cardRef.current?.tokenize({
+          amount: total,
+          billingContact: { givenName, familyName: rest.join(' '), email: who.email, phone: who.phone || undefined, addressLines: [address.line1].filter(Boolean), city: address.city, state: address.state, postalCode: address.postcode, countryCode: 'US' },
+        });
+        if (!t?.token) throw new Error('Please enter your card details.');
+        sourceId = t.token; verificationToken = t.verificationToken;
+      } catch (e) { setError(e.message || 'Please check your card details.'); jump('step-payment'); return; }
+    }
     setPlacing(true);
-    const r = await placeOrder({ address: isGuest ? address : undefined, addressId: isGuest ? undefined : addressId, notes, guest: isGuest ? guest : undefined, paymentMethod: 'cod' });
+    const r = await placeOrder({ address: isGuest ? address : undefined, addressId: isGuest ? undefined : addressId, notes, guest: isGuest ? guest : undefined, paymentMethod: payMethod, sourceId, verificationToken });
     if (!r.ok) { setError(r.error); setPlacing(false); return; }
     router.push(`/checkout/success?order=${r.id}`);
   };
@@ -266,23 +286,42 @@ export default function CheckoutPage() {
                 </Step>
               </div>
 
-              <Step n={isGuest ? '4' : '3'} title="Payment method">
-                <div role="radiogroup" aria-label="Payment method">
-                  <div role="radio" aria-checked="true" tabIndex={0} className="flex items-center gap-4 rounded-2xl border-[1.5px] border-emerald bg-[#F2F8F5] p-4">
-                    <span className="w-11 h-11 rounded-xl bg-emerald text-white grid place-items-center shrink-0"><Banknote className="w-5 h-5" strokeWidth={1.8} /></span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-extrabold text-navy text-[15px]">Cash on delivery</p>
-                      <p className="text-[12.5px] text-charcoal/60">Pay our driver in cash when your order arrives. Nothing to pay online.</p>
-                    </div>
-                    <CheckCircle2 className="w-6 h-6 text-emerald shrink-0" strokeWidth={2} />
+              <div id="step-payment" className="scroll-mt-6">
+                <Step n={isGuest ? '4' : '3'} title="Payment method">
+                  <div role="radiogroup" aria-label="Payment method" className="space-y-3">
+                    {[
+                      payOpts.card && ['card', CreditCard, 'Pay by card', 'Visa, Mastercard, Amex, Discover. Your card is held now and only charged when we confirm your order.'],
+                      payOpts.cod && ['cod', Banknote, 'Cash on delivery', 'Pay our driver in cash when your order arrives. Nothing to pay online.'],
+                    ].filter(Boolean).map(([key, Icon, title, desc]) => {
+                      const on = payMethod === key;
+                      return (
+                        <div key={key} role="radio" aria-checked={on} tabIndex={0} onClick={() => setMethod(key)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setMethod(key); } }}
+                          className={`flex items-center gap-4 rounded-2xl border-[1.5px] p-4 cursor-pointer transition ${on ? 'border-emerald bg-[#F2F8F5]' : 'border-navy/10 bg-white hover:border-navy/25'}`}>
+                          <span className={`w-11 h-11 rounded-xl grid place-items-center shrink-0 ${on ? 'bg-emerald text-white' : 'bg-ivory text-navy'}`}><Icon className="w-5 h-5" strokeWidth={1.8} /></span>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-extrabold text-navy text-[15px]">{title}</p>
+                            <p className="text-[12.5px] text-charcoal/60">{desc}</p>
+                          </div>
+                          {on ? <CheckCircle2 className="w-6 h-6 text-emerald shrink-0" strokeWidth={2} /> : <Circle className="w-6 h-6 text-navy/20 shrink-0" strokeWidth={2} />}
+                        </div>
+                      );
+                    })}
                   </div>
-                </div>
-                <p className="mt-3 text-[12px] text-charcoal/55">Card and online payments aren&apos;t available — all orders are cash on delivery.</p>
-              </Step>
+                  {isCard && (
+                    <div className="mt-4 rounded-2xl border border-navy/10 bg-white p-4">
+                      <SquareCardForm ref={cardRef} />
+                    </div>
+                  )}
+                  {!payOpts.card && <p className="mt-3 text-[12px] text-charcoal/55">Card payments aren&apos;t available right now — orders are cash on delivery.</p>}
+                </Step>
+              </div>
 
               <Step n={isGuest ? '5' : '4'} title="How it works">
                 <ol className="grid sm:grid-cols-3 gap-3 text-[13px]">
-                  {[[Clock3, 'You place the order', 'Nothing to pay now. Stock is held for you.'], [FileText, 'We confirm', 'Our team confirms availability and delivery, and issues your invoice.'], [Truck, 'Pay cash on delivery', 'Our driver brings your order — pay the total in cash on arrival.']].map(([Icon, t, d]) => (
+                  {(isCard
+                    ? [[Clock3, 'You place the order', 'Your card is held for the total — not charged yet. Stock is held for you.'], [FileText, 'We confirm & charge', 'We confirm availability and delivery, charge your card and issue your invoice.'], [Truck, 'We deliver', 'Our driver brings your order. Nothing to pay on arrival.']]
+                    : [[Clock3, 'You place the order', 'Nothing to pay now. Stock is held for you.'], [FileText, 'We confirm', 'Our team confirms availability and delivery, and issues your invoice.'], [Truck, 'Pay cash on delivery', 'Our driver brings your order — pay the total in cash on arrival.']]
+                  ).map(([Icon, t, d]) => (
                     <li key={t} className="rounded-2xl border border-navy/10 bg-white p-4">
                       <Icon className="w-5 h-5 text-emerald" strokeWidth={1.8} />
                       <p className="font-extrabold text-navy mt-2">{t}</p>
@@ -330,19 +369,19 @@ export default function CheckoutPage() {
                 {estimate?.freeOver > 0 && shipping > 0 && subtotal < estimate.freeOver && <p className="text-[11.5px] text-emerald font-semibold">Add {money(estimate.freeOver - subtotal)} more for free delivery</p>}
                 {unavailable > 0 && <p className="text-[11.5px] text-[#8a6417] font-semibold">{unavailable} item{unavailable > 1 ? 's are' : ' is'} low on stock — our team will confirm availability.</p>}
                 {quoteOnly.length > 0 && <p className="text-[11.5px] text-charcoal/55">{quoteOnly.length} price-on-request item{quoteOnly.length > 1 ? 's stay' : ' stays'} in your cart — send {quoteOnly.length > 1 ? 'them' : 'it'} as a quote request after this order.</p>}
-                <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold text-navy flex items-center gap-1.5"><Banknote className="w-4 h-4 text-emerald" />Cash on delivery</dd></div>
-                <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">Total to pay on delivery</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
-                <p className="text-[11px] text-charcoal/50">Paid in cash to our driver. The final amount is confirmed on your invoice.</p>
+                <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold text-navy flex items-center gap-1.5">{isCard ? <><CreditCard className="w-4 h-4 text-emerald" />Card</> : <><Banknote className="w-4 h-4 text-emerald" />Cash on delivery</>}</dd></div>
+                <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">{isCard ? 'Total' : 'Total to pay on delivery'}</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
+                <p className="text-[11px] text-charcoal/50">{isCard ? 'We hold this amount on your card now and charge it when we confirm your order. If the final amount is lower, you are only charged the lower amount.' : 'Paid in cash to our driver. The final amount is confirmed on your invoice.'}</p>
               </dl>
               <div className="px-5 sm:px-6 pb-6 pt-1 space-y-2.5">
                 {error && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{error}</p>}
                 <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold w-full">
-                  {placing ? 'Placing order…' : 'Place order · Cash on delivery'} <ArrowRight className="mv" />
+                  {placing ? 'Placing order…' : isCard ? `Place order · Hold ${money(total)} on card` : 'Place order · Cash on delivery'} <ArrowRight className="mv" />
                 </button>
                 {(isGuest || user.role === 'customer') && (
                   <button type="button" onClick={requestQuote} className="btn btn-line-dark w-full !min-h-[44px] !py-2.5">Request a bulk quote instead</button>
                 )}
-                <p className="text-[11.5px] text-center text-charcoal/50">Nothing to pay now — pay cash on delivery. By placing this order you agree to our Terms &amp; Conditions.</p>
+                <p className="text-[11.5px] text-center text-charcoal/50">{isCard ? 'Your card is charged only when we confirm your order.' : 'Nothing to pay now — pay cash on delivery.'} By placing this order you agree to our Terms &amp; Conditions.</p>
               </div>
             </aside>
           </div>

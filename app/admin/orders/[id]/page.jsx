@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Printer, Truck, MapPin, User, FileText, CheckCircle2, Circle } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
-import { money, fmtDate, fmtDateTime, ORDER_STATUS, ORDER_FLOW, PAYMENT_METHODS, paymentMeta } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, ORDER_STATUS, ORDER_FLOW, paymentMeta } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
 import { Pill, OrderProgress, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, KV, Skeleton, useConfirm, Initials } from '@/components/admin/common';
 import FulfilmentCard from '@/components/admin/FulfilmentCard';
-import { ConfirmOrderCard, DriverCard, InvoiceCard } from '@/components/admin/OrderCards';
+import { ConfirmOrderCard, DriverCard, InvoiceCard, PaymentCard } from '@/components/admin/OrderCards';
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -18,7 +18,6 @@ export default function OrderDetail() {
   const order = useStore((s) => s.orders.find((o) => o.id === id));
   const users = useStore((s) => s.users);
   const updateOrderStatus = useStore((s) => s.updateOrderStatus);
-  const setOrderPayment = useStore((s) => s.setOrderPayment);
   const setOrderTracking = useStore((s) => s.setOrderTracking);
   const toast = useToast();
   const [ask, dialog] = useConfirm();
@@ -42,7 +41,8 @@ export default function OrderDetail() {
       setNote('');
       toast({ text: `${order.id} marked as ${ORDER_STATUS[status].label.toLowerCase()}` });
     };
-    if (status === 'cancelled') ask({ title: `Cancel ${order.id}?`, body: 'Items go back to the supplier warehouses they were taken from and the customer will see the order as cancelled.', confirm: 'Cancel order', danger: true }, run);
+    const cardNote = order.paymentMethod === 'card' ? (order.card?.status === 'APPROVED' ? ' The card hold is released — the customer is not charged.' : order.card?.status === 'COMPLETED' ? ` The remaining ${money((order.card.amount || 0) - (order.card.refunded || 0))} is refunded to the customer's card.` : '') : '';
+    if (status === 'cancelled') ask({ title: `Cancel ${order.id}?`, body: `Items go back to the supplier warehouses they were taken from and the customer will see the order as cancelled.${cardNote}`, confirm: 'Cancel order', danger: true }, run);
     else run();
   };
 
@@ -145,15 +145,7 @@ export default function OrderDetail() {
           <InvoiceCard order={order} />
           <DriverCard order={order} />
 
-          <Card title="Payment" className="print:hidden">
-            <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} />
-            <KV k="Status" v={<Pill meta={paymentMeta(order)} />} />
-            {order.payment !== 'paid' && order.status !== 'cancelled' && <KV k="Driver collects" v={<b className="text-navy">{money(order.total)}</b>} />}
-            <p className="text-[12px] text-charcoal/55 mt-2">Cash is marked as collected automatically when the order is marked Delivered.</p>
-            <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={order.status === 'pending' || order.status === 'cancelled'} onClick={async () => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; const r = await setOrderPayment(order.id, p); if (r.ok) toast({ text: p === 'paid' ? 'Cash marked as collected' : 'Cash marked as not collected' }); }}>
-              {order.payment === 'paid' ? 'Mark cash as not collected' : 'Mark cash collected'}
-            </button>
-          </Card>
+          <PaymentCard order={order} />
 
           <Card title="Customer">
             <div className="flex items-center gap-3">

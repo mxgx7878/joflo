@@ -123,6 +123,7 @@ export function Shop() {
   const openEnquiry = useUI((s) => s.openEnquiry);
   const { products, featured, catStatus, departments, commodities } = useCatalogue();
   const showPricing = useStore((s) => s.settings.showPricing !== false);
+  const payOpts = useStore((s) => s.settings.checkoutPayments) || { cod: true };
   const q = filter.q.trim().toLowerCase();
   const list = !filter.dept && !filter.cat && !q
     ? featured
@@ -142,7 +143,7 @@ export function Shop() {
           <div>
             <p className="kicker">Featured Products</p>
             <h2 className={H2}>{title}</h2>
-            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold" />{showPricing ? 'Order priced items online and pay cash on delivery. Others are quoted on request.' : 'Send us your list — our team replies with wholesale pricing and an invoice.'}</p>
+            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold" />{showPricing ? `Order priced items online and ${payOpts.card && payOpts.cod ? 'pay by card or cash on delivery' : payOpts.card ? 'pay by card' : 'pay cash on delivery'}. Others are quoted on request.` : 'Send us your list — our team replies with wholesale pricing and an invoice.'}</p>
           </div>
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0" role="tablist" aria-label="Filter products">
             {[['', 'All Products'], ...departments.map((x) => [x.name, x.name])].map(([d, l]) => (
