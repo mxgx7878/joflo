@@ -290,7 +290,7 @@ export default function CheckoutPage() {
                 <Step n={isGuest ? '4' : '3'} title="Payment method">
                   <div role="radiogroup" aria-label="Payment method" className="space-y-3">
                     {[
-                      payOpts.card && ['card', CreditCard, 'Pay by card', 'Visa, Mastercard, Amex, Discover. Your card is held now and only charged when we confirm your order.'],
+                      payOpts.card && ['card', CreditCard, 'Pay by card', 'Visa, Mastercard, Amex, Discover. Charged now — if our confirmed total differs, we refund or bill only the difference.'],
                       payOpts.cod && ['cod', Banknote, 'Cash on delivery', 'Pay our driver in cash when your order arrives. Nothing to pay online.'],
                     ].filter(Boolean).map(([key, Icon, title, desc]) => {
                       const on = payMethod === key;
@@ -319,7 +319,7 @@ export default function CheckoutPage() {
               <Step n={isGuest ? '5' : '4'} title="How it works">
                 <ol className="grid sm:grid-cols-3 gap-3 text-[13px]">
                   {(isCard
-                    ? [[Clock3, 'You place the order', 'Your card is held for the total — not charged yet. Stock is held for you.'], [FileText, 'We confirm & charge', 'We confirm availability and delivery, charge your card and issue your invoice.'], [Truck, 'We deliver', 'Our driver brings your order. Nothing to pay on arrival.']]
+                    ? [[CreditCard, 'You pay now', 'Your card is charged for the total and stock is held for you.'], [FileText, 'We confirm', 'We confirm availability and delivery and email your invoice. Lower total → refund; higher → a link to pay the extra.'], [Truck, 'We deliver', 'Our driver brings your order. Nothing to pay on arrival.']]
                     : [[Clock3, 'You place the order', 'Nothing to pay now. Stock is held for you.'], [FileText, 'We confirm', 'Our team confirms availability and delivery, and issues your invoice.'], [Truck, 'Pay cash on delivery', 'Our driver brings your order — pay the total in cash on arrival.']]
                   ).map(([Icon, t, d]) => (
                     <li key={t} className="rounded-2xl border border-navy/10 bg-white p-4">
@@ -371,17 +371,17 @@ export default function CheckoutPage() {
                 {quoteOnly.length > 0 && <p className="text-[11.5px] text-charcoal/55">{quoteOnly.length} price-on-request item{quoteOnly.length > 1 ? 's stay' : ' stays'} in your cart — send {quoteOnly.length > 1 ? 'them' : 'it'} as a quote request after this order.</p>}
                 <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold text-navy flex items-center gap-1.5">{isCard ? <><CreditCard className="w-4 h-4 text-emerald" />Card</> : <><Banknote className="w-4 h-4 text-emerald" />Cash on delivery</>}</dd></div>
                 <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">{isCard ? 'Total' : 'Total to pay on delivery'}</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
-                <p className="text-[11px] text-charcoal/50">{isCard ? 'We hold this amount on your card now and charge it when we confirm your order. If the final amount is lower, you are only charged the lower amount.' : 'Paid in cash to our driver. The final amount is confirmed on your invoice.'}</p>
+                <p className="text-[11px] text-charcoal/50">{isCard ? 'Charged to your card now. If our confirmed total is lower we refund the difference; if it is higher we email you a secure link to pay only the extra.' : 'Paid in cash to our driver. The final amount is confirmed on your invoice.'}</p>
               </dl>
               <div className="px-5 sm:px-6 pb-6 pt-1 space-y-2.5">
                 {error && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{error}</p>}
                 <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold w-full">
-                  {placing ? 'Placing order…' : isCard ? `Place order · Hold ${money(total)} on card` : 'Place order · Cash on delivery'} <ArrowRight className="mv" />
+                  {placing ? 'Placing order…' : isCard ? `Pay ${money(total)} & place order` : 'Place order · Cash on delivery'} <ArrowRight className="mv" />
                 </button>
                 {(isGuest || user.role === 'customer') && (
                   <button type="button" onClick={requestQuote} className="btn btn-line-dark w-full !min-h-[44px] !py-2.5">Request a bulk quote instead</button>
                 )}
-                <p className="text-[11.5px] text-center text-charcoal/50">{isCard ? 'Your card is charged only when we confirm your order.' : 'Nothing to pay now — pay cash on delivery.'} By placing this order you agree to our Terms &amp; Conditions.</p>
+                <p className="text-[11.5px] text-center text-charcoal/50">{isCard ? 'Your card is charged when you place the order.' : 'Nothing to pay now — pay cash on delivery.'} By placing this order you agree to our Terms &amp; Conditions.</p>
               </div>
             </aside>
           </div>

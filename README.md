@@ -57,10 +57,24 @@ JOLOF itself is the house supplier (`isHouse`) with its own warehouses.
 Off: no prices anywhere, everything is an inquiry; customers see prices only in the quote and invoice.
 
 **Order request → confirm → invoice.** Checkout creates a *pending* order (stock reserved, estimated delivery).
-Admin opens it, sets final unit prices / delivery / discount and clicks *Confirm order & issue invoice* →
-customer sees final pricing and the invoice (`/account/invoices/[id]`, printable to PDF).
-**Inquiry → quote → accept.** Admin builds a quote (delivery can be calculated by distance), customer accepts in
-their account → confirmed order + invoice straight away.
+Card orders are **charged at checkout** (Square). Admin opens the order, sets final unit prices / delivery / discount
+and confirms → invoice issued. For card orders the difference is settled automatically
+(`lib/server/payments.js`): a **lower** total refunds the difference to the card; a **higher** total creates a
+separate **payment request** (`PR-1001`) — the customer is emailed a private link (`/pay/<token>`, also shown on
+their order) to pay only the extra, and the order can't be marked shipped until it's paid (or the admin cancels the
+request). Cancelling refunds everything charged.
+
+**Inquiry → quote → pay.** The customer only sends the request. Admin builds a quote (delivery can be calculated by
+distance) and sends it → a private payment link is emailed to the customer (and shown under Quotes in their account
+if they have one). Paying it by card accepts the quote and creates the confirmed order + paid invoice
+(`lib/server/paylinks.js`). A revised quote replaces the old link. Without Square configured, the link lets them
+accept for cash on delivery instead.
+
+**Emails** (`lib/server/notify.js`, SMTP via nodemailer). Customer: order placed · order confirmed / re-priced
+(with refund or balance link) · balance link · payment received · refund · on its way · delivered · cancelled ·
+request received · quote with pay link · quote paid. Staff (`ADMIN_NOTIFY_EMAIL`): new order · new inquiry · quote
+paid / declined · balance paid · order cancelled by the customer. Everything is logged in **Admin → Emails**
+(preview, re-send, SMTP test). Emails go out after the response, so SMTP problems never block an order.
 
 **Routing** (`lib/server/routing.js`): 1) lines JOLOF's warehouses can fill go to JOLOF regardless of distance
 (optional max-miles limit in Settings); 2) the rest go to the nearest approved supplier warehouse with stock
@@ -82,9 +96,9 @@ driver once the order ships.
 |---|---|
 | Storefront | `/`, `/trading` |
 | Auth | `/login`, `/register` |
-| Checkout | `/checkout`, `/checkout/success` |
+| Checkout | `/checkout`, `/checkout/success`, `/pay/[token]` (private quote / balance payment link) |
 | Customer | `/account`, `/account/orders`, `/account/invoices/[id]`, `/account/orders/[id]`, `/account/quotes`, `/account/quotes/[id]`, `/account/quotes/new`, `/account/saved`, `/account/profile` |
-| Admin | `/admin`, `/admin/orders`, `/admin/invoices/[id]`, `/admin/drivers`, `/admin/product-requests`, `/admin/orders/[id]`, `/admin/inquiries`, `/admin/inquiries/[id]`, `/admin/products`, `/admin/departments`, `/admin/inventory`, `/admin/vendors`, `/admin/vendors/[id]`, `/admin/trading`, `/admin/customers`, `/admin/customers/[id]`, `/admin/settings` |
+| Admin | `/admin`, `/admin/orders`, `/admin/invoices/[id]`, `/admin/drivers`, `/admin/product-requests`, `/admin/orders/[id]`, `/admin/inquiries`, `/admin/inquiries/[id]`, `/admin/products`, `/admin/departments`, `/admin/inventory`, `/admin/vendors`, `/admin/vendors/[id]`, `/admin/trading`, `/admin/customers`, `/admin/customers/[id]`, `/admin/emails`, `/admin/settings` |
 | Supplier | `/vendor`, `/vendor/orders`, `/vendor/orders/[id]`, `/vendor/products`, `/vendor/warehouses` |
 
 ## Project layout
