@@ -53,8 +53,8 @@ export default function SettingsPage() {
         <Card title="Storefront pricing" action={<Tag className="w-4 h-4 text-gold" />}>
           <Toggle label="Show prices on the website" checked={settings.showPricing !== false} onChange={(v) => save({ showPricing: v }, v ? 'Prices are now visible — priced products can be ordered online' : 'Prices hidden — every product now goes through inquiry')} />
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
-            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order placed (card held through Square, or cash on delivery) → you confirm, the card is charged and the invoice is issued → the driver delivers (and collects cash for COD orders). Products without a price stay “Inquire now”.<br />
-            <b className="text-navy">Off:</b> no prices anywhere on the site; everything goes to Inquiries. Customers see pricing only in the quote you send them, and the invoice after they accept.
+            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order placed (card charged through Square, or cash on delivery) → you confirm and the invoice is issued (card orders: lower total → automatic refund, higher → the customer is emailed a link to pay the extra) → the driver delivers (and collects cash for COD orders). Products without a price stay “Inquire now”.<br />
+            <b className="text-navy">Off:</b> no prices anywhere on the site; everything goes to Inquiries. Customers see pricing only in the quote you send them — it is emailed with a private link to pay by card, and paying confirms the order.
           </p>
         </Card>
 
@@ -95,7 +95,7 @@ export default function SettingsPage() {
           <Toggle label="Card payments (Square)" checked={settings.payments?.card !== false} onChange={(v) => save({ payments: { card: v, cod: settings.payments?.cod !== false } }, v ? 'Card payments switched on' : 'Card payments switched off')} />
           <Toggle label="Cash on delivery" checked={settings.payments?.cod !== false} onChange={(v) => save({ payments: { card: settings.payments?.card !== false, cod: v } }, v ? 'Cash on delivery switched on' : 'Cash on delivery switched off')} />
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
-            <b className="text-navy">Card:</b> the card is held at checkout and charged when you confirm the order (lower totals are fine, higher ones are not). Square releases an unconfirmed hold after 7 days. Cancelling releases the hold, or refunds the card if it was already charged.
+            <b className="text-navy">Card:</b> charged at checkout. When you confirm at a lower total the difference is refunded automatically; at a higher total the customer gets an email with a private link to pay only the extra, and the order can&apos;t ship until it&apos;s paid. Quotes are paid by card from their emailed link. Cancelling refunds the card.
           </p>
           <p className={`mt-3 text-[12.5px] rounded-xl px-3.5 py-2.5 ${settings.squareEnabled ? 'bg-[#E3F2EA] text-emerald' : 'bg-gold-pale text-[#6d4f12]'}`}>
             {settings.squareEnabled

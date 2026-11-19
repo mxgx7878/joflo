@@ -1,42 +1,36 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, MessageSquareText, Ship, XCircle } from 'lucide-react';
-import { useStore, useCurrentUser, quoteTotal } from '@/lib/store';
+import { useParams } from 'next/navigation';
+import { ArrowLeft, ArrowRight, CheckCircle2, Clock3, CreditCard, MessageSquareText, Ship, XCircle } from 'lucide-react';
+import { useStore, quoteTotal } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
 import { money, fmtDate, fmtDateTime, INQUIRY_STATUS, INQUIRY_TYPE, qtyUnit } from '@/lib/format';
 import { Pill, Modal, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
-import { AddressPicker, SectionCard, useMyInquiries } from '@/components/account/shared';
+import { SectionCard, useMyInquiries } from '@/components/account/shared';
 
 const STEPS = [
   { key: 'new', label: 'Request sent' },
   { key: 'in_review', label: 'In review' },
   { key: 'quoted', label: 'Quote sent' },
-  { key: 'accepted', label: 'Accepted' },
+  { key: 'accepted', label: 'Paid & confirmed' },
 ];
 
 export default function QuoteDetail() {
   const { id } = useParams();
-  const router = useRouter();
   const toast = useToast();
-  const user = useCurrentUser();
   const inq = useMyInquiries().find((i) => i.id === id);
   const products = useStore((s) => s.products);
   const commodities = useStore((s) => s.commodities);
-  const { acceptQuote, declineQuote } = useStore.getState();
+  const { declineQuote } = useStore.getState();
   const invoiceId = useStore((s) => s.invoices.find((v) => v.orderId === inq?.orderId)?.id);
-  const [accepting, setAccepting] = useState(false);
   const [declining, setDeclining] = useState(false);
-  const [addressId, setAddressId] = useState(() => (user?.addresses.find((a) => a.isDefault) || user?.addresses[0])?.id || null);
-  const [err, setErr] = useState('');
 
   if (!inq) return <div className="dash-card"><EmptyState title="Request not found" action={<Link href="/account/quotes" className="dash-btn dash-btn-navy">Back to quotes</Link>} /></div>;
 
   const q = inq.quote;
   const expired = q && inq.status === 'quoted' && new Date(q.validUntil + 'T23:59:59') < new Date();
-  const pendingRetailer = user?.type === 'retailer' && user?.status === 'pending';
   const stepIdx = inq.status === 'declined' || inq.status === 'closed' ? -1 : STEPS.findIndex((s) => s.key === inq.status);
   const imgFor = (item) => {
     if (item.productId) return productImg(products.find((p) => p.id === item.productId) || {});
@@ -44,18 +38,7 @@ export default function QuoteDetail() {
     return c?.img || '/brand/logo.webp';
   };
 
-  const [busy, setBusy] = useState(false);
-  const doAccept = async () => {
-    const address = user.addresses.find((a) => a.id === addressId);
-    if (!address) { setErr('Please choose or add a delivery address.'); return; }
-    setBusy(true);
-    const r = await acceptQuote(inq.id, { addressId });
-    setBusy(false);
-    if (!r.ok) { setErr(r.error); return; }
-    setAccepting(false);
-    toast({ text: `Quote accepted — order ${r.id} confirmed and invoiced` });
-    router.push(`/account/orders/${r.id}`);
-  };
+  const payHref = inq.payRequest?.token ? `/pay/${inq.payRequest.token}` : null;
 
   return (
     <>
@@ -126,10 +109,12 @@ export default function QuoteDetail() {
 
               {inq.status === 'quoted' && (
                 <div className="px-5 sm:px-6 py-5 border-t border-navy/5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                  <p className="text-[12.5px] text-charcoal/60">{pendingRetailer ? 'Your trade account must be approved before you can accept quotes.' : expired ? 'This quote has expired — send a new request for updated pricing.' : 'Accepting confirms the order at these prices and issues your invoice.'}</p>
+                  <p className="text-[12.5px] text-charcoal/60">{expired ? 'This quote has expired — send a new request for updated pricing.' : !payHref ? 'Our team is updating this quote — check your email for the latest link.' : 'Paying by card confirms the order at these prices and issues your invoice. We also emailed you this link.'}</p>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setDeclining(true)} className="dash-btn dash-btn-ghost"><XCircle />Decline</button>
-                    <button type="button" onClick={() => { setErr(''); setAccepting(true); }} disabled={pendingRetailer || expired} className="dash-btn dash-btn-gold"><CheckCircle2 />Accept quote</button>
+                    {payHref && !expired
+                      ? <Link href={payHref} className="dash-btn dash-btn-gold"><CreditCard />Review & pay {money(quoteTotal(q))}</Link>
+                      : <button type="button" disabled className="dash-btn dash-btn-gold"><CreditCard />Review & pay</button>}
                   </div>
                 </div>
               )}
@@ -148,7 +133,7 @@ export default function QuoteDetail() {
               <span className="w-11 h-11 rounded-xl bg-gold-pale text-gold grid place-items-center shrink-0"><Clock3 className="w-5 h-5" /></span>
               <div>
                 <p className="font-display text-[1.3rem] text-navy">{inq.status === 'closed' ? 'Closed' : 'Our team is preparing your quote'}</p>
-                <p className="text-[13.5px] text-charcoal/60 mt-1">{inq.status === 'closed' ? 'We replied to this inquiry by email.' : 'We usually reply within one business day. You\'ll see the quote here and can accept it online.'}</p>
+                <p className="text-[13.5px] text-charcoal/60 mt-1">{inq.status === 'closed' ? 'We replied to this inquiry by email.' : 'We usually reply within one business day. We\'ll email you the quote with a secure link to pay, and it will show here too.'}</p>
               </div>
             </div>
           )}
@@ -186,17 +171,6 @@ export default function QuoteDetail() {
         </SectionCard>
       </div>
 
-      <Modal open={accepting} onClose={() => setAccepting(false)} kicker="Accept quote" title={`Confirm ${inq.id}`} size="max-w-2xl"
-        footer={<>
-          <button type="button" className="dash-btn dash-btn-ghost" onClick={() => setAccepting(false)}>Cancel</button>
-          <button type="button" className="dash-btn dash-btn-gold" disabled={busy} onClick={doAccept}><CheckCircle2 />{busy ? 'Confirming…' : `Accept · ${q ? money(quoteTotal(q)) : ''}`}</button>
-        </>}>
-        <div className="space-y-6">
-          <div><p className="dash-label">Deliver to</p><AddressPicker value={addressId} onChange={setAddressId} /></div>
-          <p className="text-[13px] text-charcoal/65 rounded-xl bg-ivory px-4 py-3">Your order is confirmed straight away and the invoice ({q ? money(quoteTotal(q)) : ''}) appears in your account — pay in cash to our driver on delivery.</p>
-          {err && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{err}</p>}
-        </div>
-      </Modal>
       <Modal open={declining} onClose={() => setDeclining(false)} kicker="Decline quote" title="Decline this quote?"
         footer={<>
           <button type="button" className="dash-btn dash-btn-ghost" onClick={() => setDeclining(false)}>Go back</button>

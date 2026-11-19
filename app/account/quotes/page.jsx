@@ -24,7 +24,7 @@ export default function MyQuotes() {
   return (
     <>
       <PageHeader kicker="Quotes & inquiries" title="Quotes & inquiries"
-        sub="Price-on-request products, bulk orders and commodity trading are quoted by our team. Accept a quote to turn it into an order."
+        sub="Price-on-request products, bulk orders and commodity trading are quoted by our team. We email you each quote with a secure link — pay it by card to confirm your order."
         actions={<Link href="/account/quotes/new" className="dash-btn dash-btn-navy"><Plus />New request</Link>} />
       <div className="dash-card overflow-hidden">
         <div className="p-4 sm:p-5 border-b border-navy/5">
