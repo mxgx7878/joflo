@@ -1,9 +1,24 @@
-import { Playfair_Display, Manrope } from 'next/font/google';
+import localFont from 'next/font/local';
 import Providers from '@/components/Providers';
 import './globals.css';
 
-const display = Playfair_Display({ subsets: ['latin'], weight: ['500', '600', '700'], style: ['normal', 'italic'], variable: '--font-display', display: 'swap' });
-const sans = Manrope({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-sans', display: 'swap' });
+// Fonts are bundled in app/fonts (variable woff2, latin, SIL Open Font License) so the build never
+// has to download them from Google Fonts — that download fails on some hosts (e.g. Hostinger).
+const display = localFont({
+  src: [
+    { path: './fonts/playfair-display-latin-wght-normal.woff2', weight: '400 900', style: 'normal' },
+    { path: './fonts/playfair-display-latin-wght-italic.woff2', weight: '400 900', style: 'italic' },
+  ],
+  variable: '--font-display',
+  display: 'swap',
+  fallback: ['Georgia', 'serif'],
+});
+const sans = localFont({
+  src: [{ path: './fonts/manrope-latin-wght-normal.woff2', weight: '200 800', style: 'normal' }],
+  variable: '--font-sans',
+  display: 'swap',
+  fallback: ['system-ui', 'sans-serif'],
+});
 
 export const metadata = {
   title: 'JOLOF TRADING | Wholesale Food, Cosmetics & Trading Store',
