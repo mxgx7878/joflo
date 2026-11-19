@@ -5,5 +5,4 @@ prisma/data
 SkinCare.xlsx
 .env
 .env*.local
-
 config.bat
