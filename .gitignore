@@ -3,6 +3,7 @@ node_modules
 out
 prisma/data
 SkinCare.xlsx
+.env
 .env*.local
 
 config.bat
