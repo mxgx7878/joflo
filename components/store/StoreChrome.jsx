@@ -4,14 +4,19 @@ import SiteHeader from './SiteHeader';
 import { LocationGate } from '@/components/LocationPicker';
 import SiteFooter, { BottomNav } from './SiteFooter';
 import WhatsAppButton from './WhatsAppButton';
+import { FullPageLoader } from '@/components/Loading';
+import { useStore } from '@/lib/store';
 import { Scrim, MobileMenu, CartDrawer, WishDrawer, QuickView, EnquiryModal, useOverlayBehaviour } from './Overlays';
 
 export { SiteHeader, SiteFooter };
 
 export default function StoreChrome({ children }) {
   useOverlayBehaviour();
+  // first visit: keep the store hidden behind the loader until products, prices and stock arrive
+  const loaded = useStore((s) => s.loaded);
   return (
     <div className="pb-[68px] lg:pb-0">
+      <FullPageLoader overlay show={!loaded} label="Loading the store…" />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-gold focus:text-navy focus:px-4 focus:py-2 focus:rounded-full">Skip to content</a>
       <SiteHeader />
       <main id="main">
