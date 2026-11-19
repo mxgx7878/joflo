@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard, ShoppingCart, MessageSquareText, Package, FolderTree, Boxes, Wheat, Users, Settings,
-  Menu, X, ExternalLink, LogOut, Search, Warehouse, Truck, ClipboardCheck,
+  Menu, X, ExternalLink, LogOut, Search, Warehouse, Truck, ClipboardCheck, Mail,
 } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { stockState } from '@/lib/format';
@@ -21,6 +21,7 @@ const NAV = [
   { href: '/admin/drivers', label: 'Drivers', icon: Truck, badge: 'drivers' },
   { href: '/admin/trading', label: 'Trading', icon: Wheat },
   { href: '/admin/customers', label: 'Customers', icon: Users, badge: 'customers' },
+  { href: '/admin/emails', label: 'Emails', icon: Mail },
   { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 

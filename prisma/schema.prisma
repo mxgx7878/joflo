@@ -251,16 +251,21 @@ model Order {
   fulfilments Fulfilment[]
   invoice     Invoice?
   payments    Payment[]
+  requests    PaymentRequest[]
 
   @@index([userId])
 }
 
 // A card payment taken through Square for an order (amounts in dollars).
-// Card orders are authorized (held) at checkout and captured when JOLOF confirms the order.
+// Card orders are charged at checkout. If JOLOF later raises the total, the difference is a
+// separate PaymentRequest the customer pays from a private link (another Payment row).
+// (Older orders may still have an uncaptured hold: status APPROVED.)
 model Payment {
   id           String    @id @default(cuid())
   orderId      String
   order        Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  kind         String    @default("checkout") // checkout | quote | balance
+  requestId    String?
   provider     String    @default("square")
   providerId   String    @unique // Square payment id
   status       String // Square status: APPROVED (held) | COMPLETED (charged) | CANCELED | FAILED | PENDING
@@ -362,4 +367,48 @@ model Subscriber {
 model Counter {
   key   String @id
   value Int
+}
+
+// Money JOLOF asks a customer to pay through a private link (/pay/<token>), by card:
+//   quote   → the price of a quote; paying it accepts the quote and creates the order
+//   balance → the extra amount after JOLOF raised a card order's total
+model PaymentRequest {
+  id          String    @id // PR-1001
+  kind        String // quote | balance
+  orderId     String?
+  order       Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  inquiryId   String?
+  amount      Float
+  reason      String    @default("")
+  token       String    @unique
+  status      String    @default("open") // open | paid | cancelled
+  name        String    @default("")
+  email       String    @default("")
+  createdBy   String    @default("System")
+  createdAt   DateTime  @default(now())
+  paidAt      DateTime?
+  cancelledAt DateTime?
+
+  @@index([orderId])
+  @@index([inquiryId])
+}
+
+// Every email the site sends (or tried to send) — shown to admins, failed ones can be re-sent.
+model EmailLog {
+  id        String    @id @default(cuid())
+  to        String
+  subject   String
+  template  String
+  status    String // sent | failed | skipped (SMTP not configured)
+  error     String    @default("") @db.Text
+  orderId   String?
+  inquiryId String?
+  html      String    @db.Text
+  text      String    @default("") @db.Text
+  createdAt DateTime  @default(now())
+  sentAt    DateTime?
+
+  @@index([orderId])
+  @@index([inquiryId])
+  @@index([createdAt])
 }

@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Check, Clock3, Copy, FileText, RotateCcw, Truck, XCircle } from 'lucide-react';
+import { ArrowLeft, Check, Clock3, Copy, CreditCard, FileText, RotateCcw, Truck, XCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
-import { money, fmtDate, fmtDateTime, ORDER_FLOW, ORDER_STATUS, PAYMENT_METHODS, paymentMeta, cardLine } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, ORDER_FLOW, ORDER_STATUS, PAYMENT_METHODS, paymentMeta, cardLine, openBalanceRequests } from '@/lib/format';
 import { Pill, OrderProgress, Modal, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { AddressBlock, SectionCard, useMyOrders } from '@/components/account/shared';
@@ -58,9 +58,16 @@ export default function OrderDetail() {
       {order.status === 'pending' && (
         <div className="mb-6 rounded-2xl bg-gold-pale border border-gold/30 p-4 sm:p-5 flex gap-3 text-[13.5px] text-[#6d4f12]">
           <Clock3 className="w-5 h-5 shrink-0 mt-0.5" />
-          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Our team confirms availability and delivery, then your invoice appears here. {order.paymentMethod === 'card' ? `${money(order.total)} is held on your card and charged when we confirm — cancelling releases the hold.` : 'You pay in cash when the order is delivered.'}</p></div>
+          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Our team confirms availability and delivery, then your invoice appears here. {order.paymentMethod === 'card' ? (order.card?.status === 'APPROVED' ? `${money(order.total)} is held on your card and charged when we confirm — cancelling releases the hold.` : `You paid ${money(order.paid || order.total)} by card. If the confirmed total is lower we refund the difference; if higher, we email you a link to pay the extra. Cancelling refunds your card.`) : 'You pay in cash when the order is delivered.'}</p></div>
         </div>
       )}
+      {order.status !== 'cancelled' && openBalanceRequests(order).map((r) => (
+        <div key={r.id} className="mb-6 rounded-2xl bg-gold-pale border border-gold/40 p-4 sm:p-5 flex flex-wrap items-center gap-3 text-[13.5px] text-[#6d4f12]">
+          <CreditCard className="w-5 h-5 shrink-0" />
+          <p className="flex-1 min-w-[220px]"><b>Balance to pay: {money(r.amount)}</b> — the confirmed total ({money(order.total)}) is higher than the {money(order.paid)} you paid. We&apos;ll deliver once it&apos;s paid.</p>
+          {r.token && <Link href={`/pay/${r.token}`} className="dash-btn dash-btn-gold"><CreditCard />Pay {money(r.amount)}</Link>}
+        </div>
+      ))}
       {order.invoiceId && order.status !== 'cancelled' && order.payment !== 'paid' && order.paymentMethod !== 'card' && (
         <div className="mb-6 rounded-2xl bg-[#E6EEF8] p-4 sm:p-5 flex flex-wrap items-center gap-3 text-[13.5px] text-navy-600">
           <FileText className="w-5 h-5 shrink-0" />
@@ -121,7 +128,10 @@ export default function OrderDetail() {
               <div><p className="dash-label">Delivery address</p><AddressBlock address={order.address} /></div>
               <div><p className="dash-label">Customer</p><p className="text-[13.5px] text-charcoal/80">{order.customer.name}{order.customer.company ? ` · ${order.customer.company}` : ''}<br />{order.customer.email}</p></div>
               <div><p className="dash-label">Payment</p><p className="text-[13.5px] text-charcoal/80">{order.paymentMethod === 'card'
-                ? <>Card{cardLine(order.card) ? ` · ${cardLine(order.card)}` : ''} · <span className="font-bold text-navy">{paymentMeta(order).label}</span>{order.card?.refunded > 0 ? ` · ${money(order.card.refunded)} refunded` : ''}{order.card?.receiptUrl && ['paid', 'partially_refunded', 'refunded'].includes(order.payment) ? <> · <a href={order.card.receiptUrl} target="_blank" rel="noreferrer" className="font-bold text-emerald hover:text-navy">Receipt</a></> : null}</>
+                ? <>Card{cardLine(order.card) ? ` · ${cardLine(order.card)}` : ''} · <span className="font-bold text-navy">{paymentMeta(order).label}</span>{order.refunded > 0 ? ` · ${money(order.refunded)} refunded` : ''}
+                  {(order.payments || []).filter((pm) => pm.status === 'COMPLETED').map((pm) => (
+                    <span key={pm.id} className="block text-[12.5px] text-charcoal/60 mt-1">{pm.kind === 'balance' ? 'Balance' : pm.kind === 'quote' ? 'Quote payment' : 'Checkout'} · {money(pm.amount)} · {fmtDate(pm.at)}{pm.receiptUrl ? <> · <a href={pm.receiptUrl} target="_blank" rel="noreferrer" className="font-bold text-emerald hover:text-navy">Receipt</a></> : null}</span>
+                  ))}</>
                 : <>{PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} · <span className={order.payment === 'paid' ? 'text-emerald font-bold' : 'text-[#8a6417] font-bold'}>{order.payment === 'paid' ? paymentMeta(order).label : order.status === 'cancelled' ? 'No payment' : 'Due on delivery'}</span></>}</p></div>
               {order.notes && <div><p className="dash-label">Your notes</p><p className="text-[13.5px] text-charcoal/80">{order.notes}</p></div>}
               {order.inquiryId && <div className="no-print"><p className="dash-label">Quote</p><Link href={`/account/quotes/${order.inquiryId}`} className="text-[13.5px] font-bold text-emerald hover:text-navy">View quote {order.inquiryId}</Link></div>}

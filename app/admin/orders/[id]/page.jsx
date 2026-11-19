@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Printer, Truck, MapPin, User, FileText, CheckCircle2, Circle } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
-import { money, fmtDate, fmtDateTime, ORDER_STATUS, ORDER_FLOW, paymentMeta } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, ORDER_STATUS, ORDER_FLOW, paymentMeta, openBalanceRequests } from '@/lib/format';
 import { productImg } from '@/lib/catalogue';
 import { Pill, OrderProgress, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, KV, Skeleton, useConfirm, Initials } from '@/components/admin/common';
 import FulfilmentCard from '@/components/admin/FulfilmentCard';
 import { ConfirmOrderCard, DriverCard, InvoiceCard, PaymentCard } from '@/components/admin/OrderCards';
+import EmailLogCard from '@/components/admin/EmailLogCard';
 
 export default function OrderDetail() {
   const { id } = useParams();
@@ -41,7 +42,8 @@ export default function OrderDetail() {
       setNote('');
       toast({ text: `${order.id} marked as ${ORDER_STATUS[status].label.toLowerCase()}` });
     };
-    const cardNote = order.paymentMethod === 'card' ? (order.card?.status === 'APPROVED' ? ' The card hold is released — the customer is not charged.' : order.card?.status === 'COMPLETED' ? ` The remaining ${money((order.card.amount || 0) - (order.card.refunded || 0))} is refunded to the customer's card.` : '') : '';
+    const held = (order.payments || []).some((p) => p.status === 'APPROVED');
+    const cardNote = order.paymentMethod === 'card' ? `${held ? ' The card hold is released.' : ''}${order.paid > 0 ? ` ${money(order.paid)} is refunded to the customer's card.` : ''}${openBalanceRequests(order).length ? ' Open payment links are cancelled.' : ''}` : '';
     if (status === 'cancelled') ask({ title: `Cancel ${order.id}?`, body: `Items go back to the supplier warehouses they were taken from and the customer will see the order as cancelled.${cardNote}`, confirm: 'Cancel order', danger: true }, run);
     else run();
   };
@@ -57,6 +59,7 @@ export default function OrderDetail() {
             <Pill meta={ORDER_STATUS[order.status]} />
             <Pill meta={paymentMeta(order)} />
             {order.source === 'quote' && <span className="pill bg-[#EEE9F8] text-[#5B3FA0]">From quote</span>}
+            {order.balanceDue > 0 && order.status !== 'cancelled' && <span className="pill bg-gold-pale text-[#8a6417]">Balance {money(order.balanceDue)} unpaid — can&apos;t ship yet</span>}
             {order.guest && <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Guest checkout</span>}
             {order.items.some((i) => i.productId && !i.warehouseId) && order.status !== 'cancelled' && <span className="pill bg-[#F8E7E3] text-[#B4432F]">Needs a supplier</span>}
           </div>
@@ -146,6 +149,7 @@ export default function OrderDetail() {
           <DriverCard order={order} />
 
           <PaymentCard order={order} />
+          <EmailLogCard orderId={order.id} />
 
           <Card title="Customer">
             <div className="flex items-center gap-3">
@@ -174,7 +178,7 @@ export default function OrderDetail() {
 
           {order.inquiryId && (
             <Card title="Source" className="print:hidden">
-              <p className="text-[13px] text-charcoal/70">Created when the customer accepted quote <b className="text-navy">{order.inquiryId}</b>.</p>
+              <p className="text-[13px] text-charcoal/70">Created when the customer {order.paymentMethod === 'card' ? 'paid' : 'accepted'} quote <b className="text-navy">{order.inquiryId}</b>.</p>
               <Link href={`/admin/inquiries/${order.inquiryId}`} className="mt-2 inline-block text-[12.5px] font-bold text-emerald hover:text-navy">Open inquiry →</Link>
             </Card>
           )}

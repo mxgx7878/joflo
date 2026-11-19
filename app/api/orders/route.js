@@ -2,8 +2,9 @@ import { route, body, fail, str, EMAIL } from '@/lib/server/http';
 import { prisma } from '@/lib/server/db';
 import { getUser } from '@/lib/server/auth';
 import { getSettings } from '@/lib/server/settings';
-import { createOrder, discardOrder, markCardAuthorized } from '@/lib/server/orders';
-import { authorizeCard, voidCard, squareEnabled } from '@/lib/server/square';
+import { createOrder, discardOrder, markCardCharged } from '@/lib/server/orders';
+import { chargeCard, refundCard, squareEnabled } from '@/lib/server/square';
+import { notify } from '@/lib/server/notify';
 import { withState } from '@/lib/server/respond';
 import { orderForCustomer } from '@/lib/server/state';
 
@@ -12,7 +13,8 @@ const cleanAddress = (a) => ({ label: str(a?.label, 40) || 'Delivery', line1: st
 /**
  * Order from the storefront cart. JOLOF confirms prices and issues the invoice.
  *   cod  → nothing paid online; the driver collects cash on delivery.
- *   card → the card is authorized (held) now and charged when JOLOF confirms the order.
+ *   card → the card is charged now. When JOLOF confirms at a different total, the difference is
+ *          refunded or asked for as a separate balance payment (lib/server/payments.js).
  */
 export const POST = route(async (req) => {
   const d = await body(req);
@@ -50,14 +52,15 @@ export const POST = route(async (req) => {
   if (method === 'card') {
     let payment = null;
     try {
-      payment = await authorizeCard({ orderId: id, amount: total, sourceId, verificationToken: str(d.verificationToken, 400) || undefined, email: customer.email });
-      await markCardAuthorized(id, payment);
+      payment = await chargeCard({ orderId: id, amount: total, sourceId, verificationToken: str(d.verificationToken, 400) || undefined, email: customer.email, kind: 'checkout' });
+      await markCardCharged(id, payment, 'Card charged at checkout');
     } catch (e) {
-      // card not approved (or saving failed) → release any hold, the order is not placed and its stock goes back
-      if (payment) await voidCard(payment).catch((err) => console.error('[orders] void failed', id, err));
+      // card not approved (or saving failed) → give back any charge, the order is not placed and its stock goes back
+      if (payment) await refundCard(payment, payment.amount, 'Order could not be placed').catch((err) => console.error('[orders] refund failed', id, err));
       await discardOrder(id, customer.name).catch((err) => console.error('[orders] discard failed', id, err));
       throw e;
     }
   }
+  notify.orderPlaced(id);
   return withState({ id, order: await orderForCustomer(id) });
 });
