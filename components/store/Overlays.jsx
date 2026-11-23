@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useStore, useStoreReady, useCurrentUser } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
-import { money, priced, catLine, sizeLine } from '@/lib/format';
+import { money, priced, catLine, sizeLine, payOptionsPhrase, fmtExpiry, isExpired } from '@/lib/format';
 import { useUI } from './ui';
 import { FilterLink, CosLink, useCatalogue, useProductActions } from './shared';
 import { accountHref, dashLabel, useCounts } from './SiteHeader';
@@ -138,7 +138,7 @@ export function CartDrawer() {
         <div className="border-t border-navy/10 p-6 bg-ivory">
           {buyable ? (<>
             <div className="flex items-center justify-between"><span className="font-bold text-navy">Subtotal</span><span className="font-extrabold text-xl text-navy">{money(cartTotal)}</span></div>
-            <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Delivery is calculated by distance at checkout. {payOpts.card && payOpts.cod ? 'Pay by card or cash on delivery.' : payOpts.card ? 'Pay by card — charged when we confirm your order.' : 'Cash on delivery — nothing to pay online.'}</p>
+            <p className="text-[12px] text-charcoal/55 mt-1">Prices in USD. Delivery is calculated by distance at checkout. {payOpts.card ? `${payOptionsPhrase(payOpts).replace(/^p/, 'P')}.` : `${payOptionsPhrase(payOpts).replace(/^p/, 'P')} — nothing to pay online.`}</p>
             <button type="button" className="btn btn-navy w-full mt-5" onClick={() => { closeAll(); router.push('/checkout'); }}><Lock />Checkout</button>
           </>) : (
             <p className="text-[13px] text-charcoal/65">These items are priced on request — send them to our team and we&apos;ll reply with a quote.</p>
@@ -221,6 +221,11 @@ export function QuickView() {
               <p className="text-[11px] font-extrabold tracking-[.2em] uppercase text-gold">{catLine(p)}</p>
               <h2 id="qvName" className="font-display text-[2rem] text-navy mt-2 leading-tight">{p.name}</h2>
               <p className="mt-2 text-charcoal/60 text-sm">{p.price === null ? [p.size && `Size: ${p.size}`, p.pack && `Wholesale pack: ${p.pack}`].filter(Boolean).join(' · ') : `Packaging: ${p.size}`}</p>
+              {p.expiryDate && (
+                <p className={`mt-2 inline-flex self-start items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-bold ${isExpired(p.expiryDate) ? 'bg-[#F8E7E3] text-[#B4432F]' : 'bg-ivory text-navy'}`}>
+                  {isExpired(p.expiryDate) ? 'Expired' : 'Expiry date'}: {fmtExpiry(p.expiryDate)}
+                </p>
+              )}
               <p className="mt-5 flex items-baseline gap-2">
                 <span className="text-[1.7rem] font-extrabold text-navy">{priced(p) ? money(p.price) : 'Price on request'}</span>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-charcoal/45">{p.real ? 'Wholesale price per case · USD' : priced(p) ? 'USD' : 'Wholesale pricing'}</span>

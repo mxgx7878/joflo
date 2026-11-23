@@ -96,6 +96,7 @@ model Product {
   img         String?
   desc        String   @default("")
   tag         String?
+  expiryDate  DateTime? @db.Date // optional — shown on the product when set
   real        Boolean  @default(false)
   lowStock    Int      @default(10)
   moq         Int      @default(1)
@@ -229,7 +230,7 @@ model Order {
   locationId    String?
   status        String    @default("pending") // pending | confirmed | packed | shipped | delivered | cancelled
   payment       String    @default("unpaid") // unpaid | authorized | paid | partially_refunded | refunded | voided | failed
-  paymentMethod String    @default("cod") // cod (cash on delivery) | card (Square)
+  paymentMethod String    @default("cod") // cod (cash on delivery) | check (check on delivery) | card (Square)
   source        String    @default("checkout") // checkout | quote
   inquiryId     String?
   notes         String    @default("")

@@ -22,14 +22,14 @@ export default function SettingsPage() {
   const [ask, dialog] = useConfirm();
   const [d, setD] = useState(null);
   const [routing, setRouting] = useState({ jolofFirstMaxMiles: 0 });
-  const [inv, setInv] = useState({ dueDays: 7, payTo: '', footer: '' });
+  const [inv, setInv] = useState({ dueDays: 7, payTo: '', checkNote: '', footer: '' });
   const [store, setStore] = useState({ name: '', email: '', phone: '', address: '' });
 
   useEffect(() => {
     if (!ready) return;
     setD({ ...settings.delivery });
     setRouting({ jolofFirstMaxMiles: settings.routing?.jolofFirstMaxMiles || 0 });
-    setInv({ dueDays: 7, payTo: '', footer: '', ...settings.invoice });
+    setInv({ dueDays: 7, payTo: '', checkNote: '', footer: '', ...settings.invoice });
     setStore({ name: '', email: '', phone: '', address: '', ...settings.store });
   }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -53,7 +53,7 @@ export default function SettingsPage() {
         <Card title="Storefront pricing" action={<Tag className="w-4 h-4 text-gold" />}>
           <Toggle label="Show prices on the website" checked={settings.showPricing !== false} onChange={(v) => save({ showPricing: v }, v ? 'Prices are now visible — priced products can be ordered online' : 'Prices hidden — every product now goes through inquiry')} />
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
-            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order placed (card charged through Square, or cash on delivery) → you confirm and the invoice is issued (card orders: lower total → automatic refund, higher → the customer is emailed a link to pay the extra) → the driver delivers (and collects cash for COD orders). Products without a price stay “Inquire now”.<br />
+            <b className="text-navy">On:</b> products with a price show it and can be added to cart → order placed (card charged through Square, or cash / check on delivery) → you confirm and the invoice is issued (card orders: lower total → automatic refund, higher → the customer is emailed a link to pay the extra) → the driver delivers (and collects cash or a check for pay-on-delivery orders). Products without a price stay “Inquire now”.<br />
             <b className="text-navy">Off:</b> no prices anywhere on the site; everything goes to Inquiries. Customers see pricing only in the quote you send them — it is emailed with a private link to pay by card, and paying confirms the order.
           </p>
         </Card>
@@ -92,10 +92,20 @@ export default function SettingsPage() {
         </Card>
 
         <Card title="Payment methods" action={<CreditCard className="w-4 h-4 text-gold" />}>
-          <Toggle label="Card payments (Square)" checked={settings.payments?.card !== false} onChange={(v) => save({ payments: { card: v, cod: settings.payments?.cod !== false } }, v ? 'Card payments switched on' : 'Card payments switched off')} />
-          <Toggle label="Cash on delivery" checked={settings.payments?.cod !== false} onChange={(v) => save({ payments: { card: settings.payments?.card !== false, cod: v } }, v ? 'Cash on delivery switched on' : 'Cash on delivery switched off')} />
+          {(() => {
+            const cur = { card: settings.payments?.card !== false, cod: settings.payments?.cod !== false, check: settings.payments?.check !== false };
+            const toggle = (key, label) => (v) => save({ payments: { ...cur, [key]: v } }, `${label} switched ${v ? 'on' : 'off'}`);
+            return (
+              <>
+                <Toggle label="Card payments (Square)" checked={cur.card} onChange={toggle('card', 'Card payments')} />
+                <Toggle label="Cash on delivery" checked={cur.cod} onChange={toggle('cod', 'Cash on delivery')} />
+                <Toggle label="Check on delivery" checked={cur.check} onChange={toggle('check', 'Check on delivery')} />
+              </>
+            );
+          })()}
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
-            <b className="text-navy">Card:</b> charged at checkout. When you confirm at a lower total the difference is refunded automatically; at a higher total the customer gets an email with a private link to pay only the extra, and the order can&apos;t ship until it&apos;s paid. Quotes are paid by card from their emailed link. Cancelling refunds the card.
+            <b className="text-navy">Card:</b> charged at checkout. When you confirm at a lower total the difference is refunded automatically; at a higher total the customer gets an email with a private link to pay only the extra, and the order can&apos;t ship until it&apos;s paid. Quotes are paid by card from their emailed link. Cancelling refunds the card.<br />
+            <b className="text-navy">Cash / check on delivery:</b> nothing paid online — the driver collects cash or a check at drop-off, and the order is marked paid when it&apos;s delivered.
           </p>
           <p className={`mt-3 text-[12.5px] rounded-xl px-3.5 py-2.5 ${settings.squareEnabled ? 'bg-[#E3F2EA] text-emerald' : 'bg-gold-pale text-[#6d4f12]'}`}>
             {settings.squareEnabled
@@ -105,8 +115,9 @@ export default function SettingsPage() {
         </Card>
 
         <Card title="Invoices" action={<FileText className="w-4 h-4 text-gold" />}>
-          <p className="text-[12.5px] text-charcoal/60 leading-relaxed">Cash on delivery invoices are due when the order is delivered. Card orders are invoiced as paid when you confirm them.</p>
+          <p className="text-[12.5px] text-charcoal/60 leading-relaxed">Cash and check on delivery invoices are due when the order is delivered. Card orders are invoiced as paid when you confirm them.</p>
           <Field label="Cash on delivery note (printed on every invoice)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="e.g. Please have the full amount ready in cash for our driver." /></Field>
+          <Field label="Check on delivery note (printed on check invoices)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.checkNote} onChange={(e) => setInv({ ...inv, checkNote: e.target.value })} placeholder="e.g. Please have a check for the full amount, payable to JOLOF TRADING, ready for our driver." /></Field>
           <Field label="Footer" className="mt-4"><input className="dash-input" value={inv.footer} onChange={(e) => setInv({ ...inv, footer: e.target.value })} /></Field>
           <button className="dash-btn dash-btn-ghost w-full mt-4" onClick={() => save({ invoice: inv }, 'Invoice details saved')}><Save /> Save invoice details</button>
         </Card>

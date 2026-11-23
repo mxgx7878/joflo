@@ -157,7 +157,7 @@ export default function DriverSlip({ order, back }) {
             </div>
           </div>
           {order.notes && <p className="mt-4 text-[13px] bg-ivory rounded-xl p-3"><b className="text-navy">Customer note:</b> {order.notes}</p>}
-          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.' : `Cash on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect payment at drop-off (amount on the customer invoice)'}.`}</p>
+          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.' : order.paymentMethod === 'check' ? `Check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect a check payable to JOLOF TRADING at drop-off (amount on the customer invoice)'}.` : `Cash on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect payment at drop-off (amount on the customer invoice)'}.`}</p>
         </section>
 
         <footer className="mt-4 pt-6 border-t border-navy/10 grid sm:grid-cols-2 gap-8 text-[12.5px] text-charcoal/65">
