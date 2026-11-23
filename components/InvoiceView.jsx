@@ -21,7 +21,7 @@ export default function InvoiceView({ invoice, back }) {
         <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-navy/10">
           <div>
             <img src="/brand/logo.webp" alt="JOLOF TRADING" className="h-16 w-auto" />
-            <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">{store.name || 'JOLOF TRADING'}<br />{store.address}<br />{store.email}{store.phone ? ` · ${store.phone}` : ''}</p>
+            <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">{store.address}<br />{store.email}{store.phone ? ` · ${store.phone}` : ''}</p>
           </div>
           <div className="sm:text-right">
             <p className="font-display text-[2rem] text-navy leading-none">Invoice</p>
