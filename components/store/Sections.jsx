@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { CATS, U, productImg } from '@/lib/catalogue';
+import { payOptionsPhrase } from '@/lib/format';
 import { useUI } from './ui';
 import Link from 'next/link';
 import { Reveal, FilterLink, CosLink, useCatalogue, useGoShop } from './shared';
@@ -143,7 +144,7 @@ export function Shop() {
           <div>
             <p className="kicker">Featured Products</p>
             <h2 className={H2}>{title}</h2>
-            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold" />{showPricing ? `Order priced items online and ${payOpts.card && payOpts.cod ? 'pay by card or cash on delivery' : payOpts.card ? 'pay by card' : 'pay cash on delivery'}. Others are quoted on request.` : 'Send us your list — our team replies with wholesale pricing and an invoice.'}</p>
+            <p className="mt-2 text-[13.5px] text-charcoal/55 flex items-center gap-2"><Info className="w-4 h-4 text-gold" />{showPricing ? `Order priced items online and ${payOptionsPhrase(payOpts)}. Others are quoted on request.` : 'Send us your list — our team replies with wholesale pricing and an invoice.'}</p>
           </div>
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0" role="tablist" aria-label="Filter products">
             {[['', 'All Products'], ...departments.map((x) => [x.name, x.name])].map(([d, l]) => (

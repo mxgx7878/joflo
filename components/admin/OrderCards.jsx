@@ -135,7 +135,7 @@ export function InvoiceCard({ order }) {
   );
 }
 
-/** Payment card on the admin order page — cash on delivery, or Square card payments, balance requests and refunds. */
+/** Payment card on the admin order page — cash / check on delivery, or Square card payments, balance requests and refunds. */
 export function PaymentCard({ order }) {
   const setOrderPayment = useStore((s) => s.setOrderPayment);
   const refundOrderPayment = useStore((s) => s.refundOrderPayment);
@@ -150,14 +150,16 @@ export function PaymentCard({ order }) {
   const card = order.card;
 
   if (order.paymentMethod !== 'card') {
+    const what = order.paymentMethod === 'check' ? 'check' : 'cash';
+    const What = what === 'check' ? 'Check' : 'Cash';
     return (
       <Card title="Payment" className="print:hidden">
         <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} />
         <KV k="Status" v={<Pill meta={paymentMeta(order)} />} />
-        {order.payment !== 'paid' && order.status !== 'cancelled' && <KV k="Driver collects" v={<b className="text-navy">{money(order.total)}</b>} />}
-        <p className="text-[12px] text-charcoal/55 mt-2">Cash is marked as collected automatically when the order is marked Delivered.</p>
-        <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={order.status === 'pending' || order.status === 'cancelled'} onClick={async () => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; const r = await setOrderPayment(order.id, p); if (r.ok) toast({ text: p === 'paid' ? 'Cash marked as collected' : 'Cash marked as not collected' }); }}>
-          {order.payment === 'paid' ? 'Mark cash as not collected' : 'Mark cash collected'}
+        {order.payment !== 'paid' && order.status !== 'cancelled' && <KV k={what === 'check' ? 'Driver collects check for' : 'Driver collects'} v={<b className="text-navy">{money(order.total)}</b>} />}
+        <p className="text-[12px] text-charcoal/55 mt-2">{What} is marked as collected automatically when the order is marked Delivered.</p>
+        <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={order.status === 'pending' || order.status === 'cancelled'} onClick={async () => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; const r = await setOrderPayment(order.id, p); if (r.ok) toast({ text: p === 'paid' ? `${What} marked as collected` : `${What} marked as not collected` }); }}>
+          {order.payment === 'paid' ? `Mark ${what} as not collected` : `Mark ${what} collected`}
         </button>
       </Card>
     );

@@ -11,7 +11,7 @@ import { useDepartments } from '@/lib/departments';
 import { SUPPLIER_STATUS } from '@/components/admin/suppliers';
 
 const IMAGES = [...new Set(SEED_PRODUCTS.map((p) => p.img))];
-const blank = { name: '', brand: '', dept: 'Food', cat: 'Spices & Seasonings', size: '', pack: '', price: '', priceMode: 'fixed', tag: '', desc: '', img: IMAGES[0], stock: 0, lowStock: 10, moq: 1, status: 'active', featured: false, bestSeller: false, newArrival: true, recommended: false };
+const blank = { name: '', brand: '', expiryDate: '', dept: 'Food', cat: 'Spices & Seasonings', size: '', pack: '', price: '', priceMode: 'fixed', tag: '', desc: '', img: IMAGES[0], stock: 0, lowStock: 10, moq: 1, status: 'active', featured: false, bestSeller: false, newArrival: true, recommended: false };
 
 export default function ProductEditor({ product, open, onClose, onDelete }) {
   const categories = useStore((s) => s.categories);
@@ -32,7 +32,7 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
   useEffect(() => {
     if (!open) return;
     setErr('');
-    setF(product ? { ...blank, ...product, pack: product.pack || '', size: product.size || '', tag: product.tag || '', desc: product.desc || '', priceMode: typeof product.price === 'number' ? 'fixed' : 'request', price: typeof product.price === 'number' ? product.price : '' } : { ...blank, dept: firstDept.name, cat: firstCat });
+    setF(product ? { ...blank, ...product, pack: product.pack || '', size: product.size || '', tag: product.tag || '', desc: product.desc || '', expiryDate: product.expiryDate || '', priceMode: typeof product.price === 'number' ? 'fixed' : 'request', price: typeof product.price === 'number' ? product.price : '' } : { ...blank, dept: firstDept.name, cat: firstCat });
     const init = {};
     if (product) offers.filter((o) => o.productId === product.id).forEach((o) => {
       init[o.vendorId] = { on: true, cost: o.cost ?? '', status: o.status, stock: { ...(o.stock || {}) }, had: Object.values(o.stock || {}).reduce((a, n) => a + (Number(n) || 0), 0) };
@@ -56,7 +56,7 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
     const { priceMode, ...rest } = f;
     setBusy(true);
     const r = await saveProduct({
-      ...rest, name: f.name.trim(), size: f.size.trim() || null, pack: f.pack.trim() || null, tag: f.tag || undefined, desc: f.desc.trim(),
+      ...rest, name: f.name.trim(), size: f.size.trim() || null, pack: f.pack.trim() || null, tag: f.tag || undefined, desc: f.desc.trim(), expiryDate: f.expiryDate || null,
       price: priceMode === 'fixed' ? Math.round(Number(f.price) * 100) / 100 : null,
       stock: 0, lowStock: Math.max(0, parseInt(f.lowStock, 10) || 0), moq: Math.max(1, parseInt(f.moq, 10) || 1),
       ...(product ? { id: product.id } : {}),
@@ -113,6 +113,12 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
           <Field label="Brand" hint="optional"><input className="dash-input" value={f.brand || ''} onChange={(e) => set({ brand: e.target.value })} /></Field>
           <Field label="Size" hint="e.g. 500 g, 300MLx36"><input className="dash-input" value={f.size} onChange={(e) => set({ size: e.target.value })} /></Field>
           <Field label="Wholesale pack" hint="e.g. 48 Units"><input className="dash-input" value={f.pack} onChange={(e) => set({ pack: e.target.value })} /></Field>
+          <Field label="Expiry date" hint="optional — shown on the product">
+            <div className="flex gap-2">
+              <input type="date" className="dash-input flex-1" value={f.expiryDate || ''} onChange={(e) => set({ expiryDate: e.target.value })} />
+              {f.expiryDate && <button type="button" className="dash-btn dash-btn-ghost shrink-0" onClick={() => set({ expiryDate: '' })}>Clear</button>}
+            </div>
+          </Field>
         </section>
 
         <section>

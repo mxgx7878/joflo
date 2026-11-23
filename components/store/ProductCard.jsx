@@ -1,7 +1,7 @@
 'use client';
 import { useStore } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
-import { money, priced, catLine, sizeLine } from '@/lib/format';
+import { money, priced, catLine, sizeLine, fmtExpiry, isExpired } from '@/lib/format';
 import { useUI } from './ui';
 import { useProductActions, tagStyle } from './shared';
 import { Heart, ShoppingBag, Eye, Mail } from './icons';
@@ -33,6 +33,7 @@ export function ProductCard({ p }) {
           <button type="button" className="text-left hover:text-emerald transition" onClick={() => openQuick(p.id)}>{p.name}</button>
         </h3>
         <p className="text-[12.5px] text-charcoal/55 mt-1">{p.brand && <span className="font-semibold text-charcoal/70">{p.brand}</span>}{p.brand && sizeLine(p) ? ' · ' : ''}{sizeLine(p)}</p>
+        {p.expiryDate && <p className={`text-[11.5px] font-semibold mt-1 ${isExpired(p.expiryDate) ? 'text-[#B4432F]' : 'text-charcoal/60'}`}>{isExpired(p.expiryDate) ? 'Expired' : 'Expires'} {fmtExpiry(p.expiryDate)}</p>}
         {priced(p) ? (
           <div className="mt-3 flex items-center justify-between gap-2">
             <p className="leading-tight">
@@ -68,6 +69,7 @@ export function RecoCard({ p }) {
         <p className="text-[10px] font-extrabold tracking-[.16em] uppercase text-gold">{p.cat}</p>
         <h3 className="font-bold text-navy text-[15px] leading-snug mt-1"><button type="button" className="text-left hover:text-emerald" onClick={() => openQuick(p.id)}>{p.name}</button></h3>
         <p className="text-[12px] text-charcoal/55">{p.size}</p>
+        {p.expiryDate && <p className={`text-[11px] font-semibold ${isExpired(p.expiryDate) ? 'text-[#B4432F]' : 'text-charcoal/55'}`}>{isExpired(p.expiryDate) ? 'Expired' : 'Exp.'} {fmtExpiry(p.expiryDate)}</p>}
         <div className="mt-auto pt-2 flex items-center justify-between">
           <span className={`font-extrabold ${priced(p) ? 'text-navy' : 'text-emerald text-[13px]'}`}>{priced(p) ? money(p.price) : 'Price on request'}</span>
           <span className="flex gap-1.5">
