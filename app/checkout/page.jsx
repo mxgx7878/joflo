@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Banknote, Building2, CheckCircle2, Circle, Clock3, CreditCard, FileText, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, UserRound } from 'lucide-react';
+import { ArrowRight, Banknote, Building2, CheckCircle2, Circle, Clock3, CreditCard, FileCheck, FileText, Lock, MapPin, Minus, Plus, ShoppingBag, Trash2, Truck, UserRound } from 'lucide-react';
 import { useStore, useCurrentUser, useStoreReady } from '@/lib/store';
 import { rateLabel } from '@/lib/delivery';
 import { productImg } from '@/lib/catalogue';
@@ -60,8 +60,11 @@ export default function CheckoutPage() {
   const cardRef = useRef(null);
   const payOpts = settings.checkoutPayments || { cod: true, card: false };
   const [method, setMethod] = useState(null);
-  const payMethod = method && payOpts[method] ? method : payOpts.card ? 'card' : 'cod';
+  const payMethod = method && payOpts[method] ? method : payOpts.card ? 'card' : payOpts.cod ? 'cod' : payOpts.check ? 'check' : 'cod';
   const isCard = payMethod === 'card';
+  const isCheck = payMethod === 'check';
+  const offlineLabel = isCheck ? 'Check on delivery' : 'Cash on delivery';
+  const OfflineIcon = isCheck ? FileCheck : Banknote;
 
   useEffect(() => {
     if (user && !addressId) { const d = user.addresses.find((a) => a.isDefault) || user.addresses[0]; if (d) setAddressId(d.id); }
@@ -293,6 +296,7 @@ export default function CheckoutPage() {
                     {[
                       payOpts.card && ['card', CreditCard, 'Pay by card', 'Visa, Mastercard, Amex, Discover. Charged now — if our confirmed total differs, we refund or bill only the difference.'],
                       payOpts.cod && ['cod', Banknote, 'Cash on delivery', 'Pay our driver in cash when your order arrives. Nothing to pay online.'],
+                      payOpts.check && ['check', FileCheck, 'Check on delivery', 'Hand our driver a check (payable to JOLOF TRADING) when your order arrives. Nothing to pay online.'],
                     ].filter(Boolean).map(([key, Icon, title, desc]) => {
                       const on = payMethod === key;
                       return (
@@ -313,7 +317,7 @@ export default function CheckoutPage() {
                       <SquareCardForm ref={cardRef} />
                     </div>
                   )}
-                  {!payOpts.card && <p className="mt-3 text-[12px] text-charcoal/55">Card payments aren&apos;t available right now — orders are cash on delivery.</p>}
+                  {!payOpts.card && <p className="mt-3 text-[12px] text-charcoal/55">Card payments aren&apos;t available right now — orders are paid on delivery.</p>}
                 </Step>
               </div>
 
@@ -321,7 +325,7 @@ export default function CheckoutPage() {
                 <ol className="grid sm:grid-cols-3 gap-3 text-[13px]">
                   {(isCard
                     ? [[CreditCard, 'You pay now', 'Your card is charged for the total and stock is held for you.'], [FileText, 'We confirm', 'We confirm availability and delivery and email your invoice. Lower total → refund; higher → a link to pay the extra.'], [Truck, 'We deliver', 'Our driver brings your order. Nothing to pay on arrival.']]
-                    : [[Clock3, 'You place the order', 'Nothing to pay now. Stock is held for you.'], [FileText, 'We confirm', 'Our team confirms availability and delivery, and issues your invoice.'], [Truck, 'Pay cash on delivery', 'Our driver brings your order — pay the total in cash on arrival.']]
+                    : [[Clock3, 'You place the order', 'Nothing to pay now. Stock is held for you.'], [FileText, 'We confirm', 'Our team confirms availability and delivery, and issues your invoice.'], isCheck ? [Truck, 'Pay by check on delivery', 'Our driver brings your order — hand over a check for the total on arrival.'] : [Truck, 'Pay cash on delivery', 'Our driver brings your order — pay the total in cash on arrival.']]
                   ).map(([Icon, t, d]) => (
                     <li key={t} className="rounded-2xl border border-navy/10 bg-white p-4">
                       <Icon className="w-5 h-5 text-emerald" strokeWidth={1.8} />
@@ -370,19 +374,19 @@ export default function CheckoutPage() {
                 {estimate?.freeOver > 0 && shipping > 0 && subtotal < estimate.freeOver && <p className="text-[11.5px] text-emerald font-semibold">Add {money(estimate.freeOver - subtotal)} more for free delivery</p>}
                 {unavailable > 0 && <p className="text-[11.5px] text-[#8a6417] font-semibold">{unavailable} item{unavailable > 1 ? 's are' : ' is'} low on stock — our team will confirm availability.</p>}
                 {quoteOnly.length > 0 && <p className="text-[11.5px] text-charcoal/55">{quoteOnly.length} price-on-request item{quoteOnly.length > 1 ? 's stay' : ' stays'} in your cart — send {quoteOnly.length > 1 ? 'them' : 'it'} as a quote request after this order.</p>}
-                <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold text-navy flex items-center gap-1.5">{isCard ? <><CreditCard className="w-4 h-4 text-emerald" />Card</> : <><Banknote className="w-4 h-4 text-emerald" />Cash on delivery</>}</dd></div>
+                <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold text-navy flex items-center gap-1.5">{isCard ? <><CreditCard className="w-4 h-4 text-emerald" />Card</> : <><OfflineIcon className="w-4 h-4 text-emerald" />{offlineLabel}</>}</dd></div>
                 <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">{isCard ? 'Total' : 'Total to pay on delivery'}</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
-                <p className="text-[11px] text-charcoal/50">{isCard ? 'Charged to your card now. If our confirmed total is lower we refund the difference; if it is higher we email you a secure link to pay only the extra.' : 'Paid in cash to our driver. The final amount is confirmed on your invoice.'}</p>
+                <p className="text-[11px] text-charcoal/50">{isCard ? 'Charged to your card now. If our confirmed total is lower we refund the difference; if it is higher we email you a secure link to pay only the extra.' : isCheck ? 'Paid by check to our driver (payable to JOLOF TRADING). The final amount is confirmed on your invoice.' : 'Paid in cash to our driver. The final amount is confirmed on your invoice.'}</p>
               </dl>
               <div className="px-5 sm:px-6 pb-6 pt-1 space-y-2.5">
                 {error && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{error}</p>}
                 <button type="button" onClick={place} disabled={pendingRetailer || isAdmin || isVendor || placing} className="btn btn-gold w-full">
-                  {placing ? 'Placing order…' : isCard ? `Pay ${money(total)} & place order` : 'Place order · Cash on delivery'} <ArrowRight className="mv" />
+                  {placing ? 'Placing order…' : isCard ? `Pay ${money(total)} & place order` : `Place order · ${offlineLabel}`} <ArrowRight className="mv" />
                 </button>
                 {(isGuest || user.role === 'customer') && (
                   <button type="button" onClick={requestQuote} className="btn btn-line-dark w-full !min-h-[44px] !py-2.5">Request a bulk quote instead</button>
                 )}
-                <p className="text-[11.5px] text-center text-charcoal/50">{isCard ? 'Your card is charged when you place the order.' : 'Nothing to pay now — pay cash on delivery.'} By placing this order you agree to our Terms &amp; Conditions.</p>
+                <p className="text-[11.5px] text-center text-charcoal/50">{isCard ? 'Your card is charged when you place the order.' : `Nothing to pay now — pay ${isCheck ? 'by check' : 'cash'} on delivery.`} By placing this order you agree to our Terms &amp; Conditions.</p>
               </div>
             </aside>
           </div>

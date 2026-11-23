@@ -3,7 +3,7 @@ import { Suspense, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Plus, Package, Star, Flame, Sparkles, ThumbsUp, EyeOff } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
-import { money, sizeLine, stockState, STOCK_STATE } from '@/lib/format';
+import { money, sizeLine, stockState, STOCK_STATE, fmtExpiry, isExpired } from '@/lib/format';
 import { PageHeader, Pill, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, TableWrap, SearchBox, Select, Thumb, Skeleton, useConfirm } from '@/components/admin/common';
@@ -79,7 +79,7 @@ function ProductsInner() {
                           <Thumb p={p} />
                           <div className="min-w-0">
                             <p className="font-bold text-navy truncate max-w-[280px]">{p.name}</p>
-                            <p className="text-[11.5px] text-charcoal/50 truncate max-w-[280px]">{sizeLine(p) || '—'}{p.tag ? ` · ${p.tag}` : ''}</p>
+                            <p className="text-[11.5px] text-charcoal/50 truncate max-w-[280px]">{sizeLine(p) || '—'}{p.tag ? ` · ${p.tag}` : ''}{p.expiryDate ? <span className={isExpired(p.expiryDate) ? 'text-[#B4432F] font-semibold' : ''}> · {isExpired(p.expiryDate) ? 'Expired' : 'Exp.'} {fmtExpiry(p.expiryDate)}</span> : null}</p>
                           </div>
                         </div>
                       </td>
