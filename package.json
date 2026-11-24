@@ -14,7 +14,9 @@
     "db:import-foods": "tsx prisma/import-foods.js",
     "db:update-hq": "tsx prisma/update-hq.js",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.js",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "images:check": "tsx scripts/set-product-images.mjs",
+    "images:set": "tsx scripts/set-product-images.mjs --apply"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1162.0",
