@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { Printer, MapPin, Phone, Package, Truck } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { fmtDate, fmtDateTime, ORDER_STATUS } from '@/lib/format';
+import { fmtDate, fmtDateTime, ORDER_STATUS, addressLines } from '@/lib/format';
 
 /**
  * Printable driver slip (browser print → PDF): where to pick each item up, where to drop it,
@@ -49,7 +49,9 @@ export default function DriverSlip({ order, back }) {
         <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-navy/10">
           <div>
             <img src="/brand/logo.webp" alt="JOLOF TRADING" className="h-16 w-auto" />
-            <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">{store.name || 'JOLOF TRADING'}<br />{store.address}<br />{store.phone}</p>
+            <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">
+              {[store.name || 'JOLOF TRADING', ...addressLines(store.address), store.phone].filter(Boolean).map((l, i) => <span key={i} className="block">{l}</span>)}
+            </p>
           </div>
           <div className="sm:text-right">
             <p className="font-display text-[2rem] text-navy leading-none">Driver slip</p>
@@ -157,7 +159,7 @@ export default function DriverSlip({ order, back }) {
             </div>
           </div>
           {order.notes && <p className="mt-4 text-[13px] bg-ivory rounded-xl p-3"><b className="text-navy">Customer note:</b> {order.notes}</p>}
-          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.' : order.paymentMethod === 'check' ? `Check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect a check payable to JOLOF TRADING at drop-off (amount on the customer invoice)'}.` : `Cash on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect payment at drop-off (amount on the customer invoice)'}.`}</p>
+          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.' : order.paymentMethod === 'check' ? `Check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect a check payable to JOLOF TRADING at drop-off (amount on the customer invoice)'}.` : `Cash / check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect cash or a check payable to JOLOF TRADING at drop-off (amount on the customer invoice)'}.`}</p>
         </section>
 
         <footer className="mt-4 pt-6 border-t border-navy/10 grid sm:grid-cols-2 gap-8 text-[12.5px] text-charcoal/65">

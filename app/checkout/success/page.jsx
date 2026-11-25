@@ -23,8 +23,8 @@ function Success() {
     );
   }
   const isCard = order.paymentMethod === 'card';
-  const isCheck = order.paymentMethod === 'check';
-  const offlineLabel = isCheck ? 'Check on delivery' : 'Cash on delivery';
+  const isCheck = order.paymentMethod === 'check'; // older orders only
+  const offlineLabel = isCheck ? 'Check on delivery' : 'Cash / Check on delivery';
   const card = cardLine(order.card);
   const follow = order.userId ? ' Follow progress in your account.' : ` We'll contact you at ${order.customer.email}.`;
   const steps = isCard
@@ -38,7 +38,7 @@ function Success() {
       { icon: FileText, t: 'We confirm', d: 'Our team confirms availability and delivery, then issues your invoice — usually within one business day.' },
       isCheck
         ? { icon: Banknote, t: 'Pay by check on delivery', d: `Have a check for ${money(order.total)}, payable to JOLOF TRADING, ready for our driver.${follow}` }
-        : { icon: Banknote, t: 'Pay cash on delivery', d: `Have ${money(order.total)} ready in cash for our driver.${follow}` },
+        : { icon: Banknote, t: 'Pay cash / check on delivery', d: `Have ${money(order.total)} ready for our driver — in cash, or a check payable to JOLOF TRADING.${follow}` },
     ];
   const guestNoAccount = !order.userId && !user;
   return (
@@ -86,9 +86,10 @@ function Success() {
         <dl className="px-6 py-4 space-y-1.5 text-[13.5px] bg-ivory/50 border-t border-navy/5">
           <div className="flex justify-between"><dt className="text-charcoal/60">Subtotal</dt><dd className="font-bold">{money(order.subtotal)}</dd></div>
           <div className="flex justify-between"><dt className="text-charcoal/60">Delivery{order.deliveryMiles ? ` · ~${Math.round(order.deliveryMiles)} mi` : ''}</dt><dd className="font-bold">{order.shipping ? money(order.shipping) : 'Free'}</dd></div>
+          {order.cardFee > 0 && <div className="flex justify-between"><dt className="text-charcoal/60">Card processing fee</dt><dd className="font-bold">{money(order.cardFee)}</dd></div>}
           <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold">{isCard ? `Card${card ? ` · ${card}` : ''}` : offlineLabel}</dd></div>
           <div className="flex justify-between pt-2 border-t border-navy/10 text-[15px]"><dt className="font-extrabold text-navy">{isCard ? 'Total (paid by card)' : 'Total to pay on delivery'}</dt><dd className="font-extrabold text-navy">{money(order.total)}</dd></div>
-          <p className="text-[11.5px] text-charcoal/50">{isCard ? 'Your card is charged when we confirm the order — only the final amount, never more than this.' : isCheck ? 'Paid by check to our driver. Final amount is confirmed on your invoice.' : 'Paid in cash to our driver. Final amount is confirmed on your invoice.'}</p>
+          <p className="text-[11.5px] text-charcoal/50">{isCard ? 'Your card is charged when we confirm the order — only the final amount, never more than this.' : isCheck ? 'Paid by check to our driver. Final amount is confirmed on your invoice.' : 'Paid to our driver in cash or by check. Final amount is confirmed on your invoice.'}</p>
         </dl>
         <div className="px-6 py-5 border-t border-navy/5">
           <p className="dash-label">Deliver to</p><AddressBlock address={order.address} />

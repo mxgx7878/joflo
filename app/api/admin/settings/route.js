@@ -2,6 +2,7 @@ import { route, body, str } from '@/lib/server/http';
 import { requireAdmin } from '@/lib/server/auth';
 import { withState } from '@/lib/server/respond';
 import { saveSetting } from '@/lib/server/settings';
+import { cardFeeConfig } from '@/lib/cardfee';
 
 export const PUT = route(async (req, ctx) => {
   const admin = await requireAdmin();
@@ -15,8 +16,9 @@ export const PUT = route(async (req, ctx) => {
     await saveSetting('delivery', { amount: n(c.amount), perMiles: n(c.perMiles, 1), baseFee: n(c.baseFee), minFee: n(c.minFee), freeOver: n(c.freeOver) });
   }
   if (d.payments) {
-    const p = { card: !!d.payments.card, cod: !!d.payments.cod, check: !!d.payments.check };
-    if (!p.card && !p.cod && !p.check) return { ok: false, error: 'Keep at least one payment method switched on.' };
+    // cod = "Cash / Check on delivery" (one option). check stays off — kept only for older orders.
+    const p = { card: !!d.payments.card, cod: !!d.payments.cod, check: false, cardFee: cardFeeConfig(d.payments.cardFee) };
+    if (!p.card && !p.cod) return { ok: false, error: 'Keep at least one payment method switched on.' };
     await saveSetting('payments', p);
   }
   if (d.routing) await saveSetting('routing', { jolofFirstMaxMiles: Math.max(0, parseInt(d.routing.jolofFirstMaxMiles, 10) || 0) });

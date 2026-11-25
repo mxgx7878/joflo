@@ -239,6 +239,7 @@ model Order {
   deliveryFee   Float     @default(0)
   deliveryMiles Float?
   discount      Float     @default(0)
+  cardFee       Float     @default(0) // card processing fee passed on to the customer (card orders only)
   total         Float     @default(0)
   driverId      String?
   driver        Driver?   @relation(fields: [driverId], references: [id], onDelete: SetNull)
@@ -348,6 +349,7 @@ model Invoice {
   subtotal    Float
   deliveryFee Float     @default(0)
   discount    Float     @default(0)
+  cardFee     Float     @default(0)
   total       Float
   status      String    @default("unpaid") // unpaid | paid | void
   notes       String    @default("")

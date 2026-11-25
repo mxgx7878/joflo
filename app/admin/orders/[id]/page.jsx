@@ -101,6 +101,7 @@ export default function OrderDetail() {
                 <KV k="Subtotal" v={money(order.subtotal)} />
                 <KV k={`Delivery${order.deliveryMiles ? ` · ~${Math.round(order.deliveryMiles)} mi` : ''}`} v={order.shipping ? money(order.shipping) : 'Free'} />
                 {order.discount > 0 && <KV k="Discount" v={`−${money(order.discount)}`} />}
+                {order.cardFee > 0 && <KV k="Card processing fee" v={money(order.cardFee)} />}
                 <div className="flex justify-between pt-2 mt-1 border-t border-navy/10"><span className="font-bold text-navy">Total</span><span className="text-lg font-extrabold text-navy">{money(order.total)}</span></div>
               </div>
             </div>

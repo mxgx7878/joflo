@@ -12,9 +12,8 @@ const cleanAddress = (a) => ({ label: str(a?.label, 40) || 'Delivery', line1: st
 
 /**
  * Order from the storefront cart. JOLOF confirms prices and issues the invoice.
- *   cod   → nothing paid online; the driver collects cash on delivery.
- *   check → nothing paid online; the driver collects a check on delivery.
- *   card → the card is charged now. When JOLOF confirms at a different total, the difference is
+ *   cod  → "Cash / check on delivery": nothing paid online; the driver collects cash or a check.
+ *   card → the card is charged now (order total includes the card processing fee, lib/cardfee.js). When JOLOF confirms at a different total, the difference is
  *          refunded or asked for as a separate balance payment (lib/server/payments.js).
  */
 export const POST = route(async (req) => {
@@ -24,14 +23,13 @@ export const POST = route(async (req) => {
   if (!settings.showPricing) fail(400, 'Online ordering is paused — please send an inquiry instead.');
   if (user && user.role !== 'customer') fail(400, 'Sign in with a customer account to place an order.');
   if (user?.status === 'pending') fail(403, 'Your trade account is awaiting approval — send a quote request meanwhile.');
-  const method = ['card', 'check'].includes(d.paymentMethod) ? d.paymentMethod : 'cod';
+  // two options: card, or "Cash / check on delivery" (cod). An old client sending 'check' gets cod.
+  const method = d.paymentMethod === 'card' ? 'card' : 'cod';
   const pay = settings.payments || {};
   const cardOn = !!pay.card && squareEnabled();
-  const checkOn = pay.check !== false;
-  const codOn = pay.cod !== false || (!cardOn && !checkOn); // same rule as the checkout options (lib/server/state.js)
+  const codOn = pay.cod !== false || pay.check === true || !cardOn; // same rule as the checkout options (lib/server/state.js)
   if (method === 'card' && !cardOn) fail(400, 'Card payments are not available right now — please choose another payment option.');
-  if (method === 'check' && !checkOn) fail(400, 'Check on delivery is not available — please choose another payment option.');
-  if (method === 'cod' && !codOn) fail(400, 'Cash on delivery is not available — please choose another payment option.');
+  if (method === 'cod' && !codOn) fail(400, 'Cash / check on delivery is not available — please pay by card.');
   const sourceId = str(d.sourceId, 400);
   if (method === 'card' && !sourceId) fail(400, 'Please enter your card details.');
   const guest = !user;
