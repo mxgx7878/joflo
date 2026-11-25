@@ -1,7 +1,7 @@
 'use client';
 import { Printer } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { money, fmtDate, INVOICE_STATUS, COD_NOTE } from '@/lib/format';
+import { money, fmtDate, INVOICE_STATUS, COD_NOTE, addressLines } from '@/lib/format';
 import { Pill } from '@/components/ui';
 
 /** Printable invoice (browser print → PDF). Used in the customer account and the admin. */
@@ -21,7 +21,10 @@ export default function InvoiceView({ invoice, back }) {
         <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-navy/10">
           <div>
             <img src="/brand/logo.webp" alt="JOLOF TRADING" className="h-16 w-auto" />
-            <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">{store.address}<br />{store.email}{store.phone ? ` · ${store.phone}` : ''}</p>
+            {/* client's format: street / city, state ZIP / email / phone — each on its own line */}
+            <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">
+              {[...addressLines(store.address), store.email, store.phone].filter(Boolean).map((l, i) => <span key={i} className="block">{l}</span>)}
+            </p>
           </div>
           <div className="sm:text-right">
             <p className="font-display text-[2rem] text-navy leading-none">Invoice</p>
@@ -29,7 +32,7 @@ export default function InvoiceView({ invoice, back }) {
             <div className="mt-2 sm:flex sm:justify-end"><Pill meta={INVOICE_STATUS[invoice.status] || INVOICE_STATUS.unpaid} /></div>
             <dl className="mt-3 text-[12.5px] text-charcoal/70 space-y-0.5">
               <div><dt className="inline">Issued: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.issuedAt)}</dd></div>
-              {invoice.dueAt ? <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div> : <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{invoice.status === 'paid' ? 'Paid' : invoice.status === 'partially_paid' ? 'Balance due by card' : 'On delivery (cash)'}</dd></div>}
+              {invoice.dueAt ? <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div> : <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{invoice.status === 'paid' ? 'Paid' : invoice.status === 'partially_paid' ? 'Balance due by card' : invoice.notes && /^check on delivery/i.test(invoice.notes) ? 'On delivery (check)' : 'On delivery (cash / check)'}</dd></div>}
               <div><dt className="inline">Order: </dt><dd className="inline font-bold text-navy">{invoice.orderId}</dd></div>
             </dl>
           </div>
@@ -40,7 +43,8 @@ export default function InvoiceView({ invoice, back }) {
             <p className="dash-label">Bill to</p>
             <p className="font-bold text-navy">{b.company || b.name}</p>
             {b.company && <p className="text-charcoal/70">{b.name}</p>}
-            <p className="text-charcoal/70">{b.email}{b.phone ? ` · ${b.phone}` : ''}</p>
+            {b.email && <p className="text-charcoal/70">{b.email}</p>}
+            {b.phone && <p className="text-charcoal/70">{b.phone}</p>}
           </div>
           {a && (
             <div>
@@ -72,6 +76,7 @@ export default function InvoiceView({ invoice, back }) {
           <div className="flex justify-between"><span className="text-charcoal/60">Subtotal</span><span className="font-bold">{money(invoice.subtotal)}</span></div>
           <div className="flex justify-between"><span className="text-charcoal/60">Delivery</span><span className="font-bold">{invoice.deliveryFee ? money(invoice.deliveryFee) : 'Free'}</span></div>
           {invoice.discount > 0 && <div className="flex justify-between"><span className="text-charcoal/60">Discount</span><span className="font-bold">−{money(invoice.discount)}</span></div>}
+          {invoice.cardFee > 0 && <div className="flex justify-between"><span className="text-charcoal/60">Card processing fee</span><span className="font-bold">{money(invoice.cardFee)}</span></div>}
           <div className="flex justify-between pt-2 border-t border-navy/15 text-[17px]"><span className="font-extrabold text-navy">Total due</span><span className="font-extrabold text-navy">{money(invoice.total)} <span className="text-[11px] text-charcoal/45">USD</span></span></div>
         </div>
 

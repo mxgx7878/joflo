@@ -8,12 +8,14 @@ import { getLocation } from '@/lib/locations';
 import { Pill } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, KV } from './common';
+import { cardFeeFor } from '@/lib/cardfee';
 
 const r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
 
 /** Pending order → admin sets final unit prices, delivery and discount, then confirms (invoice is issued). */
 export function ConfirmOrderCard({ order }) {
   const confirmOrder = useStore((s) => s.confirmOrder);
+  const feeCfg = useStore((s) => s.settings.payments?.cardFee);
   const toast = useToast();
   const [prices, setPrices] = useState({});
   const [fee, setFee] = useState('');
@@ -31,8 +33,11 @@ export function ConfirmOrderCard({ order }) {
   }, [order.id, order.status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const subtotal = useMemo(() => r2(order.items.reduce((s, i) => s + (Number(prices[i.id]) || 0) * i.qty, 0)), [order.items, prices]);
-  const total = r2(subtotal + (Number(fee) || 0) - (Number(discount) || 0));
   const isCard = order.paymentMethod === 'card';
+  const base = r2(subtotal + (Number(fee) || 0) - (Number(discount) || 0));
+  // card orders: the Square processing fee is recalculated on the new total (same as the server — lib/cardfee.js)
+  const cardFee = isCard ? cardFeeFor(base, feeCfg) : 0;
+  const total = r2(base + cardFee);
   const held = isCard ? (order.payments || []).filter((p) => p.status === 'APPROVED').reduce((t, p) => t + p.amount, 0) : 0;
   const paid = isCard ? r2((order.paid || 0) + held) : 0;
   const diff = isCard ? r2(total - paid) : 0;
@@ -69,6 +74,7 @@ export function ConfirmOrderCard({ order }) {
       {!editing && <><label className="dash-label mt-3">Note for the customer (optional)</label><input className="dash-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Delivery Thursday morning" /></>}
       <div className="mt-4 rounded-xl bg-ivory px-4 py-3 text-[13px] space-y-1">
         <KV k="Subtotal" v={money(subtotal)} />
+        {cardFee > 0 && <KV k="Card processing fee" v={money(cardFee)} />}
         <div className="flex justify-between pt-1 border-t border-navy/10"><span className="font-bold text-navy">Invoice total</span><span className="font-extrabold text-navy">{money(total)}</span></div>
       </div>
       {isCard && diff < -0.004 && <p className="mt-3 text-[12.5px] font-bold text-emerald">{money(-diff)} will be refunded to the customer&apos;s card.</p>}
@@ -83,6 +89,7 @@ export function ConfirmOrderCard({ order }) {
 export function DriverCard({ order }) {
   const drivers = useStore((s) => s.drivers);
   const assignDriver = useStore((s) => s.assignDriver);
+  const emailDriverSlip = useStore((s) => s.emailDriverSlip);
   const toast = useToast();
   const current = drivers.find((d) => d.id === order.driverId);
   const closed = ['cancelled', 'delivered'].includes(order.status);
@@ -95,8 +102,11 @@ export function DriverCard({ order }) {
 
   const pick = async (id) => {
     const r = await assignDriver(order.id, id || null);
-    if (r.ok) toast({ text: id ? `${drivers.find((d) => d.id === id)?.name} assigned to ${order.id}` : 'Driver unassigned' });
+    if (!r.ok) return;
+    const d = drivers.find((x) => x.id === id);
+    toast({ text: d ? `${d.name} assigned to ${order.id}${d.email ? ` — slip emailed to ${d.email}` : ' — no email on file, slip not sent'}` : 'Driver unassigned' });
   };
+  const resendSlip = async () => { const r = await emailDriverSlip(order.id); if (r.ok) toast({ text: `Driver slip emailed to ${current.email}` }); };
 
   return (
     <Card title="Driver" action={<Truck className="w-4 h-4 text-gold" />} className="print:hidden">
@@ -116,7 +126,9 @@ export function DriverCard({ order }) {
           {options.map((d) => <option key={d.id} value={d.id}>{d.name} · {getLocation(d.homeBase)?.city || '—'}{d.status !== 'active' ? ` (${DRIVER_STATUS[d.status]?.label})` : ''}</option>)}
         </select>
       )}
+      {current && !current.email && order.status !== 'cancelled' && <p className="mt-3 text-[12px] rounded-xl bg-gold-pale text-[#6d4f12] px-3 py-2">{current.name} has no email address, so the slip can&apos;t be emailed. Add one under Drivers.</p>}
       {order.status !== 'cancelled' && <Link href={`/admin/orders/${order.id}/driver-slip`} className="dash-btn dash-btn-ghost w-full mt-3"><FileText /> Open driver slip</Link>}
+      {current?.email && !closed && <button type="button" className="dash-btn dash-btn-ghost w-full mt-2" onClick={resendSlip}><Mail /> Email slip to driver</button>}
       <Link href="/admin/drivers" className="mt-3 inline-block text-[12.5px] font-bold text-emerald hover:text-navy">Manage drivers →</Link>
     </Card>
   );
@@ -150,8 +162,8 @@ export function PaymentCard({ order }) {
   const card = order.card;
 
   if (order.paymentMethod !== 'card') {
-    const what = order.paymentMethod === 'check' ? 'check' : 'cash';
-    const What = what === 'check' ? 'Check' : 'Cash';
+    const what = order.paymentMethod === 'check' ? 'check' : 'cash / check';
+    const What = what === 'check' ? 'Check' : 'Cash / check';
     return (
       <Card title="Payment" className="print:hidden">
         <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} />

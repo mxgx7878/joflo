@@ -81,7 +81,7 @@ export default function PayPage() {
 
   const { request: req, quote, order, store } = page;
   const isQuote = req.kind === 'quote';
-  const amount = isQuote ? quote.total : req.amount;
+  const amount = isQuote ? (quote.payTotal ?? quote.total) : req.amount;
   const paid = req.status === 'paid' || doneOrder || (isQuote && quote.status === 'accepted');
   const closed = !paid && (req.status !== 'open' || page.expired);
   const payCard = page.pay.card;
@@ -151,13 +151,20 @@ export default function PayPage() {
                 <>
                   <Row k={`Delivery${quote.deliveryMiles ? ` · ~${Math.round(quote.deliveryMiles)} mi` : ''}`} v={quote.shipping ? money(quote.shipping) : 'Included'} />
                   {quote.discount > 0 && <Row k="Discount" v={`−${money(quote.discount)}`} />}
-                  <Row k="Quote total" v={`${money(quote.total)} USD`} strong />
+                  {quote.cardFee > 0 ? (
+                    <>
+                      <Row k="Quote total" v={money(quote.total)} />
+                      <Row k="Card processing fee" v={money(quote.cardFee)} />
+                      <Row k="Total by card" v={`${money(quote.payTotal)} USD`} strong />
+                    </>
+                  ) : <Row k="Quote total" v={`${money(quote.total)} USD`} strong />}
                 </>
               ) : (
                 <>
                   <Row k="Subtotal" v={money(order.subtotal)} />
                   <Row k="Delivery" v={order.shipping ? money(order.shipping) : 'Free'} />
                   {order.discount > 0 && <Row k="Discount" v={`−${money(order.discount)}`} />}
+                  {order.cardFee > 0 && <Row k="Card processing fee" v={money(order.cardFee)} />}
                   <Row k="Confirmed total" v={money(order.total)} />
                   <Row k="Already paid" v={`−${money(Math.round((order.total - req.amount) * 100) / 100)}`} />
                   <Row k="Balance to pay" v={`${money(req.amount)} USD`} strong />
@@ -197,7 +204,7 @@ export default function PayPage() {
             ) : (
               <>
                 <h2 className="font-display text-[1.35rem] text-navy">{payCard ? 'Pay by card' : 'Accept quote'}</h2>
-                <p className="text-[12.5px] text-charcoal/60 mt-1">{isQuote ? (payCard ? 'Paying confirms your order at these prices and issues your invoice.' : 'Accepting confirms your order — pay our driver in cash on delivery.') : 'Pays the remaining balance so we can deliver your order.'}</p>
+                <p className="text-[12.5px] text-charcoal/60 mt-1">{isQuote ? (payCard ? 'Paying confirms your order at these prices and issues your invoice.' : 'Accepting confirms your order — pay our driver in cash or by check on delivery.') : 'Pays the remaining balance so we can deliver your order.'}</p>
 
                 {page.needsAddress && (
                   <div className="mt-5 grid grid-cols-2 gap-3">
@@ -210,7 +217,7 @@ export default function PayPage() {
                 )}
 
                 {payCard && <div className="mt-5 rounded-2xl border border-navy/10 bg-white p-4"><SquareCardForm ref={cardRef} /></div>}
-                {payCod && <div className="mt-5 rounded-2xl bg-gold-pale/60 px-4 py-3 text-[13px] text-[#6d4f12] flex gap-2.5"><Banknote className="w-4 h-4 shrink-0 mt-0.5" />Card payments aren&apos;t available right now, so this order is cash on delivery.</div>}
+                {payCod && <div className="mt-5 rounded-2xl bg-gold-pale/60 px-4 py-3 text-[13px] text-[#6d4f12] flex gap-2.5"><Banknote className="w-4 h-4 shrink-0 mt-0.5" />Card payments aren&apos;t available right now, so this order is cash / check on delivery.</div>}
 
                 <dl className="mt-5 rounded-xl bg-ivory px-4 py-3"><Row k={isQuote ? 'Total to pay' : 'Balance to pay'} v={`${money(amount)} USD`} strong plain /></dl>
                 {err && <p role="alert" className="mt-4 text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{err}</p>}

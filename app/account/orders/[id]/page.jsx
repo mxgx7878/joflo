@@ -58,7 +58,7 @@ export default function OrderDetail() {
       {order.status === 'pending' && (
         <div className="mb-6 rounded-2xl bg-gold-pale border border-gold/30 p-4 sm:p-5 flex gap-3 text-[13.5px] text-[#6d4f12]">
           <Clock3 className="w-5 h-5 shrink-0 mt-0.5" />
-          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Our team confirms availability and delivery, then your invoice appears here. {order.paymentMethod === 'card' ? (order.card?.status === 'APPROVED' ? `${money(order.total)} is held on your card and charged when we confirm — cancelling releases the hold.` : `You paid ${money(order.paid || order.total)} by card. If the confirmed total is lower we refund the difference; if higher, we email you a link to pay the extra. Cancelling refunds your card.`) : order.paymentMethod === 'check' ? 'You pay by check (payable to JOLOF TRADING) when the order is delivered.' : 'You pay in cash when the order is delivered.'}</p></div>
+          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Our team confirms availability and delivery, then your invoice appears here. {order.paymentMethod === 'card' ? (order.card?.status === 'APPROVED' ? `${money(order.total)} is held on your card and charged when we confirm — cancelling releases the hold.` : `You paid ${money(order.paid || order.total)} by card. If the confirmed total is lower we refund the difference; if higher, we email you a link to pay the extra. Cancelling refunds your card.`) : order.paymentMethod === 'check' ? 'You pay by check (payable to JOLOF TRADING) when the order is delivered.' : 'You pay in cash or by check (payable to JOLOF TRADING) when the order is delivered.'}</p></div>
         </div>
       )}
       {order.status !== 'cancelled' && openBalanceRequests(order).map((r) => (
@@ -71,7 +71,7 @@ export default function OrderDetail() {
       {order.invoiceId && order.status !== 'cancelled' && order.payment !== 'paid' && order.paymentMethod !== 'card' && (
         <div className="mb-6 rounded-2xl bg-[#E6EEF8] p-4 sm:p-5 flex flex-wrap items-center gap-3 text-[13.5px] text-navy-600">
           <FileText className="w-5 h-5 shrink-0" />
-          <p className="flex-1 min-w-[200px]"><b>Invoice {order.invoiceId}</b> is ready — pay {money(order.total)} {order.paymentMethod === 'check' ? 'by check' : 'in cash'} to our driver on delivery.</p>
+          <p className="flex-1 min-w-[200px]"><b>Invoice {order.invoiceId}</b> is ready — pay {money(order.total)} {order.paymentMethod === 'check' ? 'by check' : 'in cash or by check'} to our driver on delivery.</p>
           <Link href={`/account/invoices/${order.invoiceId}`} className="dash-btn dash-btn-navy">Open invoice</Link>
         </div>
       )}
@@ -117,6 +117,7 @@ export default function OrderDetail() {
               <div className="flex justify-between"><dt className="text-charcoal/60">Subtotal</dt><dd className="font-bold">{money(order.subtotal)}</dd></div>
               <div className="flex justify-between"><dt className="text-charcoal/60">Delivery{order.deliveryMiles ? ` · ~${Math.round(order.deliveryMiles)} mi` : ''}</dt><dd className="font-bold">{order.shipping ? money(order.shipping) : 'Free'}</dd></div>
               {order.discount > 0 && <div className="flex justify-between"><dt className="text-charcoal/60">Discount</dt><dd className="font-bold">−{money(order.discount)}</dd></div>}
+              {order.cardFee > 0 && <div className="flex justify-between"><dt className="text-charcoal/60">Card processing fee</dt><dd className="font-bold">{money(order.cardFee)}</dd></div>}
               <div className="flex justify-between pt-2 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">{order.status === 'pending' ? 'Estimated total' : 'Total'}</dt><dd className="font-extrabold text-navy">{money(order.total)} <span className="text-[11px] text-charcoal/45">USD</span></dd></div>
             </dl>
           </SectionCard>

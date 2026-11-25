@@ -5,6 +5,7 @@ import { Download, RotateCcw, Store, Mail, Tag, Route, FileText, MapPinned, Save
 import { useStore, useStoreReady } from '@/lib/store';
 import { money, fmtDate } from '@/lib/format';
 import { deliveryFee, rateLabel } from '@/lib/delivery';
+import { cardFeeConfig, cardFeeFor, cardFeeLabel } from '@/lib/cardfee';
 import { PageHeader, Field } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, Skeleton, Toggle, useConfirm } from '@/components/admin/common';
@@ -24,6 +25,7 @@ export default function SettingsPage() {
   const [routing, setRouting] = useState({ jolofFirstMaxMiles: 0 });
   const [inv, setInv] = useState({ dueDays: 7, payTo: '', checkNote: '', footer: '' });
   const [store, setStore] = useState({ name: '', email: '', phone: '', address: '' });
+  const [fee, setFee] = useState(cardFeeConfig());
 
   useEffect(() => {
     if (!ready) return;
@@ -31,6 +33,7 @@ export default function SettingsPage() {
     setRouting({ jolofFirstMaxMiles: settings.routing?.jolofFirstMaxMiles || 0 });
     setInv({ dueDays: 7, payTo: '', checkNote: '', footer: '', ...settings.invoice });
     setStore({ name: '', email: '', phone: '', address: '', ...settings.store });
+    setFee(cardFeeConfig(settings.payments?.cardFee));
   }, [ready]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!ready || !d) return <Skeleton />;
@@ -93,19 +96,28 @@ export default function SettingsPage() {
 
         <Card title="Payment methods" action={<CreditCard className="w-4 h-4 text-gold" />}>
           {(() => {
-            const cur = { card: settings.payments?.card !== false, cod: settings.payments?.cod !== false, check: settings.payments?.check !== false };
+            const savedFee = cardFeeConfig(settings.payments?.cardFee);
+            const cur = { card: settings.payments?.card !== false, cod: settings.payments?.cod !== false || settings.payments?.check === true, cardFee: savedFee };
             const toggle = (key, label) => (v) => save({ payments: { ...cur, [key]: v } }, `${label} switched ${v ? 'on' : 'off'}`);
             return (
               <>
+                <Toggle label="Cash / Check on delivery" checked={cur.cod} onChange={toggle('cod', 'Cash / Check on delivery')} />
                 <Toggle label="Card payments (Square)" checked={cur.card} onChange={toggle('card', 'Card payments')} />
-                <Toggle label="Cash on delivery" checked={cur.cod} onChange={toggle('cod', 'Cash on delivery')} />
-                <Toggle label="Check on delivery" checked={cur.check} onChange={toggle('check', 'Check on delivery')} />
+                <div className="mt-3 rounded-xl border border-navy/10 p-3.5">
+                  <Toggle label="Customer pays the card processing fee" checked={fee.pass} onChange={(v) => { const next = { ...fee, pass: v }; setFee(next); save({ payments: { ...cur, cardFee: next } }, v ? 'Card fee is now added at checkout' : 'Card fee switched off — JOLOF absorbs Square fees'); }} />
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    <Field label="Percent (%)"><input type="number" min="0" max="20" step="0.01" className="dash-input" value={fee.percent} onChange={(e) => setFee({ ...fee, percent: e.target.value })} /></Field>
+                    <Field label="Fixed per payment ($)"><input type="number" min="0" step="0.01" className="dash-input" value={fee.fixed} onChange={(e) => setFee({ ...fee, fixed: e.target.value })} /></Field>
+                  </div>
+                  <p className="text-[12px] text-charcoal/55 mt-2">Square charges {cardFeeLabel(savedFee) || '2.6% + $0.15'} per card payment. With this on, card payers are charged the fee on top so JOLOF receives the full order amount — e.g. a {money(100)} order is charged {money(100 + cardFeeFor(100, { ...fee, pass: true }))}. Cash / check orders pay no fee.</p>
+                  <button className="dash-btn dash-btn-ghost w-full mt-2" onClick={() => save({ payments: { ...cur, cardFee: cardFeeConfig(fee) } }, 'Card fee saved')}><Save /> Save card fee</button>
+                </div>
               </>
             );
           })()}
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
             <b className="text-navy">Card:</b> charged at checkout. When you confirm at a lower total the difference is refunded automatically; at a higher total the customer gets an email with a private link to pay only the extra, and the order can&apos;t ship until it&apos;s paid. Quotes are paid by card from their emailed link. Cancelling refunds the card.<br />
-            <b className="text-navy">Cash / check on delivery:</b> nothing paid online — the driver collects cash or a check at drop-off, and the order is marked paid when it&apos;s delivered.
+            <b className="text-navy">Cash / Check on delivery:</b> one checkout option, nothing paid online — the driver collects cash or a check at drop-off, and the order is marked paid when it&apos;s delivered.
           </p>
           <p className={`mt-3 text-[12.5px] rounded-xl px-3.5 py-2.5 ${settings.squareEnabled ? 'bg-[#E3F2EA] text-emerald' : 'bg-gold-pale text-[#6d4f12]'}`}>
             {settings.squareEnabled
@@ -115,9 +127,8 @@ export default function SettingsPage() {
         </Card>
 
         <Card title="Invoices" action={<FileText className="w-4 h-4 text-gold" />}>
-          <p className="text-[12.5px] text-charcoal/60 leading-relaxed">Cash and check on delivery invoices are due when the order is delivered. Card orders are invoiced as paid when you confirm them.</p>
-          <Field label="Cash on delivery note (printed on every invoice)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="e.g. Please have the full amount ready in cash for our driver." /></Field>
-          <Field label="Check on delivery note (printed on check invoices)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.checkNote} onChange={(e) => setInv({ ...inv, checkNote: e.target.value })} placeholder="e.g. Please have a check for the full amount, payable to JOLOF TRADING, ready for our driver." /></Field>
+          <p className="text-[12.5px] text-charcoal/60 leading-relaxed">Cash / check on delivery invoices are due when the order is delivered. Card orders are invoiced as paid when you confirm them.</p>
+          <Field label="Cash / check on delivery note (printed on pay-on-delivery invoices)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="e.g. Please have the full amount ready for our driver, in cash or as a check payable to JOLOF TRADING." /></Field>
           <Field label="Footer" className="mt-4"><input className="dash-input" value={inv.footer} onChange={(e) => setInv({ ...inv, footer: e.target.value })} /></Field>
           <button className="dash-btn dash-btn-ghost w-full mt-4" onClick={() => save({ invoice: inv }, 'Invoice details saved')}><Save /> Save invoice details</button>
         </Card>
