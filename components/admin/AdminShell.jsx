@@ -77,7 +77,7 @@ function SideBrand() {
       <Link href="/admin" className="flex items-center gap-3">
         <span className="bg-white rounded-xl p-1.5 h-14 shrink-0"><img src="/brand/logo.webp" alt="JOLOF TRADE CENTER logo" className="h-full w-auto" /></span>
         <span className="leading-tight">
-          <span className="block text-white font-extrabold text-[13px] tracking-[.08em]">JOLOF TRADING</span>
+          <span className="block text-white font-extrabold text-[13px] tracking-[.08em]">JOLOF TRADE CENTER</span>
           <span className="block text-gold-soft text-[10.5px] font-bold tracking-[.2em] uppercase mt-0.5">Admin</span>
         </span>
       </Link>
@@ -120,7 +120,7 @@ export default function AdminShell({ children }) {
       <aside className="hidden lg:flex print:!hidden fixed inset-y-0 left-0 w-[264px] bg-navy flex-col z-40">
         <SideBrand />
         <SideNav />
-        <div className="p-4 border-t border-white/10 text-[11.5px] text-white/40">JOLOF TRADING · Admin</div>
+        <div className="p-4 border-t border-white/10 text-[11.5px] text-white/40">JOLOF TRADE CENTER · Admin</div>
       </aside>
 
       {/* Mobile drawer */}

@@ -1,5 +1,5 @@
 {
-  "name": "jolof-trading",
+  "name": "jolof-trade-center",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,6 +13,7 @@
     "db:seed": "tsx prisma/seed.js",
     "db:import-foods": "tsx prisma/import-foods.js",
     "db:update-hq": "tsx prisma/update-hq.js",
+    "db:update-brand": "tsx prisma/update-brand.js",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.js",
     "db:studio": "prisma studio"
   },

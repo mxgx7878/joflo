@@ -252,7 +252,7 @@ export function QuickView() {
                   <PackageCheck className="w-4 h-4" />Request bulk pricing for this product
                 </button>
               )}
-              <div className="mt-auto pt-8 text-[12px] text-charcoal/50 flex items-start gap-2"><Info className="w-4 h-4 shrink-0 mt-0.5" />Demonstration product shown to illustrate the shopping experience. Final products, specifications and pricing will be supplied by JOLOF TRADING.</div>
+              <div className="mt-auto pt-8 text-[12px] text-charcoal/50 flex items-start gap-2"><Info className="w-4 h-4 shrink-0 mt-0.5" />Demonstration product shown to illustrate the shopping experience. Final products, specifications and pricing will be supplied by JOLOF TRADE CENTER.</div>
             </div>
           </>
         )}

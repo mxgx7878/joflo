@@ -16,7 +16,7 @@ export default function WhatsAppButton() {
       href={whatsappLink()}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`Chat with JOLOF TRADING on WhatsApp (${WHATSAPP_DISPLAY})`}
+      aria-label={`Chat with JOLOF TRADE CENTER on WhatsApp (${WHATSAPP_DISPLAY})`}
       title="Chat on WhatsApp"
       className="fixed z-40 right-4 bottom-[84px] lg:right-6 lg:bottom-6 w-14 h-14 rounded-full bg-[#25D366] text-white shadow-lg shadow-black/20 flex items-center justify-center hover:scale-105 hover:bg-[#1ebe5b] transition focus:outline-none focus-visible:ring-4 focus-visible:ring-[#25D366]/40"
     >

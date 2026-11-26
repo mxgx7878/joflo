@@ -1,4 +1,4 @@
-# JOLOF TRADING — Storefront + Dashboards 
+# JOLOF TRADE CENTER — Storefront + Dashboards 
 
 Next.js 15 (App Router) · React 19 · Tailwind CSS 3 · Zustand · **PostgreSQL + Prisma** · Google Maps (Geocoding + Routes API)
 
@@ -84,7 +84,7 @@ A supplier who declines returns the stock and the lines re-route.
 **Delivery fee** (`lib/delivery.js`): per shipment = max(minimum, base + miles ÷ per-miles × charge),
 e.g. $20 per 100 miles + $10 base; optional free-delivery threshold. Road miles from Google Routes API.
 
-**Privacy.** Customers only ever see JOLOF TRADING (no supplier/warehouse). Suppliers see only their own lines at
+**Privacy.** Customers only ever see JOLOF TRADE CENTER (no supplier/warehouse). Suppliers see only their own lines at
 their supply price — no customer name, contact, address or retail prices.
 
 **Drivers** (Admin → Drivers): add the delivery team, assign a driver on each confirmed order; the customer sees the

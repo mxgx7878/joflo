@@ -47,7 +47,7 @@ export default function Hero() {
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/70 to-navy-950/10 lg:hidden" />
             <div className="relative h-full lg:w-[44%] flex flex-col justify-end lg:justify-center p-7 sm:p-10 lg:p-14 text-white">
-              <p className="anim kicker !text-gold-soft">JOLOF TRADING</p>
+              <p className="anim kicker !text-gold-soft">JOLOF TRADE CENTER</p>
               <h1 className="anim d1 h-display mt-5 text-[2.35rem] sm:text-5xl xl:text-[3.7rem]">Quality Products. <em className="text-gold-soft">Global Connections.</em></h1>
               <p className="anim d2 mt-5 text-white/80 text-base sm:text-lg max-w-[440px]">Discover a world of wholesale food, cosmetics, and trading essentials.</p>
               <div className="anim d3 mt-8 flex flex-wrap gap-3">

@@ -1,4 +1,4 @@
-// Demo / starter data for JOLOF TRADING.
+// Demo / starter data for JOLOF TRADE CENTER.
 // Loads the current storefront catalogue (lib/catalogue.js) into the database, plus demo
 // customers, suppliers with US warehouses and stock, drivers, orders, inquiries and settings.
 // Used by `npm run db:seed` and Admin → Settings → Reset demo data.
@@ -18,7 +18,7 @@ const jitter = (id, k) => ((hash(id + k) % 1000) / 1000 - 0.5) * 0.08; // keep w
 /* ---------------- people ---------------- */
 
 const USERS = [
-  { id: 'u-admin', role: 'admin', type: 'staff', name: 'Moussa Diallo', email: 'admin@jolof.demo', password: 'admin123', phone: '+1 (973) 555-1100', company: 'JOLOF TRADING', createdAt: '2026-01-04T09:00:00Z' },
+  { id: 'u-admin', role: 'admin', type: 'staff', name: 'Moussa Diallo', email: 'admin@jolof.demo', password: 'admin123', phone: '+1 (973) 555-1100', company: 'JOLOF TRADE CENTER', createdAt: '2026-01-04T09:00:00Z' },
   {
     id: 'u-1001', role: 'customer', type: 'retailer', name: 'Aminata Sow', email: 'retailer@jolof.demo', password: 'demo123', phone: '+1 (212) 555-0182', company: 'Teranga African Grocery', abn: '13-4827531', businessType: 'Grocery store', createdAt: '2026-03-12T10:20:00Z',
     addresses: [
@@ -32,7 +32,7 @@ const USERS = [
   { id: 'u-1005', role: 'customer', type: 'retailer', name: 'Nana Asante', email: 'nana@goldcoastmarket.demo', password: 'demo123', phone: '+1 (323) 555-0447', company: 'Gold Coast Market', abn: '62-7781902', businessType: 'Grocery & cosmetics', createdAt: '2026-07-09T16:30:00Z', addresses: [{ id: 'a-1005-1', label: 'Store', line1: '4330 Crenshaw Blvd', city: 'Los Angeles', state: 'CA', postcode: '90008', isDefault: true }] },
 
   /* suppliers (role vendor) — JOLOF's own stock is the house supplier */
-  { id: HOUSE, role: 'vendor', type: 'house', isHouse: true, name: 'JOLOF Warehouse Team', email: 'warehouse@jolof.demo', password: 'demo123', phone: '+1 (973) 555-1100', company: 'JOLOF TRADING (own stock)', abn: '—', businessType: 'In-house warehouse', createdAt: '2026-01-04T09:00:00Z' },
+  { id: HOUSE, role: 'vendor', type: 'house', isHouse: true, name: 'JOLOF Warehouse Team', email: 'warehouse@jolof.demo', password: 'demo123', phone: '+1 (973) 555-1100', company: 'JOLOF TRADE CENTER (own stock)', abn: '—', businessType: 'In-house warehouse', createdAt: '2026-01-04T09:00:00Z' },
   { id: 'v-2001', role: 'vendor', type: 'supplier', name: 'Ousmane Ba', email: 'vendor@jolof.demo', password: 'demo123', phone: '+1 (713) 555-4410', company: 'Sahel Wholesale Foods', abn: '76-5091187', businessType: 'Food wholesaler', createdAt: '2026-02-20T09:00:00Z' },
   { id: 'v-2002', role: 'vendor', type: 'supplier', name: 'Adwoa Mensah', email: 'westcoast@beauty.demo', password: 'demo123', phone: '+1 (323) 555-2030', company: 'West Coast Beauty Wholesale', abn: '95-3307721', businessType: 'Cosmetics distributor', createdAt: '2026-04-02T09:00:00Z' },
   { id: 'v-2003', role: 'vendor', type: 'supplier', name: 'Cheikh Fall', email: 'cheikh@baobab.demo', password: 'demo123', phone: '+1 (773) 555-8812', company: 'Baobab Trade Supplies', abn: '36-7123340', businessType: 'Food wholesaler', status: 'pending', createdAt: '2026-10-26T03:00:00Z' },
@@ -246,7 +246,7 @@ export async function seedDatabase(prisma) {
         payment: status === 'delivered' ? 'paid' : 'unpaid', paymentMethod: 'cod', source: extra.source || 'checkout', inquiryId: extra.inquiryId || null,
         tracking: ['shipped', 'delivered'].includes(status) ? `JLF-${id.replace(/\D/g, '')}-D` : '', subtotal, deliveryFee: fee, deliveryMiles: ships.length ? Math.max(...ships.map(([, m]) => m || 0)) : null,
         total, driverId: status === 'pending' || status === 'cancelled' ? null : extra.driverId || null, createdAt: new Date(createdAt), confirmedAt: status === 'pending' ? null : new Date(t0 + 26 * 3600e3),
-        timeline: steps.map((s, i) => ({ status: s, at: new Date(t0 + i * 26 * 3600e3).toISOString(), note: s === 'pending' ? 'Order request placed online' : s === 'confirmed' ? 'Confirmed by JOLOF TRADING — invoice issued' : '' })),
+        timeline: steps.map((s, i) => ({ status: s, at: new Date(t0 + i * 26 * 3600e3).toISOString(), note: s === 'pending' ? 'Order request placed online' : s === 'confirmed' ? 'Confirmed by JOLOF TRADE CENTER — invoice issued' : '' })),
         events: [{ at: createdAt, by: 'System', text: `Routed for ${address.city}, ${address.state}: ${ships.map(([w, m]) => `${names[w]}${w.startsWith('wh-jolof') ? ' (JOLOF stock)' : ''} · ${m} mi`).join('; ') || 'no warehouse had stock'}.` }],
         items: { create: items.map((i, k) => ({ sort: k, productId: i.productId, name: i.name, size: i.size, img: i.img, qty: i.qty, price: i.price, vendorId: i.vendorId, warehouseId: i.warehouseId, distanceMi: i.distanceMi })) },
         fulfilments: { create: ships.map(([w, m]) => ({ warehouseId: w, status: TO_FUL[status], miles: m, fee: fee ? deliveryFee(m, settingsDelivery) : 0, tracking: ['shipped', 'delivered'].includes(status) ? `JLF-${id.replace(/\D/g, '')}-D` : '' })) },

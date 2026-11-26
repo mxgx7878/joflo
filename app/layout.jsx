@@ -21,8 +21,8 @@ const sans = localFont({
 });
 
 export const metadata = {
-  title: 'JOLOF TRADING | Wholesale Food, Cosmetics & Trading Store',
-  description: 'Shop wholesale food, cosmetics and trading essentials from JOLOF TRADING — spices, millet & grains, meat & fish, skin care, hair care, soaps and agricultural commodities.',
+  title: 'JOLOF TRADE CENTER | Wholesale Food, Cosmetics & Trading Store',
+  description: 'Shop wholesale food, cosmetics and trading essentials from JOLOF TRADE CENTER — spices, millet & grains, meat & fish, skin care, hair care, soaps and agricultural commodities.',
   icons: { icon: '/brand/icon.png', apple: '/brand/icon.png' },
 };
 export const viewport = { themeColor: '#0B2347' };

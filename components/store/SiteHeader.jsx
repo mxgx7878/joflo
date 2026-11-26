@@ -261,7 +261,7 @@ export default function SiteHeader() {
         <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-[76px] lg:h-[92px] flex items-center gap-3 lg:gap-8">
             <button id="menuBtn" className="icon-btn lg:hidden -ml-2" aria-label="Open menu" aria-controls="menuDrawer" aria-expanded={panel === 'menu'} onClick={() => openPanel('menu')}><Menu /></button>
-            <a href="/#top" className="logo h-[58px] lg:h-[72px] shrink-0" aria-label="JOLOF TRADING home">
+            <a href="/#top" className="logo h-[58px] lg:h-[72px] shrink-0" aria-label="JOLOF TRADE CENTER home">
               <img src="/brand/logo.webp" alt="JOLOF logo" className="h-full w-auto block" />
             </a>
 

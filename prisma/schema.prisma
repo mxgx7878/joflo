@@ -1,4 +1,4 @@
-// JOLOF TRADING — database schema (PostgreSQL via Prisma)
+// JOLOF TRADE CENTER — database schema (PostgreSQL via Prisma)
 //
 // Catalogue model
 //   Product        = MASTER product (one row per item JOLOF sells, owned by admin)
@@ -29,7 +29,7 @@ model User {
   abn          String   @default("") // EIN / tax id
   businessType String   @default("")
   status       String   @default("active") // active | pending | suspended
-  isHouse      Boolean  @default(false) // JOLOF TRADING's own stock
+  isHouse      Boolean  @default(false) // JOLOF TRADE CENTER's own stock
   createdAt    DateTime @default(now())
 
   addresses       Address[]

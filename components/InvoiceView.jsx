@@ -20,7 +20,7 @@ export default function InvoiceView({ invoice, back }) {
       <article className="dash-card p-6 sm:p-10 max-w-[880px] mx-auto bg-white">
         <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-navy/10">
           <div>
-            <img src="/brand/logo.webp" alt="JOLOF TRADING" className="h-16 w-auto" />
+            <img src="/brand/logo.webp" alt="JOLOF TRADE CENTER" className="h-16 w-auto" />
             {/* client's format: street / city, state ZIP / email / phone — each on its own line */}
             <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">
               {[...addressLines(store.address), store.email, store.phone].filter(Boolean).map((l, i) => <span key={i} className="block">{l}</span>)}

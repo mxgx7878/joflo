@@ -131,7 +131,7 @@ export default function PayPage() {
           <section className="dash-card overflow-hidden">
             <div className="px-5 sm:px-7 pt-6 pb-4 flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[10.5px] font-extrabold tracking-[.2em] uppercase text-gold">{isQuote ? 'Quotation from JOLOF TRADING' : 'Order balance'}</p>
+                <p className="text-[10.5px] font-extrabold tracking-[.2em] uppercase text-gold">{isQuote ? 'Quotation from JOLOF TRADE CENTER' : 'Order balance'}</p>
                 <h2 className="font-display text-[1.4rem] text-navy">{isQuote ? 'Your quotation' : `Order ${order.id}`}</h2>
               </div>
               {isQuote && quote.validUntil && (

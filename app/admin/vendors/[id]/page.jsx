@@ -44,7 +44,7 @@ export default function VendorDetail() {
             <h1 className="h-display text-navy text-[2rem]">{v.company}</h1>
             <Pill meta={SUPPLIER_STATUS[v.status]} />
           </div>
-          <p className="text-[13px] text-charcoal/55 mt-1">{house ? 'JOLOF TRADING’s own warehouse stock' : `${v.businessType} · joined ${fmtDate(v.createdAt)}`}</p>
+          <p className="text-[13px] text-charcoal/55 mt-1">{house ? 'JOLOF TRADE CENTER’s own warehouse stock' : `${v.businessType} · joined ${fmtDate(v.createdAt)}`}</p>
         </div>
         {!house && (
           <div className="flex flex-wrap gap-2">

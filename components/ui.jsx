@@ -6,7 +6,7 @@ import { X } from 'lucide-react';
 
 export function Logo({ className = 'h-12', href = '/' }) {
   return (
-    <Link href={href} className={`logo block shrink-0 ${className}`} aria-label="JOLOF TRADING home">
+    <Link href={href} className={`logo block shrink-0 ${className}`} aria-label="JOLOF TRADE CENTER home">
       {/* Client-supplied logo, used unaltered */}
       <img src="/brand/logo.webp" alt="JOLOF TRADE CENTER logo" className="h-full w-auto" />
     </Link>

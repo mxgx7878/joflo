@@ -246,7 +246,7 @@ export default function InquiryDetail() {
           {inq.status === 'new' && <button className="dash-btn dash-btn-ghost" onClick={() => status('in_review', 'Marked as in review')}>Mark in review</button>}
           {!['closed', 'accepted'].includes(inq.status) && <button className="dash-btn dash-btn-ghost" onClick={() => status('closed', 'Inquiry closed')}>Close</button>}
           {['closed', 'declined'].includes(inq.status) && <button className="dash-btn dash-btn-ghost" onClick={() => status('in_review', 'Inquiry reopened')}>Reopen</button>}
-          <a href={`mailto:${inq.email}?subject=${encodeURIComponent(`JOLOF TRADING — ${inq.id}`)}`} className="dash-btn dash-btn-navy"><Mail /> Reply by email</a>
+          <a href={`mailto:${inq.email}?subject=${encodeURIComponent(`JOLOF TRADE CENTER — ${inq.id}`)}`} className="dash-btn dash-btn-navy"><Mail /> Reply by email</a>
         </div>
       </div>
 
