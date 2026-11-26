@@ -37,8 +37,8 @@ function Success() {
       { icon: MailCheck, t: 'Order received', d: `Stock is held for you. Reference ${order.id}.` },
       { icon: FileText, t: 'We confirm', d: 'Our team confirms availability and delivery, then issues your invoice — usually within one business day.' },
       isCheck
-        ? { icon: Banknote, t: 'Pay by check on delivery', d: `Have a check for ${money(order.total)}, payable to JOLOF TRADING, ready for our driver.${follow}` }
-        : { icon: Banknote, t: 'Pay cash / check on delivery', d: `Have ${money(order.total)} ready for our driver — in cash, or a check payable to JOLOF TRADING.${follow}` },
+        ? { icon: Banknote, t: 'Pay by check on delivery', d: `Have a check for ${money(order.total)}, payable to JOLOF TRADE CENTER, ready for our driver.${follow}` }
+        : { icon: Banknote, t: 'Pay cash / check on delivery', d: `Have ${money(order.total)} ready for our driver — in cash, or a check payable to JOLOF TRADE CENTER.${follow}` },
     ];
   const guestNoAccount = !order.userId && !user;
   return (

@@ -19,7 +19,7 @@ export const POST = route(async (req) => {
   if (!smtpConfigured()) fail(400, 'SMTP is not configured yet — add SMTP_HOST, SMTP_USER and SMTP_PASS to .env.');
   const settings = await getSettings();
   const html = layout({ title: 'Test email from your store', body: p('If you can read this, emails from the website are working.') + box('Order, quote and payment emails will be sent from this address.', 'success'), store: settings.store, appUrl: appUrl() });
-  const [r] = await deliver({ to, subject: 'JOLOF TRADING — test email', html, text: toText(html), template: 'test' });
+  const [r] = await deliver({ to, subject: 'JOLOF TRADE CENTER — test email', html, text: toText(html), template: 'test' });
   if (r?.status !== 'sent') fail(502, `Could not send: ${r?.error || 'unknown error'}`);
   return { to };
 });

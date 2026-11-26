@@ -152,7 +152,7 @@ export default function ProductEditor({ product, open, onClose, onDelete }) {
                   <label className="flex items-center gap-3 px-4 py-3 cursor-pointer">
                     <input type="checkbox" className="w-4 h-4 accent-[#0B2347]" checked={on} onChange={(e) => toggleSup(v.id, e.target.checked)} />
                     <span className="flex-1 min-w-0">
-                      <span className="block font-bold text-navy text-[13.5px] truncate">{v.isHouse ? 'JOLOF TRADING (own stock)' : v.company || v.name}</span>
+                      <span className="block font-bold text-navy text-[13.5px] truncate">{v.isHouse ? 'JOLOF TRADE CENTER (own stock)' : v.company || v.name}</span>
                       <span className="block text-[11.5px] text-charcoal/55 truncate">{wh.length ? wh.map((w) => w.suburb || w.city).filter(Boolean).join(' · ') : 'No warehouse yet'}</span>
                     </span>
                     {v.status !== 'active' && <span className={`pill ${SUPPLIER_STATUS[v.status]?.cls || ''}`}>{SUPPLIER_STATUS[v.status]?.label || v.status}</span>}

@@ -15,10 +15,10 @@ export default function SiteFooter() {
       <div className="max-w-site mx-auto px-4 sm:px-6 lg:px-8 pt-16 lg:pt-20">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
-            <a href="/#top" className="inline-block bg-ivory rounded-2xl p-4 border-b-2 border-gold" aria-label="JOLOF TRADING home">
+            <a href="/#top" className="inline-block bg-ivory rounded-2xl p-4 border-b-2 border-gold" aria-label="JOLOF TRADE CENTER home">
               <span className="logo block h-[104px]"><img src="/brand/logo.webp" alt="JOLOF logo" className="h-full w-auto block" /></span>
             </a>
-            <p className="mt-6 text-[14.5px] leading-[1.85] max-w-[360px]">JOLOF TRADING brings together international commodity trading, food wholesale, and cosmetics distribution with a commitment to lasting commercial relationships.</p>
+            <p className="mt-6 text-[14.5px] leading-[1.85] max-w-[360px]">JOLOF TRADE CENTER brings together international commodity trading, food wholesale, and cosmetics distribution with a commitment to lasting commercial relationships.</p>
             <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2.5 rounded-full bg-[#25D366] text-white font-bold text-[14px] px-5 h-11 hover:bg-[#1ebe5b] transition"><WhatsAppIcon className="w-5 h-5" />WhatsApp: {WHATSAPP_DISPLAY}</a>
           </div>
           <nav className="lg:col-span-2" aria-label="Shop">
@@ -46,7 +46,7 @@ export default function SiteFooter() {
           <nav className="lg:col-span-3" aria-label="Company">
             <h3 className="text-white font-display text-lg">Company</h3><div className="w-8 h-0.5 bg-gold mt-3 mb-5" />
             <ul className="space-y-3 text-[14.5px]">
-              <li><a className="hover:text-gold-soft transition" href="/#about">About JOLOF TRADING</a></li>
+              <li><a className="hover:text-gold-soft transition" href="/#about">About JOLOF TRADE CENTER</a></li>
               <li><Link className="hover:text-gold-soft transition" href="/trading">JOLOF TRADE CENTER</Link></li>
               <li><SoonLink className="hover:text-gold-soft transition">Privacy Policy</SoonLink></li>
               <li><SoonLink className="hover:text-gold-soft transition">Terms &amp; Conditions</SoonLink></li>
@@ -54,7 +54,7 @@ export default function SiteFooter() {
           </nav>
         </div>
         <div className="mt-14 border-t border-gold/25 py-7 flex flex-col md:flex-row items-center justify-between gap-3 text-[13px]">
-          <p>© 2026 JOLOF TRADING. All Rights Reserved.</p>
+          <p>© 2026 JOLOF TRADE CENTER. All Rights Reserved.</p>
           <p className="text-white/45 text-center">Developed by <a href="http://orientpearldigital.com/" className="hover:text-gold-soft transition" target="_blank" rel="noopener noreferrer">Orient Pearl Digital</a></p>
         </div>
       </div>

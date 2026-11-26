@@ -58,7 +58,7 @@ export default function OrderDetail() {
       {order.status === 'pending' && (
         <div className="mb-6 rounded-2xl bg-gold-pale border border-gold/30 p-4 sm:p-5 flex gap-3 text-[13.5px] text-[#6d4f12]">
           <Clock3 className="w-5 h-5 shrink-0 mt-0.5" />
-          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADING</p><p className="mt-0.5">Your stock is held. Our team confirms availability and delivery, then your invoice appears here. {order.paymentMethod === 'card' ? (order.card?.status === 'APPROVED' ? `${money(order.total)} is held on your card and charged when we confirm — cancelling releases the hold.` : `You paid ${money(order.paid || order.total)} by card. If the confirmed total is lower we refund the difference; if higher, we email you a link to pay the extra. Cancelling refunds your card.`) : order.paymentMethod === 'check' ? 'You pay by check (payable to JOLOF TRADING) when the order is delivered.' : 'You pay in cash or by check (payable to JOLOF TRADING) when the order is delivered.'}</p></div>
+          <div><p className="font-extrabold">Awaiting confirmation from JOLOF TRADE CENTER</p><p className="mt-0.5">Your stock is held. Our team confirms availability and delivery, then your invoice appears here. {order.paymentMethod === 'card' ? (order.card?.status === 'APPROVED' ? `${money(order.total)} is held on your card and charged when we confirm — cancelling releases the hold.` : `You paid ${money(order.paid || order.total)} by card. If the confirmed total is lower we refund the difference; if higher, we email you a link to pay the extra. Cancelling refunds your card.`) : order.paymentMethod === 'check' ? 'You pay by check (payable to JOLOF TRADE CENTER) when the order is delivered.' : 'You pay in cash or by check (payable to JOLOF TRADE CENTER) when the order is delivered.'}</p></div>
         </div>
       )}
       {order.status !== 'cancelled' && openBalanceRequests(order).map((r) => (
@@ -153,14 +153,14 @@ export default function OrderDetail() {
         </div>
       </div>
 
-      <p className="print-only text-[12px] text-charcoal/60 mt-6">JOLOF TRADING · Tax invoice / order summary · Printed {fmtDate(new Date().toISOString())}</p>
+      <p className="print-only text-[12px] text-charcoal/60 mt-6">JOLOF TRADE CENTER · Tax invoice / order summary · Printed {fmtDate(new Date().toISOString())}</p>
 
       <Modal open={confirmCancel} onClose={() => setConfirmCancel(false)} kicker="Cancel order" title={`Cancel ${order.id}?`}
         footer={<>
           <button type="button" className="dash-btn dash-btn-ghost" onClick={() => setConfirmCancel(false)}>Keep order</button>
           <button type="button" className="dash-btn dash-btn-danger" onClick={async () => { setConfirmCancel(false); const r = await cancelOrder(order.id); if (r.ok) toast({ text: `Order ${order.id} cancelled` }); }}>Yes, cancel order</button>
         </>}>
-        <p className="text-[14px] text-charcoal/70">Orders can be cancelled until JOLOF TRADING confirms them. Held stock is released and no invoice is issued.</p>
+        <p className="text-[14px] text-charcoal/70">Orders can be cancelled until JOLOF TRADE CENTER confirms them. Held stock is released and no invoice is issued.</p>
       </Modal>
 
       <style>{`

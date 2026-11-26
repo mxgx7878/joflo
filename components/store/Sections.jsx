@@ -424,9 +424,9 @@ export function About() {
             </div>
           </Reveal>
           <Reveal className="lg:col-span-8">
-            <p className="kicker">About JOLOF TRADING</p>
-            <h2 className="h-display text-navy text-[2rem] sm:text-[2.6rem] mt-3">From Africa to the world.</h2>
-            <p className="mt-5 text-charcoal/70 leading-[1.85] text-[1.02rem]">JOLOF TRADING is a diversified trading and wholesale distribution business bringing together commodity trading, food wholesale and cosmetics distribution. Our online store makes it simple for retailers, distributors and commercial buyers to browse the range, build an order and request wholesale pricing — all in one place.</p>
+            <p className="kicker">About JOLOF TRADE CENTER</p>
+            <h2 className="h-display text-navy text-[2rem] sm:text-[2.6rem] mt-3">One source for all your African goods.</h2>
+            <p className="mt-5 text-charcoal/70 leading-[1.85] text-[1.02rem]">JOLOF TRADE CENTER is a diversified trading and wholesale distribution business bringing together commodity trading, food wholesale and cosmetics distribution. Our online store makes it simple for retailers, distributors and commercial buyers to browse the range, build an order and request wholesale pricing — all in one place.</p>
             <div className="mt-8 grid sm:grid-cols-3 gap-4">
               {aboutDepts.map((d) => {
                 const Icon = d.kind === 'trading' ? Ship : d.name === 'Cosmetics' ? Sparkles : Wheat;
@@ -464,7 +464,7 @@ export function Newsletter() {
           <div className="relative">
             <p className="kicker !text-gold-soft">Newsletter</p>
             <h2 className="h-display text-[2rem] sm:text-[2.6rem] mt-3">Be first to see new products.</h2>
-            <p className="mt-3 text-white/75">New arrivals, collections and wholesale updates from JOLOF TRADING.</p>
+            <p className="mt-3 text-white/75">New arrivals, collections and wholesale updates from JOLOF TRADE CENTER.</p>
           </div>
           <form className="relative" noValidate onSubmit={onSubmit}>
             <div className="flex flex-col sm:flex-row gap-3 bg-white/10 sm:bg-white sm:p-1.5 sm:rounded-full">

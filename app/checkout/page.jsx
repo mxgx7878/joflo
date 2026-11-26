@@ -83,7 +83,7 @@ export default function CheckoutPage() {
   const addrLoc = address && (address.city || address.state) ? locationFromAddress(address) : null;
   const mismatch = location && addrLoc && addrLoc.state !== location.state ? addrLoc : null;
 
-  // delivery is priced by road distance from the warehouse(s) that will ship — customers only see JOLOF TRADING
+  // delivery is priced by road distance from the warehouse(s) that will ship — customers only see JOLOF TRADE CENTER
   const [estimate, setEstimate] = useState(null);
   const [estimating, setEstimating] = useState(false);
   const addrKey = isGuest ? `${gAddr.line1}|${gAddr.city}|${gAddr.state}|${gAddr.postcode}` : addressId || '';
@@ -299,7 +299,7 @@ export default function CheckoutPage() {
                 <Step n={isGuest ? '4' : '3'} title="Payment method">
                   <div role="radiogroup" aria-label="Payment method" className="space-y-3">
                     {[
-                      payOpts.cod && ['cod', Banknote, 'Cash / Check on delivery', 'Pay our driver in cash, or by check payable to JOLOF TRADING, when your order arrives. Nothing to pay online.'],
+                      payOpts.cod && ['cod', Banknote, 'Cash / Check on delivery', 'Pay our driver in cash, or by check payable to JOLOF TRADE CENTER, when your order arrives. Nothing to pay online.'],
                       payOpts.card && ['card', CreditCard, 'Pay by card', `Visa, Mastercard, Amex, Discover. Charged now${payOpts.cardFee?.pass !== false && feeLabel ? ` — a ${feeLabel} card processing fee is added` : ''}. If our confirmed total differs, we refund or bill only the difference.`],
                     ].filter(Boolean).map(([key, Icon, title, desc]) => {
                       const on = payMethod === key;
@@ -381,7 +381,7 @@ export default function CheckoutPage() {
                 {isCard && cardFee > 0 && <div className="flex justify-between"><dt className="text-charcoal/60">Card processing fee <span className="text-charcoal/45">· {feeLabel}</span></dt><dd className="font-bold text-navy">{shipping === null ? '…' : money(cardFee)}</dd></div>}
                 <div className="flex justify-between"><dt className="text-charcoal/60">Payment</dt><dd className="font-bold text-navy flex items-center gap-1.5">{isCard ? <><CreditCard className="w-4 h-4 text-emerald" />Card</> : <><OfflineIcon className="w-4 h-4 text-emerald" />{offlineLabel}</>}</dd></div>
                 <div className="flex justify-between pt-3 mt-1 border-t border-navy/10 text-[16px]"><dt className="font-extrabold text-navy">{isCard ? 'Total' : 'Total to pay on delivery'}</dt><dd className="font-extrabold text-navy">{money(total)} <span className="text-[11px] font-bold text-charcoal/45">USD</span></dd></div>
-                <p className="text-[11px] text-charcoal/50">{isCard ? 'Charged to your card now. If our confirmed total is lower we refund the difference; if it is higher we email you a secure link to pay only the extra.' : 'Paid to our driver in cash, or by check payable to JOLOF TRADING. The final amount is confirmed on your invoice.'}</p>
+                <p className="text-[11px] text-charcoal/50">{isCard ? 'Charged to your card now. If our confirmed total is lower we refund the difference; if it is higher we email you a secure link to pay only the extra.' : 'Paid to our driver in cash, or by check payable to JOLOF TRADE CENTER. The final amount is confirmed on your invoice.'}</p>
               </dl>
               <div className="px-5 sm:px-6 pb-6 pt-1 space-y-2.5">
                 {error && <p role="alert" className="text-[13px] font-semibold text-[#B4432F] bg-[#F8E7E3] rounded-xl px-4 py-3">{error}</p>}

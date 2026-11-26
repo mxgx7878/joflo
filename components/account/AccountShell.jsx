@@ -137,7 +137,7 @@ export default function AccountShell({ children }) {
           </div>
         )}
         {user.status === 'suspended' && (
-          <div className="mb-6 rounded-2xl bg-[#F8E7E3] p-4 text-[13.5px] text-[#B4432F] font-semibold">This account is suspended. Please contact JOLOF TRADING.</div>
+          <div className="mb-6 rounded-2xl bg-[#F8E7E3] p-4 text-[13.5px] text-[#B4432F] font-semibold">This account is suspended. Please contact JOLOF TRADE CENTER.</div>
         )}
         {children}
       </main>

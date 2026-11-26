@@ -396,7 +396,7 @@ async function s3Uploader() {
 // ──────────────────────────────── database ───────────────────────────────
 const describe = (p) => {
   const parts = [`${p.name}${p.size && !p.name.toLowerCase().includes(p.size.toLowerCase()) ? `, ${p.size}` : ''}. Wholesale ${p.packRaw || 'case'} — sold by the case only.`];
-  if (p.price != null) parts.push('Price shown is the JOLOF TRADING wholesale price per case.');
+  if (p.price != null) parts.push('Price shown is the JOLOF TRADE CENTER wholesale price per case.');
   if (p.upc) parts.push(`UPC ${p.upc}.`);
   return parts.join(' ');
 };

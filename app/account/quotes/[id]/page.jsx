@@ -76,7 +76,7 @@ export default function QuoteDetail() {
             <section className={`dash-card overflow-hidden ${inq.status === 'quoted' ? 'ring-2 ring-gold/50' : ''}`}>
               <div className="px-5 sm:px-6 pt-5 pb-4 flex flex-wrap items-start justify-between gap-3 border-b border-navy/5">
                 <div>
-                  <p className="text-[10.5px] font-extrabold tracking-[.2em] uppercase text-gold">Quote from JOLOF TRADING</p>
+                  <p className="text-[10.5px] font-extrabold tracking-[.2em] uppercase text-gold">Quote from JOLOF TRADE CENTER</p>
                   <h2 className="font-display text-[1.4rem] text-navy">Your quotation</h2>
                   <p className="text-[12.5px] text-charcoal/55 mt-0.5">Sent {fmtDateTime(q.sentAt)}</p>
                 </div>

@@ -128,7 +128,7 @@ export default function SettingsPage() {
 
         <Card title="Invoices" action={<FileText className="w-4 h-4 text-gold" />}>
           <p className="text-[12.5px] text-charcoal/60 leading-relaxed">Cash / check on delivery invoices are due when the order is delivered. Card orders are invoiced as paid when you confirm them.</p>
-          <Field label="Cash / check on delivery note (printed on pay-on-delivery invoices)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="e.g. Please have the full amount ready for our driver, in cash or as a check payable to JOLOF TRADING." /></Field>
+          <Field label="Cash / check on delivery note (printed on pay-on-delivery invoices)" className="mt-4"><textarea rows={3} className="dash-input" value={inv.payTo} onChange={(e) => setInv({ ...inv, payTo: e.target.value })} placeholder="e.g. Please have the full amount ready for our driver, in cash or as a check payable to JOLOF TRADE CENTER." /></Field>
           <Field label="Footer" className="mt-4"><input className="dash-input" value={inv.footer} onChange={(e) => setInv({ ...inv, footer: e.target.value })} /></Field>
           <button className="dash-btn dash-btn-ghost w-full mt-4" onClick={() => save({ invoice: inv }, 'Invoice details saved')}><Save /> Save invoice details</button>
         </Card>

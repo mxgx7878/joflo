@@ -48,9 +48,9 @@ export default function DriverSlip({ order, back }) {
       <article className="dash-card p-6 sm:p-10 max-w-[880px] mx-auto bg-white">
         <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-navy/10">
           <div>
-            <img src="/brand/logo.webp" alt="JOLOF TRADING" className="h-16 w-auto" />
+            <img src="/brand/logo.webp" alt="JOLOF TRADE CENTER" className="h-16 w-auto" />
             <p className="text-[12.5px] text-charcoal/65 mt-3 leading-relaxed">
-              {[store.name || 'JOLOF TRADING', ...addressLines(store.address), store.phone].filter(Boolean).map((l, i) => <span key={i} className="block">{l}</span>)}
+              {[store.name || 'JOLOF TRADE CENTER', ...addressLines(store.address), store.phone].filter(Boolean).map((l, i) => <span key={i} className="block">{l}</span>)}
             </p>
           </div>
           <div className="sm:text-right">
@@ -101,10 +101,10 @@ export default function DriverSlip({ order, back }) {
                         <>
                           <p className="font-bold text-navy">{s.w.name}</p>
                           <p className="text-charcoal/75">{addr(s.w) || s.w.suburb}</p>
-                          <p className="text-charcoal/60">{s.v?.isHouse ? 'JOLOF TRADING' : s.v?.company || s.v?.name}{s.v?.phone ? ` · ${s.v.phone}` : ''}</p>
+                          <p className="text-charcoal/60">{s.v?.isHouse ? 'JOLOF TRADE CENTER' : s.v?.company || s.v?.name}{s.v?.phone ? ` · ${s.v.phone}` : ''}</p>
                         </>
                       ) : s.key === 'direct' ? (
-                        <p className="font-bold text-navy">Direct from JOLOF TRADING</p>
+                        <p className="font-bold text-navy">Direct from JOLOF TRADE CENTER</p>
                       ) : (
                         <p className="font-bold text-[#B4432F]">Pickup location not assigned yet — check with dispatch</p>
                       )}
@@ -159,7 +159,7 @@ export default function DriverSlip({ order, back }) {
             </div>
           </div>
           {order.notes && <p className="mt-4 text-[13px] bg-ivory rounded-xl p-3"><b className="text-navy">Customer note:</b> {order.notes}</p>}
-          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.' : order.paymentMethod === 'check' ? `Check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect a check payable to JOLOF TRADING at drop-off (amount on the customer invoice)'}.` : `Cash / check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect cash or a check payable to JOLOF TRADING at drop-off (amount on the customer invoice)'}.`}</p>
+          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.' : order.paymentMethod === 'check' ? `Check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect a check payable to JOLOF TRADE CENTER at drop-off (amount on the customer invoice)'}.` : `Cash / check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect cash or a check payable to JOLOF TRADE CENTER at drop-off (amount on the customer invoice)'}.`}</p>
         </section>
 
         <footer className="mt-4 pt-6 border-t border-navy/10 grid sm:grid-cols-2 gap-8 text-[12.5px] text-charcoal/65">

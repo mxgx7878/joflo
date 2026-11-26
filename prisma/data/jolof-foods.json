@@ -9,7 +9,7 @@
   "pack": "30 Units",
   "price": 100.0,
   "img": "foods/baobab-power",
-  "desc": "Baobab Powder — 500g · 30 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Baobab Powder — 500g · 30 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-002",
@@ -33,7 +33,7 @@
   "pack": "50 Units",
   "price": 275.0,
   "img": "foods/baobab-seed",
-  "desc": "Baobab Seed — 500g · 50 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Baobab Seed — 500g · 50 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-004",
@@ -45,7 +45,7 @@
   "pack": "24 Units",
   "price": 80.0,
   "img": null,
-  "desc": "Adja Khady Palm Oil — ½ L · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Adja Khady Palm Oil — ½ L · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-005",
@@ -57,7 +57,7 @@
   "pack": "12 Units",
   "price": 80.0,
   "img": null,
-  "desc": "Adja Khady Palm Oil — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Adja Khady Palm Oil — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-006",
@@ -69,7 +69,7 @@
   "pack": "12 Units",
   "price": 70.0,
   "img": "foods/praise-palm-oil",
-  "desc": "Praise Palm Oil — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Palm Oil — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-007",
@@ -81,7 +81,7 @@
   "pack": "12 Units",
   "price": 105.0,
   "img": "foods/bama-mayonnaise",
-  "desc": "Praise Bama Mayonnaise — 32 fl.oz · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Bama Mayonnaise — 32 fl.oz · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-008",
@@ -93,7 +93,7 @@
   "pack": "15 Units",
   "price": 80.0,
   "img": "foods/sankhal",
-  "desc": "Praise Sankhal — 800g · 15 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Sankhal — 800g · 15 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-009",
@@ -105,7 +105,7 @@
   "pack": "20 Units",
   "price": 60.0,
   "img": "foods/sankhal",
-  "desc": "Praise Sankhal — 400g · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Sankhal — 400g · 20 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-010",
@@ -117,7 +117,7 @@
   "pack": "12 Units",
   "price": 56.0,
   "img": "foods/calve-mayonnaise",
-  "desc": "Praise Calve Mayonnaise — 450ml · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Calve Mayonnaise — 450ml · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-011",
@@ -141,7 +141,7 @@
   "pack": "6 Units",
   "price": 50.0,
   "img": "foods/calve-mayonnaise",
-  "desc": "Praise Calve Mayonnaise — 825ml · 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Calve Mayonnaise — 825ml · 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-013",
@@ -153,7 +153,7 @@
   "pack": "12 Units",
   "price": 56.0,
   "img": "foods/armanti-mayonaisse",
-  "desc": "Praise Armanti Mayonnaise — 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Armanti Mayonnaise — 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-014",
@@ -177,7 +177,7 @@
   "pack": "12 Units",
   "price": 82.0,
   "img": null,
-  "desc": "Praise SYRUP DUVAL — 750ml · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise SYRUP DUVAL — 750ml · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-016",
@@ -189,7 +189,7 @@
   "pack": "12 Units",
   "price": 28.0,
   "img": "foods/vermicelle-tria",
-  "desc": "Praise Vermicelle TRIA — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Vermicelle TRIA — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-017",
@@ -201,7 +201,7 @@
   "pack": "12 Units",
   "price": 46.0,
   "img": "foods/couscous-tria",
-  "desc": "Praise Couscous TRIA — 1kg · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Couscous TRIA — 1kg · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-018",
@@ -213,7 +213,7 @@
   "pack": "100 Paquets",
   "price": 100.0,
   "img": null,
-  "desc": "Praise Vanilla Sugar Sen — 100 Sachets · 100 Paquets. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Vanilla Sugar Sen — 100 Sachets · 100 Paquets. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-019",
@@ -225,7 +225,7 @@
   "pack": "10 Units",
   "price": 130.0,
   "img": "cafe-touba",
-  "desc": "Café Touba Bakhdad — 1kg · 10 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Café Touba Bakhdad — 1kg · 10 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-020",
@@ -237,7 +237,7 @@
   "pack": "10 Units",
   "price": 70.0,
   "img": "cafe-touba",
-  "desc": "Café Touba Bakhdad — 500g · 10 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Café Touba Bakhdad — 500g · 10 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-021",
@@ -249,7 +249,7 @@
   "pack": "12 Units",
   "price": 76.0,
   "img": null,
-  "desc": "Café Touba Tawfex — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Café Touba Tawfex — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-022",
@@ -261,7 +261,7 @@
   "pack": "6 Units",
   "price": 76.0,
   "img": null,
-  "desc": "Café Touba Tawfex — 1kg · 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Café Touba Tawfex — 1kg · 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-023",
@@ -273,7 +273,7 @@
   "pack": "24 Units",
   "price": 100.0,
   "img": "foods/nettetou-soumbra-dawadawa-powder",
-  "desc": "Tawfex NETTETOU/SOUMBRA/ DAWADAWA POWDER — 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Tawfex NETTETOU/SOUMBRA/ DAWADAWA POWDER — 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-024",
@@ -285,7 +285,7 @@
   "pack": "6 Units",
   "price": 50.0,
   "img": "foods/peanut-butter",
-  "desc": "Tawfex Peanut Butter — 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Tawfex Peanut Butter — 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-025",
@@ -297,7 +297,7 @@
   "pack": "12 Units",
   "price": 80.0,
   "img": "foods/peanut-butter",
-  "desc": "Tawfex Peanut Butter — 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Tawfex Peanut Butter — 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-026",
@@ -309,7 +309,7 @@
   "pack": "24 Units",
   "price": 115.0,
   "img": "foods/mamas-choice-plantain-fufu-flour",
-  "desc": "Mama's Choice Plantain Fufu Flour — 220 Oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Mama's Choice Plantain Fufu Flour — 220 Oz · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-027",
@@ -321,7 +321,7 @@
   "pack": "24 Units",
   "price": 58.0,
   "img": "foods/athieke",
-  "desc": "Mama's Choice ATHIEKE — 300g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Mama's Choice ATHIEKE — 300g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-028",
@@ -333,7 +333,7 @@
   "pack": "6 Units",
   "price": 78.0,
   "img": null,
-  "desc": "Mama's Choice Biscuits Tawfex — 1kg · 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Mama's Choice Biscuits Tawfex — 1kg · 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-029",
@@ -345,7 +345,7 @@
   "pack": "12 Units",
   "price": 78.0,
   "img": null,
-  "desc": "Mama's Choice Biscuits Tawfex — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Mama's Choice Biscuits Tawfex — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-030",
@@ -357,7 +357,7 @@
   "pack": "24 Units",
   "price": 175.0,
   "img": "foods/nestle-nido-milk-powder",
-  "desc": "Nestle Nido Milk Powder — 400g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Nido Milk Powder — 400g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-031",
@@ -369,7 +369,7 @@
   "pack": "12 Units",
   "price": 180.0,
   "img": "foods/nestle-nido-milk-powder",
-  "desc": "Nestle Nido Milk Powder — 900g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Nido Milk Powder — 900g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-032",
@@ -381,7 +381,7 @@
   "pack": "6 Units",
   "price": 215.0,
   "img": "foods/nestle-nido-milk-powder",
-  "desc": "Nestle Nido Milk Powder — 2500g · 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Nido Milk Powder — 2500g · 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-033",
@@ -393,7 +393,7 @@
   "pack": "48 Units",
   "price": 65.0,
   "img": "peak-milk",
-  "desc": "Nestle Peak Evaporated Milk liquid — 48 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Peak Evaporated Milk liquid — 48 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-034",
@@ -405,7 +405,7 @@
   "pack": "48 Units",
   "price": 105.0,
   "img": "peak-milk",
-  "desc": "Nestle Peak Evaporated Milk liquid — 380ml · 48 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Peak Evaporated Milk liquid — 380ml · 48 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-035",
@@ -453,7 +453,7 @@
   "pack": "20 Units",
   "price": 28.0,
   "img": null,
-  "desc": "Nestle Vermicelle Elena fidelini — 16 oz · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Vermicelle Elena fidelini — 16 oz · 20 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-039",
@@ -465,7 +465,7 @@
   "pack": "20 Units",
   "price": 80.0,
   "img": "foods/cassava-dough-placali",
-  "desc": "Nestle Cassava Dough Placali — 3lbs · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Cassava Dough Placali — 3lbs · 20 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-040",
@@ -477,7 +477,7 @@
   "pack": "24 Units",
   "price": 90.0,
   "img": "foods/bonnet-rouge-liquid",
-  "desc": "Nestle Bonnet Rouge Liquid — 380g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Bonnet Rouge Liquid — 380g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-041",
@@ -489,7 +489,7 @@
   "pack": "50 Units",
   "price": 155.0,
   "img": "foods/the-flecha",
-  "desc": "Nestle The Flecha — 200g · 50 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle The Flecha — 200g · 50 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-042",
@@ -501,7 +501,7 @@
   "pack": "200 Units",
   "price": 75.0,
   "img": "foods/the-flecha",
-  "desc": "Nestle The Flecha — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle The Flecha — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-043",
@@ -513,7 +513,7 @@
   "pack": "200 Units",
   "price": 75.0,
   "img": "black-star-tea",
-  "desc": "Nestle Tea Black Star — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Tea Black Star — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-044",
@@ -525,7 +525,7 @@
   "pack": "200 Units",
   "price": 75.0,
   "img": "achoura",
-  "desc": "Nestle Tea Achoura — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Tea Achoura — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-045",
@@ -537,7 +537,7 @@
   "pack": null,
   "price": 75.0,
   "img": "achoura",
-  "desc": "Nestle Tea Achoura — 250g. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Nestle Tea Achoura — 250g. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-dry-046",
@@ -549,7 +549,7 @@
   "pack": "200 Units",
   "price": 75.0,
   "img": null,
-  "desc": "Nestle Tea Gazelle — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Tea Gazelle — 25g · 200 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-047",
@@ -561,7 +561,7 @@
   "pack": "20x100",
   "price": 60.0,
   "img": "foods/maggi-star-cube",
-  "desc": "Nestle Maggi Star Cube — 4g · 20x100. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Maggi Star Cube — 4g · 20x100. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-048",
@@ -573,7 +573,7 @@
   "pack": "24x60",
   "price": 130.0,
   "img": "maggi-crevette",
-  "desc": "Nestle Maggi Shrimp — 10g · 24x60. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Maggi Shrimp — 10g · 24x60. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-049",
@@ -585,7 +585,7 @@
   "pack": "24x60",
   "price": 120.0,
   "img": "foods/maggi-tablette",
-  "desc": "Nestle Maggi tablette — 10g · 24x60. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Nestle Maggi tablette — 10g · 24x60. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-050",
@@ -597,7 +597,7 @@
   "pack": "24 Units",
   "price": 70.0,
   "img": "foods/sardine-mackerel-with-chilli",
-  "desc": "Geisha Sardine Mackerel with chilli — 16 oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Geisha Sardine Mackerel with chilli — 16 oz · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-051",
@@ -609,7 +609,7 @@
   "pack": "50 Units",
   "price": 85.0,
   "img": "foods/sardine-founty",
-  "desc": "Sardine Founty — 50 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Sardine Founty — 50 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-052",
@@ -621,7 +621,7 @@
   "pack": "24 Units",
   "price": 68.0,
   "img": null,
-  "desc": "African Queen Sardine Mackerel — 425g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "African Queen Sardine Mackerel — 425g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-053",
@@ -633,7 +633,7 @@
   "pack": "50 Units",
   "price": 90.0,
   "img": "foods/sardine-belma",
-  "desc": "Sardine Belma — 125g · 50 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Sardine Belma — 125g · 50 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-054",
@@ -645,7 +645,7 @@
   "pack": "20 Units",
   "price": 105.0,
   "img": "foods/iyan-ado-pounded-yam",
-  "desc": "Belma Iyan Ado Pounded Yam — 2 lbs · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Iyan Ado Pounded Yam — 2 lbs · 20 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-055",
@@ -657,7 +657,7 @@
   "pack": "10 Units",
   "price": 105.0,
   "img": "foods/iyan-ado-pounded-yam",
-  "desc": "Belma Iyan Ado Pounded Yam — 4 lbs · 10 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Iyan Ado Pounded Yam — 4 lbs · 10 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-056",
@@ -669,7 +669,7 @@
   "pack": "48 Units",
   "price": 52.0,
   "img": null,
-  "desc": "Belma Mamma's Rose Blanche — 250g · 48 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Mamma's Rose Blanche — 250g · 48 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-057",
@@ -681,7 +681,7 @@
   "pack": "6 Units",
   "price": 46.0,
   "img": null,
-  "desc": "Belma Moutarde La Reine — 850g · 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Moutarde La Reine — 850g · 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-058",
@@ -717,7 +717,7 @@
   "pack": "12 Units",
   "price": 50.0,
   "img": "foods/moutarde-amora",
-  "desc": "Belma Moutarde Amora — 440g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Moutarde Amora — 440g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-061",
@@ -729,7 +729,7 @@
   "pack": "12 Units",
   "price": 44.0,
   "img": "kadi",
-  "desc": "Belma Moutarde Kadi — 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Moutarde Kadi — 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-062",
@@ -741,7 +741,7 @@
   "pack": "6 Units",
   "price": 24.0,
   "img": "kadi",
-  "desc": "Belma Moutarde Kadi — 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Moutarde Kadi — 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-063",
@@ -753,7 +753,7 @@
   "pack": "30 Units",
   "price": 100.0,
   "img": null,
-  "desc": "Belma Peanut Powder — 1 lbs · 30 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Peanut Powder — 1 lbs · 30 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-064",
@@ -765,7 +765,7 @@
   "pack": "20 Units",
   "price": 60.0,
   "img": "foods/farine-de-mil",
-  "desc": "Belma Farine de Mil — 400g · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Belma Farine de Mil — 400g · 20 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-065",
@@ -777,7 +777,7 @@
   "pack": null,
   "price": 90.0,
   "img": "foods/datte",
-  "desc": "Belma Datte. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Belma Datte. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-dry-066",
@@ -789,7 +789,7 @@
   "pack": "12 Units",
   "price": 76.0,
   "img": "foods/maad",
-  "desc": "Zena Maad — 420g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Maad — 420g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-067",
@@ -801,7 +801,7 @@
   "pack": "12 Units",
   "price": 35.0,
   "img": null,
-  "desc": "Sonia Piment Sauce — 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Sonia Piment Sauce — 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-068",
@@ -813,7 +813,7 @@
   "pack": "12 Units",
   "price": 76.0,
   "img": "foods/spicy-pepper-sauce",
-  "desc": "Zena Spicy Pepper Sauce — 420g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Spicy Pepper Sauce — 420g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-069",
@@ -825,7 +825,7 @@
   "pack": "1 Units",
   "price": 23.0,
   "img": "foods/jasmine-rice",
-  "desc": "Zena Jasmine Rice — 25 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Jasmine Rice — 25 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-070",
@@ -837,7 +837,7 @@
   "pack": "1 Units",
   "price": 11.0,
   "img": "foods/jasmine-rice",
-  "desc": "Zena Jasmine Rice — 10 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Jasmine Rice — 10 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-071",
@@ -849,7 +849,7 @@
   "pack": "1 Units",
   "price": 21.0,
   "img": "foods/broken-rice",
-  "desc": "Zena Broken Rice — 25 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Broken Rice — 25 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-072",
@@ -861,7 +861,7 @@
   "pack": "1 Units",
   "price": 9.0,
   "img": "foods/broken-rice",
-  "desc": "Zena Broken Rice — 10 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Broken Rice — 10 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-073",
@@ -873,7 +873,7 @@
   "pack": "1 Units",
   "price": 40.0,
   "img": "foods/excellence-rice",
-  "desc": "Zena Excellence Rice — 50 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Excellence Rice — 50 lbs · 1 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-074",
@@ -885,7 +885,7 @@
   "pack": "30 Units",
   "price": 150.0,
   "img": "foods/fonio",
-  "desc": "Zena Fonio — 32 oz · 30 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Fonio — 32 oz · 30 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-075",
@@ -897,7 +897,7 @@
   "pack": "1 Units",
   "price": 110.0,
   "img": "foods/fleur-doranger-small",
-  "desc": "Zena Fleur d'Oranger Small — 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Fleur d'Oranger Small — 1 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-076",
@@ -909,7 +909,7 @@
   "pack": "1 Units",
   "price": 130.0,
   "img": "foods/fleur-doranger",
-  "desc": "Zena Fleur d'Oranger — 1 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Fleur d'Oranger — 1 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-077",
@@ -921,7 +921,7 @@
   "pack": "24 Units",
   "price": 108.0,
   "img": "foods/corn-beef-exeter",
-  "desc": "Zena Corn Beef Exeter — 340g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zena Corn Beef Exeter — 340g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-078",
@@ -933,7 +933,7 @@
   "pack": "24 Units",
   "price": 145.0,
   "img": "foods/plantain-fufu-flour",
-  "desc": "Tropiway Plantain Fufu Flour — 24oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Tropiway Plantain Fufu Flour — 24oz · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-079",
@@ -945,7 +945,7 @@
   "pack": "12 Units",
   "price": 54.0,
   "img": "foods/banku-mix",
-  "desc": "Tropiway Banku Mix — 2.2 lbs · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Tropiway Banku Mix — 2.2 lbs · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-080",
@@ -957,7 +957,7 @@
   "pack": "12 Units",
   "price": 70.0,
   "img": "foods/praise-zomi-palm-oil",
-  "desc": "Praise Zomi Palm Oil — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Zomi Palm Oil — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-081",
@@ -1017,7 +1017,7 @@
   "pack": "40 Units",
   "price": 260.0,
   "img": "foods/butter-president",
-  "desc": "Al Haloub Butter President — 250g · 40 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Al Haloub Butter President — 250g · 40 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-086",
@@ -1029,7 +1029,7 @@
   "pack": "12 Units",
   "price": 66.0,
   "img": "foods/derica-tomato-paste",
-  "desc": "Al Haloub Derica Tomato Paste — 800g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Al Haloub Derica Tomato Paste — 800g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-087",
@@ -1041,7 +1041,7 @@
   "pack": "12 Units",
   "price": 40.0,
   "img": null,
-  "desc": "Al Haloub Adja Vinaigre — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Al Haloub Adja Vinaigre — 1L · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-088",
@@ -1053,7 +1053,7 @@
   "pack": "12 Units",
   "price": 50.0,
   "img": "foods/chocopain-chocolate-tartina",
-  "desc": "Al Haloub CHOCOPAIN Chocolate Tartina — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Al Haloub CHOCOPAIN Chocolate Tartina — 500g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-089",
@@ -1065,7 +1065,7 @@
   "pack": "40 Units",
   "price": 26.0,
   "img": "foods/indomie-instant-chicken-onion-flour",
-  "desc": "Al Haloub Indomie Instant Chicken Onion Flour — 70g · 40 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Al Haloub Indomie Instant Chicken Onion Flour — 70g · 40 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-090",
@@ -1077,7 +1077,7 @@
   "pack": "20 Units",
   "price": 60.0,
   "img": "foods/sunny-gold-gari-raw-white",
-  "desc": "SUNNY GOLD Gari Raw White — 2.2 lbs · 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "SUNNY GOLD Gari Raw White — 2.2 lbs · 20 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-091",
@@ -1101,7 +1101,7 @@
   "pack": "20 Units",
   "price": 90.0,
   "img": "foods/moringa-leaves",
-  "desc": "SUNNY GOLD Moringa Leaves — 20 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "SUNNY GOLD Moringa Leaves — 20 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-093",
@@ -1113,7 +1113,7 @@
   "pack": "12 Units",
   "price": 50.0,
   "img": "jadida",
-  "desc": "SUNNY GOLD Jadida Butter — 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "SUNNY GOLD Jadida Butter — 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-094",
@@ -1125,7 +1125,7 @@
   "pack": null,
   "price": 75.0,
   "img": "jumbo-48",
-  "desc": "SUNNY GOLD Jumbo Regular. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "SUNNY GOLD Jumbo Regular. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-dry-095",
@@ -1137,7 +1137,7 @@
   "pack": "10 Units",
   "price": 75.0,
   "img": "jumbo-jar",
-  "desc": "SUNNY GOLD Jumbo Jar — 10 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "SUNNY GOLD Jumbo Jar — 10 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-096",
@@ -1245,7 +1245,7 @@
   "pack": "6 Units",
   "price": 70.0,
   "img": "foods/milo-chox-mix",
-  "desc": "Omega Milo Chox Mix — 1.4kg · 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Omega Milo Chox Mix — 1.4kg · 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-105",
@@ -1257,7 +1257,7 @@
   "pack": "24 Units",
   "price": 92.0,
   "img": "foods/egusi-powder-ghana",
-  "desc": "Omega Egusi Powder (Ghana) — 500g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Omega Egusi Powder (Ghana) — 500g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-106",
@@ -1269,7 +1269,7 @@
   "pack": "12 Units",
   "price": 92.0,
   "img": null,
-  "desc": "Blessing Shrimp Powder — 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessing Shrimp Powder — 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-107",
@@ -1281,7 +1281,7 @@
   "pack": "12 Units",
   "price": 135.0,
   "img": "nescafe",
-  "desc": "Blessing Nescafe — 200g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessing Nescafe — 200g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-108",
@@ -1293,7 +1293,7 @@
   "pack": "24 Units",
   "price": 135.0,
   "img": "nescafe",
-  "desc": "Blessing Nescafe — 100g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessing Nescafe — 100g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-109",
@@ -1305,7 +1305,7 @@
   "pack": "48 Units",
   "price": 135.0,
   "img": "nescafe",
-  "desc": "Blessing Nescafe — 50g · 48 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessing Nescafe — 50g · 48 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-110",
@@ -1329,7 +1329,7 @@
   "pack": null,
   "price": 46.0,
   "img": "foods/begue-balla-gaye-candy",
-  "desc": "Praise Begue Balla Gaye Candy. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Praise Begue Balla Gaye Candy. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-dry-112",
@@ -1341,7 +1341,7 @@
   "pack": "30 Units",
   "price": 135.0,
   "img": "foods/thiere-no-lalo",
-  "desc": "Praise Thiere No Lalo — 500g · 30 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Praise Thiere No Lalo — 500g · 30 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-113",
@@ -1353,7 +1353,7 @@
   "pack": null,
   "price": 36.0,
   "img": "foods/sonia-pathial",
-  "desc": "Sonia Pathial. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Sonia Pathial. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-dry-114",
@@ -1401,7 +1401,7 @@
   "pack": null,
   "price": 66.0,
   "img": "foods/menth-fraish",
-  "desc": "Royal Menth Fraish. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Royal Menth Fraish. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-dry-118",
@@ -1413,7 +1413,7 @@
   "pack": null,
   "price": 88.0,
   "img": "maggi-arome",
-  "desc": "Royal Arome Maggi. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Royal Arome Maggi. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-dry-119",
@@ -1425,7 +1425,7 @@
   "pack": "24 Units",
   "price": 70.0,
   "img": "dieg-bou-diar",
-  "desc": "Royal Tomato Dieg Bou Diar — 400g · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Royal Tomato Dieg Bou Diar — 400g · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-120",
@@ -1437,7 +1437,7 @@
   "pack": "12 Units",
   "price": 70.0,
   "img": "dieg-bou-diar",
-  "desc": "Royal Tomato Dieg Bou Diar — 800g · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Royal Tomato Dieg Bou Diar — 800g · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-121",
@@ -1449,7 +1449,7 @@
   "pack": "6 Units",
   "price": 76.0,
   "img": "dieg-bou-diar",
-  "desc": "Royal Tomato Dieg Bou Diar — 2kg · 6 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Royal Tomato Dieg Bou Diar — 2kg · 6 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-122",
@@ -1545,7 +1545,7 @@
   "pack": "100 Units",
   "price": 185.0,
   "img": "foods/titus-sardines",
-  "desc": "Titus Sardines (Red) — 125g · 100 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Titus Sardines (Red) — 125g · 100 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-130",
@@ -1557,7 +1557,7 @@
   "pack": "50 Units",
   "price": 90.0,
   "img": "foods/titus-sardines",
-  "desc": "Titus Sardines (Red) — 125g · 50 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Titus Sardines (Red) — 125g · 50 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-131",
@@ -1629,7 +1629,7 @@
   "pack": "24 Units",
   "price": 100.0,
   "img": "foods/zwan-chicken-and-beef-luncheon-loaf",
-  "desc": "Zwan Chicken and Beef Luncheon Loaf — 12 oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zwan Chicken and Beef Luncheon Loaf — 12 oz · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-dry-137",
@@ -1641,7 +1641,7 @@
   "pack": "24 Units",
   "price": 85.0,
   "img": "foods/zwan-chicken-luncheon-loaf",
-  "desc": "Zwan Chicken Luncheon Loaf — 12 oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Zwan Chicken Luncheon Loaf — 12 oz · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-001",
@@ -1653,7 +1653,7 @@
   "pack": "24 Units",
   "price": 20.0,
   "img": "ginger-honey-lemon",
-  "desc": "Ginger, Honey and Lemon Drink — 11.16 fl.oz · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Ginger, Honey and Lemon Drink — 11.16 fl.oz · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-002",
@@ -1665,7 +1665,7 @@
   "pack": "24 Units",
   "price": 24.0,
   "img": "3x-energy",
-  "desc": "3X Energy Small — 25 cl · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "3X Energy Small — 25 cl · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-003",
@@ -1677,7 +1677,7 @@
   "pack": "24 Units",
   "price": 28.0,
   "img": "3x-energy",
-  "desc": "3X Energy Med — 33 cl · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "3X Energy Med — 33 cl · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-004",
@@ -1689,7 +1689,7 @@
   "pack": "24 Units",
   "price": 32.0,
   "img": "3x-energy",
-  "desc": "3X Energy Big — 50 cl · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "3X Energy Big — 50 cl · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-005",
@@ -1701,7 +1701,7 @@
   "pack": "24 Units",
   "price": 20.0,
   "img": "sagiko",
-  "desc": "Sagiko Tamarind — 320ml · 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Sagiko Tamarind — 320ml · 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-006",
@@ -1713,7 +1713,7 @@
   "pack": "24 Units",
   "price": 20.0,
   "img": null,
-  "desc": "Achoura Drink — 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Achoura Drink — 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-007",
@@ -1725,7 +1725,7 @@
   "pack": "24 Units",
   "price": 20.0,
   "img": "ira",
-  "desc": "IRA Juice — 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "IRA Juice — 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-drk-008",
@@ -1737,7 +1737,7 @@
   "pack": "24 Units",
   "price": 20.0,
   "img": "vimto",
-  "desc": "Vimto — 24 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Vimto — 24 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-001",
@@ -1749,7 +1749,7 @@
   "pack": "20 Pcs",
   "price": 76.0,
   "img": "foods/athieke",
-  "desc": "ATHIEKE — 20 Pcs. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "ATHIEKE — 20 Pcs. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-002",
@@ -1761,7 +1761,7 @@
   "pack": null,
   "price": 5.5,
   "img": "foods/lamb-cut",
-  "desc": "Lamb Cut — 1 lbs. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Lamb Cut — 1 lbs. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-frz-003",
@@ -1773,7 +1773,7 @@
   "pack": null,
   "price": 80.0,
   "img": "foods/whole-tilapia",
-  "desc": "Whole Tilapia (750-950) — 40lbs. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Whole Tilapia (750-950) — 40lbs. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-frz-004",
@@ -1785,7 +1785,7 @@
   "pack": "16 Pcs",
   "price": 70.0,
   "img": null,
-  "desc": "Blessings Sweet Potato Leaves — 21 lbs · 16 Pcs. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings Sweet Potato Leaves — 21 lbs · 16 Pcs. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-005",
@@ -1797,7 +1797,7 @@
   "pack": "10 Pcs",
   "price": 65.0,
   "img": "foods/blessings-cassava-leaves",
-  "desc": "Blessings Cassava Leaves — 3 lbs · 10 Pcs. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings Cassava Leaves — 3 lbs · 10 Pcs. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-006",
@@ -1809,7 +1809,7 @@
   "pack": "16 Pcs",
   "price": 65.0,
   "img": "foods/cassava-leaves",
-  "desc": "Blessings Cassava Leaves — 2 lbs · 16 Pcs. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings Cassava Leaves — 2 lbs · 16 Pcs. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-007",
@@ -1821,7 +1821,7 @@
   "pack": null,
   "price": 3.7,
   "img": "foods/croaker-fish-8-16",
-  "desc": "Blessings Croaker Fish (8-16) — 1 lbs. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Blessings Croaker Fish (8-16) — 1 lbs. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-frz-008",
@@ -1833,7 +1833,7 @@
   "pack": "80 Units",
   "price": 360.0,
   "img": "foods/guedj-beure",
-  "desc": "Blessings Guedj Beure — 4.58 oz · 80 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings Guedj Beure — 4.58 oz · 80 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-009",
@@ -1845,7 +1845,7 @@
   "pack": "80 Units",
   "price": 360.0,
   "img": null,
-  "desc": "Blessings KETHIAKH SALT — 80 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings KETHIAKH SALT — 80 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-010",
@@ -1857,7 +1857,7 @@
   "pack": "80 Units",
   "price": 360.0,
   "img": "foods/yett",
-  "desc": "Blessings YETT — 80 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings YETT — 80 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-011",
@@ -1869,7 +1869,7 @@
   "pack": "80 Units",
   "price": 360.0,
   "img": "foods/guedj-kong",
-  "desc": "Blessings Guedj Kong — 4.58 oz · 80 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings Guedj Kong — 4.58 oz · 80 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  },
  {
   "id": "f-frz-012",
@@ -1881,7 +1881,7 @@
   "pack": null,
   "price": 32.0,
   "img": "foods/chicken-legs",
-  "desc": "Blessings Chicken Legs. Wholesale — price shown is the JOLOF TRADING wholesale price."
+  "desc": "Blessings Chicken Legs. Wholesale — price shown is the JOLOF TRADE CENTER wholesale price."
  },
  {
   "id": "f-frz-013",
@@ -1893,6 +1893,6 @@
   "pack": "12 Units",
   "price": 32.0,
   "img": "foods/okra-cut",
-  "desc": "Blessings Okra Cut — 2 lbs · 12 Units. Wholesale case — price shown is the JOLOF TRADING wholesale price per case."
+  "desc": "Blessings Okra Cut — 2 lbs · 12 Units. Wholesale case — price shown is the JOLOF TRADE CENTER wholesale price per case."
  }
 ]

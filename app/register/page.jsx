@@ -165,7 +165,7 @@ function RegisterForm() {
       <div className={`mt-6 ${err.agree ? 'text-[#B4432F]' : ''}`}>
         <label className="inline-flex items-start gap-2.5 text-[13px] cursor-pointer">
           <input id="agree" type="checkbox" checked={f.agree} onChange={up('agree')} className="w-4 h-4 mt-0.5 accent-[#07563C]" />
-          <span>I agree to the JOLOF TRADING Terms &amp; Conditions and Privacy Policy.</span>
+          <span>I agree to the JOLOF TRADE CENTER Terms &amp; Conditions and Privacy Policy.</span>
         </label>
         {err.agree && <p className="text-[12px] mt-1">{err.agree}</p>}
       </div>
@@ -185,7 +185,7 @@ export default function RegisterPage() {
       <MinimalHeader />
       <main className="flex-1 px-4 py-10 sm:py-14">
         <div className="w-full max-w-[760px] mx-auto bg-white rounded-3xl border border-navy/5 shadow-[0_30px_70px_-40px_rgba(11,35,71,.45)] p-6 sm:p-10">
-          <p className="kicker">Join JOLOF TRADING</p>
+          <p className="kicker">Join JOLOF TRADE CENTER</p>
           <h1 className="h-display text-navy text-[2.1rem] mt-3">Create your account</h1>
           <p className="text-[14px] text-charcoal/60 mt-2 mb-7">Individuals can order straight away. Retailers get a trade account with bulk quotes. Suppliers fulfil orders from their own warehouses.</p>
           <Suspense fallback={<div className="h-96" />}><RegisterForm /></Suspense>

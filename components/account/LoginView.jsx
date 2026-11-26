@@ -54,7 +54,7 @@ function LoginForm({ demoAccounts }) {
       <div className="field">
         <div className="flex items-center justify-between">
           <label htmlFor="password">Password</label>
-          <button type="button" className="text-[11.5px] font-bold text-emerald hover:text-navy -mt-1.5" onClick={() => setError('Password reset by email is coming soon — contact JOLOF TRADING to reset your password.')}>Forgot password?</button>
+          <button type="button" className="text-[11.5px] font-bold text-emerald hover:text-navy -mt-1.5" onClick={() => setError('Password reset by email is coming soon — contact JOLOF TRADE CENTER to reset your password.')}>Forgot password?</button>
         </div>
         <div className="relative">
           <LockKeyhole className="w-[18px] h-[18px] text-navy/40 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -83,7 +83,7 @@ function LoginForm({ demoAccounts }) {
       </div>}
 
       <p className="text-center text-[13.5px] text-charcoal/60 pt-1">
-        New to JOLOF TRADING? <Link href={`/register${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="font-bold text-emerald hover:text-navy">Create an account</Link>
+        New to JOLOF TRADE CENTER? <Link href={`/register${next ? `?next=${encodeURIComponent(next)}` : ''}`} className="font-bold text-emerald hover:text-navy">Create an account</Link>
       </p>
     </form>
   );
