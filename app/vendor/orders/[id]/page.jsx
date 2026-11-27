@@ -36,7 +36,7 @@ function Job({ job, offersIdx }) {
     const r = await rejectFulfilment(job.order.id, job.warehouseId, decline.reason === 'Other' ? decline.note : decline.reason);
     setDecline(null);
     if (!r.ok) { toast({ text: r.error }); return; }
-    toast({ text: r.lost ? `Declined — JOLOF TRADING will source ${job.order.id} manually.` : `Declined — ${job.order.id} has been passed to the next warehouse.` });
+    toast({ text: r.lost ? `Declined — JOLOF TRADE CENTER will source ${job.order.id} manually.` : `Declined — ${job.order.id} has been passed to the next warehouse.` });
     router.push('/vendor/orders');
   };
 
@@ -138,14 +138,14 @@ export default function VendorOrderDetail() {
         <div className="space-y-5">
           <Card title="Customer & delivery">
             <p className="flex gap-2 text-[13.5px] text-charcoal/75 leading-relaxed"><MapPin className="w-4 h-4 mt-0.5 text-navy/40 shrink-0" />
-              <span>This is a <b className="text-navy">JOLOF TRADING</b> order. Pack the items above and have them ready for collection — JOLOF&apos;s driver delivers to the customer.</span>
+              <span>This is a <b className="text-navy">JOLOF TRADE CENTER</b> order. Pack the items above and have them ready for collection — JOLOF&apos;s driver delivers to the customer.</span>
             </p>
-            <p className="mt-3 text-[12px] text-charcoal/50">Customer name, contact and address are kept by JOLOF TRADING. Questions? Contact the JOLOF operations team quoting <b className="text-navy">{order.id}</b>.</p>
+            <p className="mt-3 text-[12px] text-charcoal/50">Customer name, contact and address are kept by JOLOF TRADE CENTER. Questions? Contact the JOLOF operations team quoting <b className="text-navy">{order.id}</b>.</p>
           </Card>
           <Card title="Order info" className="print:hidden">
-            <KV k="Customer billed by" v="JOLOF TRADING" />
+            <KV k="Customer billed by" v="JOLOF TRADE CENTER" />
             <KV k="Your supply value" v={money(mine.reduce((s, j) => s + j.value, 0))} />
-            <p className="text-[12px] text-charcoal/50 mt-2">JOLOF TRADING invoices the customer and settles your supply value.</p>
+            <p className="text-[12px] text-charcoal/50 mt-2">JOLOF TRADE CENTER invoices the customer and settles your supply value.</p>
           </Card>
         </div>
       </div>
