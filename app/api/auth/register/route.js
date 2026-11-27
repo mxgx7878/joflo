@@ -21,7 +21,8 @@ export const POST = route(async (req) => {
       phone: str(d.phone, 40), company: str(d.company, 160), abn: str(d.abn, 40), businessType: str(d.businessType, 80),
       status: type === 'individual' ? 'active' : 'pending',
       ...(addr && !supplier ? { addresses: { create: [{ label: type === 'retailer' ? 'Store' : 'Home', ...addr, isDefault: true, lat: geo?.lat, lng: geo?.lng }] } } : {}),
-      ...(addr && supplier ? { warehouses: { create: [{ name: `${str(d.company, 120) || str(d.name, 120)} — ${addr.city}`, ...addr, lat: geo?.lat, lng: geo?.lng, locationId: d.locationId || geo?.locationId || null }] } } : {}),
+      // Warehouse has no "country" column (US only) — passing it made every supplier signup fail
+      ...(addr && supplier ? { warehouses: { create: [{ name: `${str(d.company, 120) || str(d.name, 120)} — ${addr.city}`, line1: addr.line1, city: addr.city, state: addr.state, postcode: addr.postcode, lat: geo?.lat, lng: geo?.lng, locationId: str(d.locationId, 60) || geo?.locationId || null }] } } : {}),
     },
     include: { addresses: true },
   });
