@@ -1,9 +1,9 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Ban, Copy, CreditCard, ExternalLink, FileCheck2, FileText, Mail, Phone, RefreshCw, RotateCcw, Truck, UserRound } from 'lucide-react';
+import { Ban, Banknote, Copy, CreditCard, ExternalLink, FileCheck2, FileText, Mail, Phone, RefreshCw, RotateCcw, Truck, UserRound } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { money, fmtDate, fmtDateTime, DRIVER_STATUS, INVOICE_STATUS, PAYMENT_METHODS, PAYREQ_STATUS, paymentMeta, cardLine, holdDaysLeft } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, DRIVER_STATUS, INVOICE_STATUS, PAYMENT_METHODS, CASH_METHODS, isOnDelivery, PAYREQ_STATUS, paymentMeta, cardLine, holdDaysLeft } from '@/lib/format';
 import { getLocation } from '@/lib/locations';
 import { Pill } from '@/components/ui';
 import { useToast } from '@/components/Providers';
@@ -147,9 +147,148 @@ export function InvoiceCard({ order }) {
   );
 }
 
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const fmtReceived = (iso) => (iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }) : '');
+
+/**
+ * Cash / check on delivery: the admin records what the store actually paid — in full, a deposit,
+ * or later ("bill to bill"). The status (Unpaid → Deposit · balance due → Paid in full) follows the amounts.
+ */
+function CashPaymentCard({ order }) {
+  const recordCashPayment = useStore((s) => s.recordCashPayment);
+  const voidCashPayment = useStore((s) => s.voidCashPayment);
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const [method, setMethod] = useState('check');
+  const [full, setFull] = useState(true);
+  const [amount, setAmount] = useState('');
+  const [checkNumber, setCheckNumber] = useState('');
+  const [receivedAt, setReceivedAt] = useState('');
+  const [note, setNote] = useState('');
+  const [voiding, setVoiding] = useState(null);
+  const [voidReason, setVoidReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState('');
+
+  const rows = order.cashPayments || [];
+  const balance = r2(order.balanceDue || 0);
+  const onDelivery = isOnDelivery(order.paymentMethod);
+  const canRecord = onDelivery && !['pending', 'cancelled'].includes(order.status) && balance > 0;
+
+  const start = (asFull) => { setOpen(true); setFull(asFull); setAmount(''); setCheckNumber(''); setReceivedAt(today()); setNote(''); setErr(''); };
+  const save = async () => {
+    const amt = r2(amount);
+    if (!full && !(amt > 0)) { setErr('Enter the amount received, or tick Paid in full.'); return; }
+    if (!full && amt > balance) { setErr(`That's more than the ${money(balance)} still owed.`); return; }
+    setBusy(true); setErr('');
+    const r = await recordCashPayment(order.id, { method, full, amount: full ? undefined : amt, checkNumber: method === 'check' ? checkNumber.trim() : '', receivedAt, note: note.trim() });
+    setBusy(false);
+    if (!r.ok) { setErr(r.error); return; }
+    setOpen(false);
+    toast({ text: full || amt >= balance ? 'Marked as paid in full' : `${money(amt)} recorded — ${money(r2(balance - amt))} still owed` });
+  };
+  const doVoid = async (pm) => {
+    setBusy(true);
+    const r = await voidCashPayment(order.id, pm.id, voidReason.trim());
+    setBusy(false);
+    if (!r.ok) { toast({ text: r.error }); return; }
+    setVoiding(null); setVoidReason('');
+    toast({ text: `${money(pm.amount)} payment voided` });
+  };
+
+  return (
+    <Card title="Payment" action={<Banknote className="w-4 h-4 text-gold" />} className="print:hidden">
+      <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} />
+      <KV k="Status" v={<Pill meta={paymentMeta(order)} />} />
+      {onDelivery && order.status !== 'cancelled' && (
+        <>
+          <KV k="Total" v={money(order.total)} />
+          <KV k="Paid" v={<b className="text-navy">{money(order.paid || 0)}</b>} />
+          <KV k="Balance due" v={<b className={balance > 0 ? 'text-[#8a6417]' : 'text-emerald'}>{money(balance)}</b>} />
+        </>
+      )}
+      {order.overpaid > 0 && <p className="text-[12px] mt-2 rounded-xl px-3 py-2 bg-[#F8E7E3] text-[#B4432F]">Recorded payments are {money(order.overpaid)} more than the order total — void the wrong entry or settle the difference with the store.</p>}
+
+      {rows.length > 0 && (
+        <ul className="mt-3 divide-y divide-navy/5 border-y border-navy/5">
+          {rows.map((pm) => (
+            <li key={pm.id} className="py-2 text-[12.5px]">
+              <div className="flex items-start justify-between gap-2">
+                <span className={`min-w-0 ${pm.voided ? 'line-through text-charcoal/40' : ''}`}>
+                  <b className={pm.voided ? '' : 'text-navy'}>{CASH_METHODS[pm.method] || 'Cash / check'}{pm.checkNumber ? ` #${pm.checkNumber}` : ''}</b>
+                  {' · '}{pm.receivedAt ? `received ${fmtReceived(pm.receivedAt)}` : `recorded ${fmtDate(pm.at)}`}
+                  <span className="block text-charcoal/50 no-underline">{pm.by}{pm.note ? ` · ${pm.note}` : ''}</span>
+                </span>
+                <span className="flex items-center gap-2 shrink-0">
+                  <b className={pm.voided ? 'line-through text-charcoal/40' : 'text-navy'}>{money(pm.amount)}</b>
+                  {!pm.voided && voiding !== pm.id && <button className="text-[11.5px] font-bold text-[#B4432F] hover:underline" disabled={busy} onClick={() => { setVoiding(pm.id); setVoidReason(''); }}>Void</button>}
+                </span>
+              </div>
+              {pm.voided && <p className="text-[11.5px] text-[#B4432F] mt-0.5">Voided by {pm.voidedBy} · {fmtDate(pm.voidedAt)}{pm.voidReason ? ` · ${pm.voidReason}` : ''}</p>}
+              {voiding === pm.id && (
+                <div className="mt-2 rounded-xl border border-[#B4432F]/30 p-2.5">
+                  <input className="dash-input !py-1.5 !text-[12.5px]" value={voidReason} onChange={(e) => setVoidReason(e.target.value)} placeholder="Why? e.g. check bounced, wrong amount" />
+                  <div className="flex gap-1.5 mt-2">
+                    <button className="dash-btn dash-btn-ghost flex-1 !h-8 !text-[12px]" onClick={() => setVoiding(null)}>Keep</button>
+                    <button className="dash-btn dash-btn-danger flex-1 !h-8 !text-[12px]" disabled={busy} onClick={() => doVoid(pm)}>Void payment</button>
+                  </div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      {onDelivery && !rows.length && order.status !== 'cancelled' && <p className="text-[12px] text-charcoal/55 mt-2">No payment recorded yet.</p>}
+      {onDelivery && order.status === 'pending' && <p className="text-[12px] text-charcoal/55 mt-2">Confirm the order first — payments can be recorded once the total is final.</p>}
+
+      {canRecord && !open && (
+        <div className="grid grid-cols-2 gap-2 mt-3">
+          <button className="dash-btn dash-btn-navy min-w-0" onClick={() => start(true)}>Paid in full</button>
+          <button className="dash-btn dash-btn-ghost min-w-0" onClick={() => start(false)}>Deposit / part</button>
+        </div>
+      )}
+      {canRecord && open && (
+        <div className="mt-3 rounded-xl border border-navy/10 p-3">
+          <label className="dash-label">Paid by</label>
+          <div className="grid grid-cols-2 gap-1.5">
+            {['cash', 'check'].map((m) => (
+              <button key={m} type="button" onClick={() => setMethod(m)} className={`dash-btn !h-9 min-w-0 ${method === m ? 'dash-btn-navy' : 'dash-btn-ghost'}`}>{CASH_METHODS[m]}</button>
+            ))}
+          </div>
+          <label className="flex items-center gap-2 mt-3 text-[13px] font-bold text-navy cursor-pointer">
+            <input type="checkbox" checked={full} onChange={(e) => setFull(e.target.checked)} className="accent-emerald w-4 h-4" />
+            Paid in full ({money(balance)})
+          </label>
+          {!full && (
+            <>
+              <label className="dash-label mt-3">Amount received (max {money(balance)})</label>
+              <input type="number" min="0.01" step="0.01" max={balance} className="dash-input" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="e.g. 200" />
+            </>
+          )}
+          {method === 'check' && (
+            <>
+              <label className="dash-label mt-3">Check number <span className="normal-case font-normal text-charcoal/45">(optional)</span></label>
+              <input className="dash-input" value={checkNumber} onChange={(e) => setCheckNumber(e.target.value)} placeholder="e.g. 10452" />
+            </>
+          )}
+          <label className="dash-label mt-3">Date received <span className="normal-case font-normal text-charcoal/45">(optional)</span></label>
+          <input type="date" className="dash-input" value={receivedAt} max={today()} onChange={(e) => setReceivedAt(e.target.value)} />
+          <label className="dash-label mt-3">Note <span className="normal-case font-normal text-charcoal/45">(optional)</span></label>
+          <input className="dash-input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Manager paid deposit, rest next week" />
+          {err && <p className="mt-2 text-[12px] font-bold text-[#B4432F]">{err}</p>}
+          <div className="flex gap-2 mt-3">
+            <button className="dash-btn dash-btn-ghost flex-1" onClick={() => setOpen(false)}>Cancel</button>
+            <button className="dash-btn dash-btn-navy flex-1" disabled={busy} onClick={save}>{busy ? 'Saving…' : 'Save payment'}</button>
+          </div>
+        </div>
+      )}
+      {onDelivery && order.status !== 'cancelled' && <p className="text-[11.5px] text-charcoal/50 mt-3">Marking the order Delivered doesn&apos;t change the payment — record what the store actually paid, then print the invoice.</p>}
+    </Card>
+  );
+}
+
 /** Payment card on the admin order page — cash / check on delivery, or Square card payments, balance requests and refunds. */
 export function PaymentCard({ order }) {
-  const setOrderPayment = useStore((s) => s.setOrderPayment);
   const refundOrderPayment = useStore((s) => s.refundOrderPayment);
   const syncOrderPayment = useStore((s) => s.syncOrderPayment);
   const paymentRequestAction = useStore((s) => s.paymentRequestAction);
@@ -161,21 +300,7 @@ export function PaymentCard({ order }) {
   const [err, setErr] = useState('');
   const card = order.card;
 
-  if (order.paymentMethod !== 'card') {
-    const what = order.paymentMethod === 'check' ? 'check' : 'cash / check';
-    const What = what === 'check' ? 'Check' : 'Cash / check';
-    return (
-      <Card title="Payment" className="print:hidden">
-        <KV k="Method" v={PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} />
-        <KV k="Status" v={<Pill meta={paymentMeta(order)} />} />
-        {order.payment !== 'paid' && order.status !== 'cancelled' && <KV k={what === 'check' ? 'Driver collects check for' : 'Driver collects'} v={<b className="text-navy">{money(order.total)}</b>} />}
-        <p className="text-[12px] text-charcoal/55 mt-2">{What} is marked as collected automatically when the order is marked Delivered.</p>
-        <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={order.status === 'pending' || order.status === 'cancelled'} onClick={async () => { const p = order.payment === 'paid' ? 'unpaid' : 'paid'; const r = await setOrderPayment(order.id, p); if (r.ok) toast({ text: p === 'paid' ? `${What} marked as collected` : `${What} marked as not collected` }); }}>
-          {order.payment === 'paid' ? `Mark ${what} as not collected` : `Mark ${what} collected`}
-        </button>
-      </Card>
-    );
-  }
+  if (order.paymentMethod !== 'card') return <CashPaymentCard order={order} />;
 
   const daysLeft = holdDaysLeft(card);
   const refundable = r2(order.paid || 0);

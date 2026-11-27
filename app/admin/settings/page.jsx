@@ -117,7 +117,7 @@ export default function SettingsPage() {
           })()}
           <p className="text-[12.5px] text-charcoal/60 mt-2 leading-relaxed">
             <b className="text-navy">Card:</b> charged at checkout. When you confirm at a lower total the difference is refunded automatically; at a higher total the customer gets an email with a private link to pay only the extra, and the order can&apos;t ship until it&apos;s paid. Quotes are paid by card from their emailed link. Cancelling refunds the card.<br />
-            <b className="text-navy">Cash / Check on delivery:</b> one checkout option, nothing paid online — the driver collects cash or a check at drop-off, and the order is marked paid when it&apos;s delivered.
+            <b className="text-navy">Cash / Check on delivery:</b> one checkout option, nothing paid online — the store pays in cash or by check (in full, a deposit, or later), and you record each payment on the order. The status (Unpaid → Deposit → Paid in full) and the invoice follow the amounts recorded.
           </p>
           <p className={`mt-3 text-[12.5px] rounded-xl px-3.5 py-2.5 ${settings.squareEnabled ? 'bg-[#E3F2EA] text-emerald' : 'bg-gold-pale text-[#6d4f12]'}`}>
             {settings.squareEnabled

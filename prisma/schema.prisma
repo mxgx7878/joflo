@@ -229,7 +229,7 @@ model Order {
   lng           Float?
   locationId    String?
   status        String    @default("pending") // pending | confirmed | packed | shipped | delivered | cancelled
-  payment       String    @default("unpaid") // unpaid | authorized | paid | partially_refunded | refunded | voided | failed
+  payment       String    @default("unpaid") // unpaid | authorized | partially_paid | paid | partially_refunded | refunded | voided | failed (cash / check: from CashPayment rows)
   paymentMethod String    @default("cod") // cod (cash on delivery) | check (check on delivery) | card (Square)
   source        String    @default("checkout") // checkout | quote
   inquiryId     String?
@@ -254,8 +254,32 @@ model Order {
   invoice     Invoice?
   payments    Payment[]
   requests    PaymentRequest[]
+  cashPayments CashPayment[]
 
   @@index([userId])
+}
+
+// Cash / check money an admin records by hand on a "cash / check on delivery" order.
+// Stores often pay later, pay a deposit first, or pay "bill to bill", so an order can have several.
+// Order.payment is worked out from these rows (never set by hand):
+//   nothing received → unpaid · part of the total → partially_paid (deposit) · total reached → paid
+// Rows are never deleted — a wrong entry is voided (with who / when / why) so the history stays.
+model CashPayment {
+  id          String    @id @default(cuid())
+  orderId     String
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method      String    @default("cash") // cash | check | unknown (marked collected before payments were tracked)
+  amount      Float
+  checkNumber String    @default("")
+  receivedAt  DateTime? // when the money was received (optional)
+  note        String    @default("")
+  createdBy   String    @default("System")
+  createdAt   DateTime  @default(now())
+  voidedAt    DateTime?
+  voidedBy    String    @default("")
+  voidReason  String    @default("")
+
+  @@index([orderId])
 }
 
 // A card payment taken through Square for an order (amounts in dollars).
