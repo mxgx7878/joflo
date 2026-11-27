@@ -1,13 +1,14 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Ban, Banknote, Copy, CreditCard, ExternalLink, FileCheck2, FileText, Mail, Phone, RefreshCw, RotateCcw, Truck, UserRound } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Ban, Banknote, Copy, CreditCard, ExternalLink, FileCheck2, FileText, Mail, Phone, RefreshCw, RotateCcw, Trash2, Truck, UserRound } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { money, fmtDate, fmtDateTime, DRIVER_STATUS, INVOICE_STATUS, PAYMENT_METHODS, CASH_METHODS, isOnDelivery, PAYREQ_STATUS, paymentMeta, cardLine, holdDaysLeft } from '@/lib/format';
 import { getLocation } from '@/lib/locations';
 import { Pill } from '@/components/ui';
 import { useToast } from '@/components/Providers';
-import { Card, KV } from './common';
+import { Card, KV, useConfirm } from './common';
 import { cardFeeFor } from '@/lib/cardfee';
 
 const r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
@@ -388,6 +389,50 @@ export function PaymentCard({ order }) {
         </div>
       )}
       {pays.length > 0 && <button className="dash-btn dash-btn-ghost w-full mt-3" disabled={busy} onClick={refresh}><RefreshCw /> Refresh from Square</button>}
+    </Card>
+  );
+}
+
+/**
+ * Why an order can't be deleted yet (same rules as the server), or '' when it can.
+ * Money must never disappear with an order: card money held / charged → cancel first (releases / refunds);
+ * cash / check payments recorded → void them first.
+ */
+export function deleteBlocker(order) {
+  if (order.paymentMethod === 'card') {
+    if ((order.payments || []).some((p) => p.status === 'APPROVED')) return 'Card hold on this order — cancel it first so the hold is released, then delete.';
+    if ((order.paid || 0) > 0.005) return `${money(order.paid)} charged by card — cancel the order first so it's refunded, then delete.`;
+    return '';
+  }
+  if (isOnDelivery(order.paymentMethod) && (order.paid || 0) > 0.005) return `${money(order.paid)} in cash / check payments recorded — void them in the Payment card first, then delete.`;
+  return '';
+}
+
+/** What deleting does, for the confirmation dialog. */
+export function deleteNote(order) {
+  const restock = !['cancelled', 'shipped', 'delivered'].includes(order.status);
+  return `This permanently removes ${order.id} with its items, invoice${order.invoiceId ? ` ${order.invoiceId}` : ''}, supplier shares and payment records. ${restock ? 'Its items go back to the warehouses they were taken from. ' : order.status === 'cancelled' ? 'Stock was already returned when it was cancelled. ' : 'Stock is not returned — the goods already left the warehouse. '}The customer will no longer see it. This can't be undone.`;
+}
+
+/** Danger zone on the admin order page: permanently delete the order. */
+export function DeleteOrderCard({ order }) {
+  const deleteOrder = useStore((s) => s.deleteOrder);
+  const toast = useToast();
+  const router = useRouter();
+  const [ask, dialog] = useConfirm();
+  const blocked = deleteBlocker(order);
+  const run = () => ask({ title: `Delete ${order.id}?`, body: deleteNote(order), confirm: 'Delete order', danger: true }, async () => {
+    const r = await deleteOrder(order.id);
+    if (!r.ok) return;
+    toast({ text: `${order.id} deleted` });
+    router.push('/admin/orders');
+  });
+  return (
+    <Card title="Delete order" className="print:hidden">
+      {dialog}
+      <p className="text-[12.5px] text-charcoal/60">Remove a test, duplicate or mistaken order for good. {['cancelled', 'shipped', 'delivered'].includes(order.status) ? '' : 'Its stock goes back to the warehouses.'}</p>
+      {blocked && <p className="text-[12px] mt-2 rounded-xl px-3 py-2 bg-gold-pale text-[#8a6417]">{blocked}</p>}
+      <button type="button" className="dash-btn dash-btn-ghost w-full mt-3 !text-[#B4432F] !border-[#B4432F]/30 hover:!bg-[#F8E7E3]" disabled={!!blocked} onClick={run}><Trash2 /> Delete order</button>
     </Card>
   );
 }

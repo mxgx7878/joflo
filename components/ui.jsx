@@ -1,8 +1,8 @@
 'use client';
 // Shared building blocks for the admin and customer dashboards.
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { X } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function Logo({ className = 'h-12', href = '/' }) {
   return (
@@ -126,6 +126,64 @@ export function Tabs({ tabs, value, onChange }) {
           {t.label}{typeof t.count === 'number' && <span className="ml-1.5 opacity-60">{t.count}</span>}
         </button>
       ))}
+    </div>
+  );
+}
+
+export const PAGE_SIZES = [10, 25, 50, 100];
+
+/**
+ * Client-side paging for a filtered list.
+ *   const pg = usePaged(list, [tab, q]);  → pg.items (this page), and <Pagination {...pg} />
+ * Goes back to page 1 when any value in `reset` changes (new filter / search), and never
+ * points past the last page (e.g. after an item is deleted).
+ */
+export function usePaged(list, reset = [], initialSize = 25) {
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(initialSize);
+  useEffect(() => { setPage(1); }, reset); // eslint-disable-line react-hooks/exhaustive-deps
+  const total = list.length;
+  const pages = Math.max(1, Math.ceil(total / size));
+  const current = Math.min(page, pages);
+  const items = useMemo(() => list.slice((current - 1) * size, current * size), [list, current, size]);
+  return { items, page: current, pages, size, total, onPage: setPage, onSize: (n) => { setSize(n); setPage(1); } };
+}
+
+/** "1 … 4 5 6 … 20" around the current page */
+function pageWindow(page, pages) {
+  const set = new Set([1, pages, page - 1, page, page + 1].filter((n) => n >= 1 && n <= pages));
+  const nums = [...set].sort((a, b) => a - b);
+  const out = [];
+  nums.forEach((n, i) => { if (i && n - nums[i - 1] > 1) out.push(`gap${n}`); out.push(n); });
+  return out;
+}
+
+/** Page controls under a table / list: "Showing 26–50 of 312 orders", page numbers, rows per page. */
+export function Pagination({ page, pages, size, total, onPage, onSize, noun = 'orders', className = '' }) {
+  if (!total) return null;
+  const from = (page - 1) * size + 1;
+  const to = Math.min(total, page * size);
+  const btn = 'min-w-[34px] h-[34px] px-2 rounded-full text-[13px] font-bold transition disabled:opacity-35 disabled:cursor-not-allowed';
+  return (
+    <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-4 sm:px-5 py-3 border-t border-navy/5 print:hidden ${className}`}>
+      <p className="text-[12.5px] text-charcoal/60">Showing <b className="text-navy">{from}–{to}</b> of <b className="text-navy">{total}</b> {noun}</p>
+      <div className="flex flex-wrap items-center gap-3">
+        {pages > 1 && (
+          <nav className="flex items-center gap-1" aria-label="Pages">
+            <button type="button" className={`${btn} text-navy hover:bg-ivory`} disabled={page <= 1} onClick={() => onPage(page - 1)} aria-label="Previous page"><ChevronLeft className="w-4 h-4 mx-auto" /></button>
+            {pageWindow(page, pages).map((n) => (typeof n === 'string'
+              ? <span key={n} className="px-1 text-charcoal/40">…</span>
+              : <button key={n} type="button" className={`${btn} ${n === page ? 'bg-navy text-white' : 'text-navy hover:bg-ivory'}`} aria-current={n === page ? 'page' : undefined} onClick={() => onPage(n)}>{n}</button>))}
+            <button type="button" className={`${btn} text-navy hover:bg-ivory`} disabled={page >= pages} onClick={() => onPage(page + 1)} aria-label="Next page"><ChevronRight className="w-4 h-4 mx-auto" /></button>
+          </nav>
+        )}
+        <label className="flex items-center gap-2 text-[12.5px] text-charcoal/60">
+          Per page
+          <select value={size} onChange={(e) => onSize(Number(e.target.value))} className="h-[34px] rounded-full border-[1.5px] border-[#E2DED2] bg-white px-3 text-[13px] font-bold text-navy focus:outline-none focus:border-gold">
+            {PAGE_SIZES.map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </label>
+      </div>
     </div>
   );
 }

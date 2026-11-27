@@ -2,11 +2,13 @@
 import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ShoppingCart, MapPin, X } from 'lucide-react';
+import { ShoppingCart, MapPin, X, Trash2 } from 'lucide-react';
 import { useStore, useStoreReady } from '@/lib/store';
 import { money, fmtDate, ORDER_STATUS, paymentMeta } from '@/lib/format';
-import { PageHeader, Pill, Tabs, EmptyState } from '@/components/ui';
-import { Card, TableWrap, SearchBox, Select, Skeleton } from '@/components/admin/common';
+import { PageHeader, Pill, Tabs, EmptyState, Pagination, usePaged } from '@/components/ui';
+import { useToast } from '@/components/Providers';
+import { Card, TableWrap, SearchBox, Select, Skeleton, useConfirm } from '@/components/admin/common';
+import { deleteBlocker, deleteNote } from '@/components/admin/OrderCards';
 import { geoOf, STATE_NAMES, BOROUGHS } from '@/lib/usgeo';
 import { shortName } from '@/components/admin/suppliers';
 
@@ -67,10 +69,25 @@ function OrdersInner() {
     });
   }, [locFiltered, geo, tab, q]);
 
+  // 25 per page by default; back to page 1 whenever the tab, search or location filter changes
+  const pg = usePaged(list, [tab, q, fState, fBorough, fCounty, fZip]);
+  const deleteOrder = useStore((s) => s.deleteOrder);
+  const toast = useToast();
+  const [ask, dialog] = useConfirm();
+  const remove = (o) => {
+    const blocked = deleteBlocker(o);
+    if (blocked) { toast({ text: blocked }); return; }
+    ask({ title: `Delete ${o.id}?`, body: deleteNote(o), confirm: 'Delete order', danger: true }, async () => {
+      const r = await deleteOrder(o.id);
+      if (r.ok) toast({ text: `${o.id} deleted` });
+    });
+  };
+
   if (!ready) return <Skeleton />;
 
   return (
     <>
+      {dialog}
       <PageHeader kicker="Sales" title="Orders" sub="Order requests from the store and orders from paid quotes. Confirm prices to issue the invoice, assign a driver, then track delivery." />
       <Card pad={false}>
         <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center gap-3 justify-between border-b border-navy/5">
@@ -91,9 +108,9 @@ function OrdersInner() {
         {list.length === 0 ? <EmptyState icon={ShoppingCart} title="No orders here" body={hasLoc ? "No orders match this location — try another area or clear the location filter." : "Try another status or search term."} /> : (
           <TableWrap>
             <table className="dash-table">
-              <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Items</th><th>Ships from</th><th>Driver</th><th>Source</th><th>Payment</th><th>Status</th><th className="text-right">Total</th></tr></thead>
+              <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Items</th><th>Ships from</th><th>Driver</th><th>Source</th><th>Payment</th><th>Status</th><th className="text-right">Total</th><th><span className="sr-only">Delete</span></th></tr></thead>
               <tbody>
-                {list.map((o) => (
+                {pg.items.map((o) => (
                   <tr key={o.id} className="cursor-pointer">
                     <td className="whitespace-nowrap"><Link href={`/admin/orders/${o.id}`} className="font-bold text-navy hover:text-emerald">{o.id}</Link></td>
                     <td className="min-w-[180px]"><span className="font-semibold text-navy">{o.customer.company || o.customer.name}</span><span className="block text-[11.5px] text-charcoal/50">{o.customer.company ? o.customer.name : o.customer.email}</span></td>
@@ -110,12 +127,17 @@ function OrdersInner() {
                     <td><Pill meta={paymentMeta(o)} /></td>
                     <td><Pill meta={ORDER_STATUS[o.status]} /></td>
                     <td className="text-right font-bold text-navy whitespace-nowrap">{money(o.total)}</td>
+                    <td className="text-right">
+                      <button type="button" onClick={() => remove(o)} title={deleteBlocker(o) || `Delete ${o.id}`} aria-label={`Delete ${o.id}`}
+                        className="w-8 h-8 inline-grid place-items-center rounded-full text-charcoal/35 hover:text-[#B4432F] hover:bg-[#F8E7E3] transition"><Trash2 className="w-4 h-4" /></button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </TableWrap>
         )}
+        <Pagination {...pg} />
       </Card>
     </>
   );

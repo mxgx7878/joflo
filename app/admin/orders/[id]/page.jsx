@@ -10,7 +10,7 @@ import { Pill, OrderProgress, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { Card, KV, Skeleton, useConfirm, Initials } from '@/components/admin/common';
 import FulfilmentCard from '@/components/admin/FulfilmentCard';
-import { ConfirmOrderCard, DriverCard, InvoiceCard, PaymentCard } from '@/components/admin/OrderCards';
+import { ConfirmOrderCard, DriverCard, InvoiceCard, PaymentCard, DeleteOrderCard } from '@/components/admin/OrderCards';
 import EmailLogCard from '@/components/admin/EmailLogCard';
 
 export default function OrderDetail() {
@@ -184,6 +184,8 @@ export default function OrderDetail() {
               <Link href={`/admin/inquiries/${order.inquiryId}`} className="mt-2 inline-block text-[12.5px] font-bold text-emerald hover:text-navy">Open inquiry →</Link>
             </Card>
           )}
+
+          <DeleteOrderCard order={order} />
         </div>
       </div>
     </div>
