@@ -114,13 +114,13 @@ export default function VendorShell({ children }) {
             <Clock3 className="w-5 h-5 text-[#8a6417] shrink-0 mt-0.5" />
             <div className="text-[13.5px] text-[#6d4f12]">
               <p className="font-extrabold">Your supplier account is awaiting approval</p>
-              <p className="mt-0.5">Set up your warehouses and products now — orders start coming to you once JOLOF TRADING approves the account.</p>
+              <p className="mt-0.5">Set up your warehouses and products now — orders start coming to you once JOLOF TRADE CENTER approves the account.</p>
             </div>
           </div>
         )}
         {user.status === 'suspended' && (
           <div className="mb-6 rounded-2xl bg-[#F8E7E3] p-4 sm:p-5 flex gap-3 text-[13.5px] text-[#B4432F] print:hidden">
-            <Ban className="w-5 h-5 shrink-0 mt-0.5" /><p><b>This supplier account is suspended.</b> New orders are not being routed to you. Contact JOLOF TRADING.</p>
+            <Ban className="w-5 h-5 shrink-0 mt-0.5" /><p><b>This supplier account is suspended.</b> New orders are not being routed to you. Contact JOLOF TRADE CENTER.</p>
           </div>
         )}
         {children}
