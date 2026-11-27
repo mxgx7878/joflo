@@ -1,7 +1,7 @@
 'use client';
 import { Printer } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { money, fmtDate, INVOICE_STATUS, COD_NOTE, addressLines } from '@/lib/format';
+import { money, fmtDate, INVOICE_STATUS, COD_NOTE, CASH_METHODS, addressLines, isOnDelivery } from '@/lib/format';
 import { Pill } from '@/components/ui';
 
 /** Printable invoice (browser print → PDF). Used in the customer account and the admin. */
@@ -11,6 +11,15 @@ export default function InvoiceView({ invoice, back }) {
   const inv = settings.invoice || {};
   const b = invoice.billTo || {};
   const a = invoice.shipTo || null;
+  // cash / check orders: show what's been received and what's still owed, from the order's recorded payments
+  const order = useStore((s) => s.orders.find((o) => o.id === invoice.orderId));
+  const cash = order && isOnDelivery(order.paymentMethod) && invoice.status !== 'void' ? order : null;
+  const received = (cash?.cashPayments || []).filter((pm) => !pm.voided);
+  const paid = cash ? cash.paid || 0 : 0;
+  const balance = cash ? Math.max(0, Math.round((invoice.total - paid) * 100) / 100) : 0;
+  const dueText = invoice.status === 'paid' ? 'Paid'
+    : invoice.status === 'partially_paid' ? (cash ? `Balance ${money(balance)}` : 'Balance due by card')
+      : invoice.notes && /^check on delivery/i.test(invoice.notes) ? 'On delivery (check)' : 'On delivery (cash / check)';
   return (
     <div className="invoice-page">
       <div className="no-print flex flex-wrap items-center justify-between gap-3 mb-5">
@@ -32,7 +41,7 @@ export default function InvoiceView({ invoice, back }) {
             <div className="mt-2 sm:flex sm:justify-end"><Pill meta={INVOICE_STATUS[invoice.status] || INVOICE_STATUS.unpaid} /></div>
             <dl className="mt-3 text-[12.5px] text-charcoal/70 space-y-0.5">
               <div><dt className="inline">Issued: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.issuedAt)}</dd></div>
-              {invoice.dueAt ? <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div> : <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{invoice.status === 'paid' ? 'Paid' : invoice.status === 'partially_paid' ? 'Balance due by card' : invoice.notes && /^check on delivery/i.test(invoice.notes) ? 'On delivery (check)' : 'On delivery (cash / check)'}</dd></div>}
+              {invoice.dueAt ? <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{fmtDate(invoice.dueAt)}</dd></div> : <div><dt className="inline">Due: </dt><dd className="inline font-bold text-navy">{dueText}</dd></div>}
               <div><dt className="inline">Order: </dt><dd className="inline font-bold text-navy">{invoice.orderId}</dd></div>
             </dl>
           </div>
@@ -77,8 +86,31 @@ export default function InvoiceView({ invoice, back }) {
           <div className="flex justify-between"><span className="text-charcoal/60">Delivery</span><span className="font-bold">{invoice.deliveryFee ? money(invoice.deliveryFee) : 'Free'}</span></div>
           {invoice.discount > 0 && <div className="flex justify-between"><span className="text-charcoal/60">Discount</span><span className="font-bold">−{money(invoice.discount)}</span></div>}
           {invoice.cardFee > 0 && <div className="flex justify-between"><span className="text-charcoal/60">Card processing fee</span><span className="font-bold">{money(invoice.cardFee)}</span></div>}
-          <div className="flex justify-between pt-2 border-t border-navy/15 text-[17px]"><span className="font-extrabold text-navy">Total due</span><span className="font-extrabold text-navy">{money(invoice.total)} <span className="text-[11px] text-charcoal/45">USD</span></span></div>
+          <div className="flex justify-between pt-2 border-t border-navy/15 text-[17px]"><span className="font-extrabold text-navy">{cash && paid > 0 ? 'Total' : 'Total due'}</span><span className="font-extrabold text-navy">{money(invoice.total)} <span className="text-[11px] text-charcoal/45">USD</span></span></div>
+          {cash && paid > 0 && (
+            <>
+              <div className="flex justify-between"><span className="text-charcoal/60">{balance > 0 ? 'Paid (deposit)' : 'Paid'}</span><span className="font-bold text-emerald">−{money(paid)}</span></div>
+              <div className="flex justify-between pt-2 border-t border-navy/15 text-[17px]"><span className="font-extrabold text-navy">Balance due</span><span className={`font-extrabold ${balance > 0 ? 'text-[#8a6417]' : 'text-emerald'}`}>{money(balance)} <span className="text-[11px] text-charcoal/45">USD</span></span></div>
+            </>
+          )}
         </div>
+
+        {received.length > 0 && (
+          <div className="mt-6 text-[12.5px]">
+            <p className="dash-label">Payments received</p>
+            <table className="w-full">
+              <tbody>
+                {received.slice().reverse().map((pm) => (
+                  <tr key={pm.id} className="border-b border-navy/5">
+                    <td className="py-1.5 pr-3">{pm.receivedAt ? fmtDate(pm.receivedAt) : fmtDate(pm.at)}</td>
+                    <td className="py-1.5 pr-3">{CASH_METHODS[pm.method] || 'Cash / check'}{pm.checkNumber ? ` #${pm.checkNumber}` : ''}</td>
+                    <td className="py-1.5 text-right font-bold text-navy">{money(pm.amount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <footer className="mt-8 pt-5 border-t border-navy/10 text-[12.5px] text-charcoal/65 space-y-2">
           <p><b className="text-navy">Payment:</b> {invoice.notes || inv.payTo || COD_NOTE} Invoice reference <b className="text-navy">{invoice.id}</b>.</p>

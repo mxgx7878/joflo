@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Check, Clock3, Copy, CreditCard, FileText, RotateCcw, Truck, XCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import { productImg } from '@/lib/catalogue';
-import { money, fmtDate, fmtDateTime, ORDER_FLOW, ORDER_STATUS, PAYMENT_METHODS, paymentMeta, cardLine, openBalanceRequests } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, ORDER_FLOW, ORDER_STATUS, PAYMENT_METHODS, CASH_METHODS, paymentMeta, cardLine, openBalanceRequests } from '@/lib/format';
 import { Pill, OrderProgress, Modal, EmptyState } from '@/components/ui';
 import { useToast } from '@/components/Providers';
 import { AddressBlock, SectionCard, useMyOrders } from '@/components/account/shared';
@@ -71,7 +71,7 @@ export default function OrderDetail() {
       {order.invoiceId && order.status !== 'cancelled' && order.payment !== 'paid' && order.paymentMethod !== 'card' && (
         <div className="mb-6 rounded-2xl bg-[#E6EEF8] p-4 sm:p-5 flex flex-wrap items-center gap-3 text-[13.5px] text-navy-600">
           <FileText className="w-5 h-5 shrink-0" />
-          <p className="flex-1 min-w-[200px]"><b>Invoice {order.invoiceId}</b> is ready — pay {money(order.total)} {order.paymentMethod === 'check' ? 'by check' : 'in cash or by check'} to our driver on delivery.</p>
+          <p className="flex-1 min-w-[200px]"><b>Invoice {order.invoiceId}</b> is ready — {order.paid > 0 ? <>we&apos;ve received {money(order.paid)}; the balance of <b>{money(order.balanceDue)}</b> is due</> : <>pay {money(order.total)}</>} {order.paymentMethod === 'check' ? 'by check' : 'in cash or by check'}{order.status === 'delivered' || order.paid > 0 ? ' (payable to JOLOF TRADE CENTER).' : ' to our driver on delivery.'}</p>
           <Link href={`/account/invoices/${order.invoiceId}`} className="dash-btn dash-btn-navy">Open invoice</Link>
         </div>
       )}
@@ -133,7 +133,10 @@ export default function OrderDetail() {
                   {(order.payments || []).filter((pm) => pm.status === 'COMPLETED').map((pm) => (
                     <span key={pm.id} className="block text-[12.5px] text-charcoal/60 mt-1">{pm.kind === 'balance' ? 'Balance' : pm.kind === 'quote' ? 'Quote payment' : 'Checkout'} · {money(pm.amount)} · {fmtDate(pm.at)}{pm.receiptUrl ? <> · <a href={pm.receiptUrl} target="_blank" rel="noreferrer" className="font-bold text-emerald hover:text-navy">Receipt</a></> : null}</span>
                   ))}</>
-                : <>{PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} · <span className={order.payment === 'paid' ? 'text-emerald font-bold' : 'text-[#8a6417] font-bold'}>{order.payment === 'paid' ? paymentMeta(order).label : order.status === 'cancelled' ? 'No payment' : 'Due on delivery'}</span></>}</p></div>
+                : <>{PAYMENT_METHODS[order.paymentMethod] || PAYMENT_METHODS.cod} · <span className={order.payment === 'paid' ? 'text-emerald font-bold' : 'text-[#8a6417] font-bold'}>{order.payment === 'paid' ? paymentMeta(order).label : order.status === 'cancelled' ? 'No payment' : order.payment === 'partially_paid' ? `${money(order.balanceDue)} still due` : order.status === 'delivered' ? 'Unpaid' : 'Due on delivery'}</span>
+                  {(order.cashPayments || []).map((pm) => (
+                    <span key={pm.id} className="block text-[12.5px] text-charcoal/60 mt-1">{CASH_METHODS[pm.method] || 'Cash / check'}{pm.checkNumber ? ` #${pm.checkNumber}` : ''} · {money(pm.amount)} · {fmtDate(pm.receivedAt || pm.at)}</span>
+                  ))}</>}</p></div>
               {order.notes && <div><p className="dash-label">Your notes</p><p className="text-[13.5px] text-charcoal/80">{order.notes}</p></div>}
               {order.inquiryId && <div className="no-print"><p className="dash-label">Quote</p><Link href={`/account/quotes/${order.inquiryId}`} className="text-[13.5px] font-bold text-emerald hover:text-navy">View quote {order.inquiryId}</Link></div>}
             </div>

@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { Printer, MapPin, Phone, Package, Truck } from 'lucide-react';
 import { useStore } from '@/lib/store';
-import { fmtDate, fmtDateTime, ORDER_STATUS, addressLines } from '@/lib/format';
+import { money, fmtDate, fmtDateTime, ORDER_STATUS, addressLines } from '@/lib/format';
 
 /**
  * Printable driver slip (browser print → PDF): where to pick each item up, where to drop it,
@@ -159,7 +159,16 @@ export default function DriverSlip({ order, back }) {
             </div>
           </div>
           {order.notes && <p className="mt-4 text-[13px] bg-ivory rounded-xl p-3"><b className="text-navy">Customer note:</b> {order.notes}</p>}
-          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.' : order.paymentMethod === 'check' ? `Check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect a check payable to JOLOF TRADE CENTER at drop-off (amount on the customer invoice)'}.` : `Cash / check on delivery${order.payment === 'paid' ? ' — already collected' : ' — collect cash or a check payable to JOLOF TRADE CENTER at drop-off (amount on the customer invoice)'}.`}</p>
+          <p className="mt-4 text-[13px]"><b className="text-navy">Payment:</b> {order.paymentMethod === 'card' ? 'Paid by card — do not collect any money.'
+            : (order.balanceDue || 0) <= 0.005 && order.priceConfirmed ? `${order.paymentMethod === 'check' ? 'Check' : 'Cash / check'} on delivery — already paid in full. Do not collect any money.`
+              : <>{order.paymentMethod === 'check' ? 'Check' : 'Cash / check'} on delivery — collect <b className="text-navy">{money(order.balanceDue ?? order.total)}</b>{order.paymentMethod === 'check' ? ' by check' : ' in cash or by check'} (payable to JOLOF TRADE CENTER).{order.paid > 0 ? ` ${money(order.paid)} of the ${money(order.total)} total was already received.` : ''} If the store pays only part or will pay later, write the amount and check number below and tell the office.</>}</p>
+          {order.paymentMethod !== 'card' && (
+            <div className="mt-3 grid grid-cols-3 gap-4 text-[12.5px] text-charcoal/65">
+              <div><p className="border-b border-navy/30 h-8" /><p className="mt-1">Amount received</p></div>
+              <div><p className="border-b border-navy/30 h-8" /><p className="mt-1">Cash / check #</p></div>
+              <div><p className="border-b border-navy/30 h-8" /><p className="mt-1">Balance to collect later</p></div>
+            </div>
+          )}
         </section>
 
         <footer className="mt-4 pt-6 border-t border-navy/10 grid sm:grid-cols-2 gap-8 text-[12.5px] text-charcoal/65">

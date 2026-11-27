@@ -249,6 +249,8 @@ export async function seedDatabase(prisma) {
         timeline: steps.map((s, i) => ({ status: s, at: new Date(t0 + i * 26 * 3600e3).toISOString(), note: s === 'pending' ? 'Order request placed online' : s === 'confirmed' ? 'Confirmed by JOLOF TRADE CENTER — invoice issued' : '' })),
         events: [{ at: createdAt, by: 'System', text: `Routed for ${address.city}, ${address.state}: ${ships.map(([w, m]) => `${names[w]}${w.startsWith('wh-jolof') ? ' (JOLOF stock)' : ''} · ${m} mi`).join('; ') || 'no warehouse had stock'}.` }],
         items: { create: items.map((i, k) => ({ sort: k, productId: i.productId, name: i.name, size: i.size, img: i.img, qty: i.qty, price: i.price, vendorId: i.vendorId, warehouseId: i.warehouseId, distanceMi: i.distanceMi })) },
+        // delivered demo orders were paid in full in cash (recorded by the office)
+        ...(status === 'delivered' ? { cashPayments: { create: [{ method: 'cash', amount: total, receivedAt: new Date(t0 + steps.length * 26 * 3600e3), createdBy: 'JOLOF Admin' }] } } : {}),
         fulfilments: { create: ships.map(([w, m]) => ({ warehouseId: w, status: TO_FUL[status], miles: m, fee: fee ? deliveryFee(m, settingsDelivery) : 0, tracking: ['shipped', 'delivered'].includes(status) ? `JLF-${id.replace(/\D/g, '')}-D` : '' })) },
       },
     });

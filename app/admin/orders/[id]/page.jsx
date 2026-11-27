@@ -59,7 +59,8 @@ export default function OrderDetail() {
             <Pill meta={ORDER_STATUS[order.status]} />
             <Pill meta={paymentMeta(order)} />
             {order.source === 'quote' && <span className="pill bg-[#EEE9F8] text-[#5B3FA0]">From quote</span>}
-            {order.balanceDue > 0 && order.status !== 'cancelled' && <span className="pill bg-gold-pale text-[#8a6417]">Balance {money(order.balanceDue)} unpaid — can&apos;t ship yet</span>}
+            {order.paymentMethod === 'card' && order.balanceDue > 0 && order.status !== 'cancelled' && <span className="pill bg-gold-pale text-[#8a6417]">Balance {money(order.balanceDue)} unpaid — can&apos;t ship yet</span>}
+            {order.paymentMethod !== 'card' && order.payment === 'partially_paid' && order.status !== 'cancelled' && <span className="pill bg-gold-pale text-[#8a6417]">{money(order.paid)} paid · {money(order.balanceDue)} still owed</span>}
             {order.guest && <span className="pill bg-ivory text-charcoal/70 border border-navy/10">Guest checkout</span>}
             {order.items.some((i) => i.productId && !i.warehouseId) && order.status !== 'cancelled' && <span className="pill bg-[#F8E7E3] text-[#B4432F]">Needs a supplier</span>}
           </div>
