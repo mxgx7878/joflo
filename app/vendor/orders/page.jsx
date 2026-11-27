@@ -7,7 +7,7 @@ import { useStoreReady } from '@/lib/store';
 import { money, fmtDate } from '@/lib/format';
 import { kmAway } from '@/lib/locations';
 import { FUL_STATUS, FUL_SHORT } from '@/lib/fulfilment';
-import { PageHeader, Pill, Tabs, EmptyState } from '@/components/ui';
+import { PageHeader, Pill, Tabs, EmptyState, Pagination, usePaged } from '@/components/ui';
 import { Card, TableWrap, SearchBox, Select, Skeleton } from '@/components/admin/common';
 import { useVendor, OPEN_JOB } from '@/components/vendor/hooks';
 
@@ -29,6 +29,8 @@ function Inner() {
     return jobs.filter((j) => match(tab, j) && (!wh || j.warehouseId === wh) && (!t || `${j.order.id} ${j.items.map((i) => i.name).join(' ')}`.toLowerCase().includes(t)));
   }, [jobs, tab, wh, q]);
 
+  const pg = usePaged(list, [tab, wh, q]);
+
   if (!ready) return <Skeleton />;
 
   return (
@@ -47,7 +49,7 @@ function Inner() {
             <table className="dash-table">
               <thead><tr><th>Order</th><th>Date</th><th>Ship from</th><th>Delivery</th><th>Items</th><th>Status</th><th className="text-right">Supply value</th></tr></thead>
               <tbody>
-                {list.map((j) => (
+                {pg.items.map((j) => (
                   <tr key={j.order.id + j.key}>
                     <td className="whitespace-nowrap">
                       <Link href={`/vendor/orders/${j.order.id}`} className="font-bold text-navy hover:text-emerald">{j.order.id}</Link>
@@ -65,6 +67,7 @@ function Inner() {
             </table>
           </TableWrap>
         )}
+        <Pagination {...pg} />
       </Card>
     </>
   );
