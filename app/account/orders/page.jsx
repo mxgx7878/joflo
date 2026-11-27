@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Package, Search } from 'lucide-react';
 import { ORDER_STATUS } from '@/lib/format';
-import { PageHeader, Tabs, EmptyState } from '@/components/ui';
+import { PageHeader, Tabs, EmptyState, Pagination, usePaged } from '@/components/ui';
 import { useMyOrders } from '@/components/account/shared';
 import OrdersList from '@/components/account/OrdersList';
 
@@ -24,6 +24,7 @@ export default function MyOrders() {
     const s = q.trim().toLowerCase();
     return orders.filter((o) => inGroup(o, tab) && (!s || o.id.toLowerCase().includes(s) || o.items.some((i) => i.name.toLowerCase().includes(s))));
   }, [orders, tab, q]);
+  const pg = usePaged(list, [tab, q], 10);
 
   return (
     <>
@@ -37,7 +38,7 @@ export default function MyOrders() {
             <input value={q} onChange={(e) => setQ(e.target.value)} className="dash-input !pl-10" placeholder="Order no. or product…" />
           </label>
         </div>
-        {list.length ? <OrdersList orders={list} /> : (
+        {list.length ? <><OrdersList orders={pg.items} /><Pagination {...pg} /></> : (
           <EmptyState icon={Package} title={orders.length ? 'No orders match' : 'No orders yet'} body={orders.length ? 'Try another filter or search term.' : 'Your orders will appear here once you check out.'}
             action={!orders.length && <Link href="/#shop" className="dash-btn dash-btn-navy">Start shopping</Link>} />
         )}
