@@ -44,7 +44,7 @@ function OfferEditor({ open, product, offer, warehouses, onClose }) {
               <p className="text-[12px] text-charcoal/55">Store price: {priced(product) ? money(product.price) : 'Price on request'}</p>
             </div>
           </div>
-          <Field label="Your supply price (per unit, USD)" hint="What JOLOF TRADING pays you per unit. Leave empty to agree per order.">
+          <Field label="Your supply price (per unit, USD)" hint="What JOLOF TRADE CENTER pays you per unit. Leave empty to agree per order.">
             <input type="number" min="0" step="0.01" className="dash-input" value={cost} onChange={(e) => setCost(e.target.value)} placeholder={priced(product) ? `e.g. ${(product.price * 0.75).toFixed(2)}` : ''} />
           </Field>
           <div>
@@ -90,14 +90,14 @@ function RequestProduct({ open, onClose, warehouses }) {
     const r = await requestProduct(f);
     setBusy(false);
     if (!r.ok) { setErr(r.error); return; }
-    toast({ text: `${f.name} sent to JOLOF TRADING for approval` });
+    toast({ text: `${f.name} sent to JOLOF TRADE CENTER for approval` });
     close();
   };
   return (
     <Modal open={open} onClose={close} kicker="New to the catalogue" title="Request a new product" size="max-w-2xl"
       footer={<><button className="dash-btn dash-btn-ghost" onClick={close}>Cancel</button><button className="dash-btn dash-btn-navy" disabled={busy} onClick={send}><Send /> {busy ? 'Sending…' : 'Send for approval'}</button></>}>
       <div className="space-y-4">
-        <p className="text-[13px] text-charcoal/60">JOLOF TRADING reviews it and adds it to the master catalogue. Once approved, your supply price and stock below are listed automatically.</p>
+        <p className="text-[13px] text-charcoal/60">JOLOF TRADE CENTER reviews it and adds it to the master catalogue. Once approved, your supply price and stock below are listed automatically.</p>
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Product name *" className="sm:col-span-2"><input className="dash-input" value={f.name} onChange={set('name')} placeholder="Brand + product, e.g. Maggi Chicken Cubes" /></Field>
           <Field label="Category *"><select className="dash-input" value={f.categoryId} onChange={set('categoryId')}><option value="">Choose…</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.dept} · {c.name}</option>)}</select></Field>
@@ -231,7 +231,7 @@ export default function VendorProducts() {
           })}
           {!catalogue.length && <li className="py-10 text-center text-[13px] text-charcoal/55">No catalogue products match.</li>}
         </ul>
-        <p className="text-[12px] text-charcoal/50 mt-4">Don&apos;t see a product you carry? <button className="font-bold text-emerald hover:text-navy" onClick={() => { setBrowse(false); setRequesting(true); }}>Request a new product</button> — JOLOF TRADING approves it into the catalogue.</p>
+        <p className="text-[12px] text-charcoal/50 mt-4">Don&apos;t see a product you carry? <button className="font-bold text-emerald hover:text-navy" onClick={() => { setBrowse(false); setRequesting(true); }}>Request a new product</button> — JOLOF TRADE CENTER approves it into the catalogue.</p>
       </Drawer>
 
       {requests.length > 0 && (
